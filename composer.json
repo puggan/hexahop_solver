@@ -1,0 +1,20 @@
+{
+    "name": "puggan/hexahop_solver",
+    "description": "Hexahop Solver",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thorbjörn Sundragon",
+            "email": "puggan@spiro.se"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Puggan\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.3"
+    }
+}
