@@ -6,37 +6,37 @@
 
 	class HexaHopMap extends MapState
 	{
-		const DIR_N = 0;
-		const DIR_NE = 1;
-		const DIR_SE = 2;
-		const DIR_S = 3;
-		const DIR_SW = 4;
-		const DIR_NW = 5;
-		const DIR_J = 6;
+		private const DIR_N = 0;
+		private const DIR_NE = 1;
+		private const DIR_SE = 2;
+		private const DIR_S = 3;
+		private const DIR_SW = 4;
+		private const DIR_NW = 5;
+		private const DIR_J = 6;
 
-		const TILE_WATER = 0;
-		const TILE_LOW_LAND = 1;
-		const TILE_LOW_GREEN = 2;
-		const TILE_HIGH_GREEN = 3;
-		const TILE_TRAMPOLINE = 4;
-		const TILE_ROTATOR = 5;
-		const TILE_HIGH_LAND = 6;
-		const TILE_LOW_BLUE = 7;
-		const TILE_HIGH_BLUE = 8;
-		const TILE_LASER = 9;
-		const TILE_ICE = 10;
-		const TILE_ANTI_ICE = 11;
-		const TILE_BUILD = 12;
-		const TILE_UNKNOWN_13 = 13;
-		const TILE_BOAT = 14;
-		const TILE_LOW_ELEVATOR = 15;
-		const TILE_HIGH_ELEVATOR = 16;
+		private const TILE_WATER = 0;
+		private const TILE_LOW_LAND = 1;
+		private const TILE_LOW_GREEN = 2;
+		private const TILE_HIGH_GREEN = 3;
+		private const TILE_TRAMPOLINE = 4;
+		private const TILE_ROTATOR = 5;
+		private const TILE_HIGH_LAND = 6;
+		private const TILE_LOW_BLUE = 7;
+		private const TILE_HIGH_BLUE = 8;
+		private const TILE_LASER = 9;
+		private const TILE_ICE = 10;
+		private const TILE_ANTI_ICE = 11;
+		private const TILE_BUILD = 12;
+		//private const TILE_UNKNOWN_13 = 13;
+		private const TILE_BOAT = 14;
+		private const TILE_LOW_ELEVATOR = 15;
+		private const TILE_HIGH_ELEVATOR = 16;
 
-		const ITEM_ANIT_ICE = 1;
-		const ITEM_JUMP = 2;
+		private const ITEM_ANIT_ICE = 1;
+		private const ITEM_JUMP = 2;
 
-		const MASK_TILE_TYPE = 0x1F;
-		const SHIFT_TILE_ITEM = 5;
+		private const MASK_TILE_TYPE = 0x1F;
+		private const SHIFT_TILE_ITEM = 5;
 
 		/** @var \PHPDoc\MapInfo $mapinfo */
 		private $mapinfo;
@@ -141,10 +141,21 @@
 		 *
 		 * @param int $move move/direction to travel
 		 */
-		protected function _move($move) : void
+		protected function _move($direction) : void
 		{
-			$this->player->alive = FALSE;
-			// TODO: Implement _move() method.
+			if($direction === self::DIR_J)
+			{
+				if($this->items[self::ITEM_JUMP] < 1)
+				{
+					$this->player->alive = FALSE;
+					return;
+				}
+				$this->items[self::ITEM_JUMP]--;
+			}
+			$next_point = $this->next_point($this->player, $direction);
+			$this->move_outof($this->player);
+			$this->points++;
+			$this->move_into($next_point, $direction);
 		}
 
 		/**
@@ -226,5 +237,201 @@
 					$this->tiles[$y][$x] = $map_stream->uint8();
 				}
 			}
+		}
+
+		/**
+		 * @param \PhpDoc\Point $point
+		 * @param int $direction
+		 */
+		private function move_into($point, $direction)
+		{
+			$this->player->x = $point->x;
+			$this->player->y = $point->y;
+
+			//<editor-fold desc="Out of bounds">
+			if(empty($this->tiles[$point->y][$point->x]))
+			{
+				$this->player->alive = FALSE;
+				$this->player->z = 0;
+				return;
+			}
+			//</editor-fold>
+
+			$tile_and_item = $this->tiles[$point->y][$point->x];
+			$tile = $tile_and_item & self::MASK_TILE_TYPE;
+
+			//<editor-fold desc="Item">
+			$item = $tile_and_item >> self::SHIFT_TILE_ITEM;
+			if($item)
+			{
+				$this->items[$item]++;
+				$this->tiles[$point->y][$point->x] = $tile;
+			}
+			//</editor-fold>
+
+			if($point->z < 1)
+			{
+				switch($tile)
+				{
+					case self::TILE_HIGH_GREEN:
+					case self::TILE_HIGH_LAND:
+					case self::TILE_HIGH_BLUE:
+					case self::TILE_HIGH_ELEVATOR:
+						$this->player->alive = FALSE;
+						return;
+				}
+			}
+
+			switch($tile)
+			{
+				case self::TILE_WATER:
+					$this->player->alive = FALSE;
+					$this->player->z = 0;
+					return;
+
+				case self::TILE_LOW_ELEVATOR:
+					$this->tiles[$point->y][$point->x] = self::TILE_HIGH_ELEVATOR;
+					break;
+
+				case self::TILE_HIGH_ELEVATOR:
+					$this->tiles[$point->y][$point->x] = self::TILE_LOW_ELEVATOR;
+					break;
+
+				case self::TILE_TRAMPOLINE:
+					throw new \RuntimeException('Tile TRAMPOLINE not implemented');
+					break;
+
+				case self::TILE_ROTATOR:
+					throw new \RuntimeException('Tile ROTATOR not implemented');
+					break;
+
+				case self::TILE_LASER:
+					throw new \RuntimeException('Tile LASER not implemented');
+					break;
+
+				case self::TILE_ICE:
+					throw new \RuntimeException('Tile ICE not implemented');
+					break;
+
+				case self::TILE_BUILD:
+					throw new \RuntimeException('Tile BUILD not implemented');
+					break;
+
+				case self::TILE_BOAT:
+					throw new \RuntimeException('Tile BOAT not implemented');
+					break;
+
+				/*
+				case self::TILE_ANTI_ICE:
+				case self::TILE_LOW_LAND:
+				case self::TILE_LOW_GREEN:
+				case self::TILE_LOW_BLUE:
+				case self::TILE_HIGH_LAND:
+				case self::TILE_HIGH_GREEN:
+				case self::TILE_HIGH_BLUE:
+					break;
+				*/
+			}
+
+			//<editor-fold desc="set height (z)">
+			switch($tile)
+			{
+				case self::TILE_WATER:
+				case self::TILE_LOW_LAND:
+				case self::TILE_LOW_GREEN:
+				case self::TILE_TRAMPOLINE:
+				case self::TILE_ROTATOR:
+				case self::TILE_LOW_BLUE:
+				case self::TILE_LASER:
+				case self::TILE_ICE:
+				case self::TILE_ANTI_ICE:
+				case self::TILE_BUILD:
+				case self::TILE_LOW_ELEVATOR:
+				case self::TILE_BOAT:
+					$this->player->z = 0;
+					return;
+
+				case self::TILE_HIGH_GREEN:
+				case self::TILE_HIGH_LAND:
+				case self::TILE_HIGH_BLUE:
+				case self::TILE_HIGH_ELEVATOR:
+					$this->player->z = 1;
+					return;
+			}
+			//</editor-fold>
+		}
+
+		/**
+		 * @param \PhpDoc\Point $point
+		 */
+		private function move_outof($point)
+		{
+			$tile = $this->tiles[$point->y][$point->x];
+			switch($tile & self::MASK_TILE_TYPE)
+			{
+				case self::TILE_LOW_GREEN:
+				case self::TILE_HIGH_GREEN:
+					$this->tiles[$point->y][$point->x] = self::TILE_WATER;
+					return;
+
+				case self::TILE_LOW_BLUE:
+					$this->tiles[$point->y][$point->x] = self::TILE_LOW_GREEN;
+					$this->points += 10;
+					return;
+
+				case self::TILE_HIGH_BLUE:
+					$this->tiles[$point->y][$point->x] = self::TILE_HIGH_GREEN;
+					$this->points += 10;
+					return;
+
+				case self::TILE_ANTI_ICE:
+					$this->tiles[$point->y][$point->x] = self::TILE_LOW_BLUE;
+					return;
+			}
+		}
+
+		/**
+		 * @param \PhpDoc\Point $current
+		 * @param int $direction
+		 * @param int $steps
+		 *
+		 * @return \PhpDoc\Point
+		 */
+		private function next_point($current, $direction, $steps = 1)
+		{
+			/** @var \PhpDoc\Point $new_point */
+			$new_point = clone $current;
+			switch($direction)
+			{
+				case self::DIR_N:
+					$new_point->y -= $steps;
+					return $new_point;
+
+				case self::DIR_NE:
+					$new_point->x += $steps;
+					$new_point->y -= $steps;
+					return $new_point;
+
+				case self::DIR_SE:
+					$new_point->x += $steps;
+					return $new_point;
+
+				case self::DIR_S:
+					$new_point->y += $steps;
+					return $new_point;
+
+				case self::DIR_SW:
+					$new_point->x -= $steps;
+					$new_point->y += $steps;
+					return $new_point;
+
+				case self::DIR_NW:
+					$new_point->x -= $steps;
+					return $new_point;
+
+				case self::DIR_J:
+					return $new_point;
+			}
+			throw new \RuntimeException('Bad direction: ' . $direction);
 		}
 	}
