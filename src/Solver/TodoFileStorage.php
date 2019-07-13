@@ -73,6 +73,11 @@
 				{
 					continue;
 				}
+				fclose($f);
+				if(!$path)
+				{
+					return [];
+				}
 				$this->reserved->save($path, [$pid]);
 				return array_map('intval', explode(',', $path));
 			}
@@ -110,7 +115,7 @@
 					fseek($f, $position_before);
 					fwrite($f, 'X');
 					fclose($f);
-					$this->auto_clean();
+					$this->auto_clean(1);
 					return;
 				}
 			}

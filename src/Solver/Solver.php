@@ -83,6 +83,7 @@
 
 					$this->todos->remove_all($duplicate_path);
 				}
+				$this->hashes->save($hash, $dir_path);
 
 				if($state->won())
 				{

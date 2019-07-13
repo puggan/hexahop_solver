@@ -4,7 +4,7 @@
 
 	abstract class MapState
 	{
-		abstract public function __construct($data, $path = null);
+		abstract public function __construct($data, $path = NULL);
 
 		/**
 		 * Player have won
@@ -41,6 +41,7 @@
 
 		/**
 		 * Make a move in the current state
+		 *
 		 * @param int $move move/direction to travel
 		 */
 		abstract protected function _move($move) : void;
@@ -73,20 +74,15 @@
 		public function path($path) : self
 		{
 			$state = clone $this;
-			foreach($path as $move)
+			if(is_array($path))
 			{
-				$state->_move($move);
+				foreach($path as $move)
+				{
+					$state->_move($move);
+				}
 			}
 			return $state;
 		}
-
-		/**
-		 * @param MapState $a
-		 * @param MapState $b
-		 *
-		 * @return int -1, 0, 1
-		 */
-		abstract public static function cmp($a, $b) : int;
 
 		/**
 		 * is the current state better that this other state?
@@ -95,8 +91,5 @@
 		 *
 		 * @return bool
 		 */
-		public function better($other) : bool
-		{
-			return self::cmp($this, $other);
-		}
+		abstract public function better($other) : bool;
 	}
