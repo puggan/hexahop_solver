@@ -7,13 +7,23 @@
 	use Puggan\Solver\Solver;
 	use Puggan\Solver\TodoFileStorage;
 
+	/**
+	 * Class HexaHopSolver
+	 * @package Puggan\Solver\HexaHop
+	 * @property-read HexaHopMap startState
+	 */
 	class HexaHopSolver extends Solver
 	{
-		public function __construct($map_id)
+		/**
+		 * HexaHopSolver constructor.
+		 *
+		 * @param int $level_number
+		 */
+		public function __construct($level_number)
 		{
 			$new_map = false;
 			//<editor-fold desc="mkdir $this->path">
-			$path = dirname(__DIR__, 3) . '/data/' . $map_id . '/';
+			$path = dirname(__DIR__, 3) . '/data/' . $level_number . '/';
 			if(!is_dir($path))
 			{
 				if(!mkdir($path) && !is_dir($path))
@@ -23,7 +33,7 @@
 				$new_map = true;
 			}
 			//</editor-fold>
-			$startState = new HexaHopMap($map_id);
+			$startState = new HexaHopMap($level_number);
 			$solved = new IniHashStorage($path . 'solved.ini');
 			$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
 			$hashes = new IniHashStorage($path . 'hashes.ini');
@@ -33,5 +43,10 @@
 				$todos->add([]);
 			}
 			parent::__construct($startState, $solved, $alias, $hashes, $todos);
+		}
+
+		public function map_info($json_option)
+		{
+			return $this->startState->map_info($json_option);
 		}
 	}

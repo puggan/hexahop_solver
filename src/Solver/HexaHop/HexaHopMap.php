@@ -64,10 +64,15 @@
 
 		public function __construct($level_number, $path = NULL)
 		{
+			$this->mapinfo = self::mapinfo($level_number);
+			if(!$this->mapinfo)
+			{
+				throw new \RuntimeException('invalid level_number. ' . $level_number);
+			}
+
 			$this->points = 0;
 			$this->items[self::ITEM_ANIT_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
-			$this->mapinfo = self::mapinfo($level_number);
 			$this->player = (object) [
 				'alive' => TRUE,
 				'x' => $this->mapinfo->start_x,
@@ -454,5 +459,10 @@
 		public function __clone()
 		{
 			$this->player = clone $this->player;
+		}
+
+		public function map_info($json_option)
+		{
+			return json_encode($this->mapinfo, $json_option);
 		}
 	}

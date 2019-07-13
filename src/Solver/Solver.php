@@ -5,7 +5,7 @@
 	class Solver
 	{
 		/** @var MapState $startState */
-		private $startState;
+		protected $startState;
 
 		/** @var HashStorage $solved */
 		private $solved;
