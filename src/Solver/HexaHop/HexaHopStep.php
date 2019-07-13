@@ -16,9 +16,13 @@
 
 	$solver = new HexaHopSolver($level_number);
 	echo $solver->map_info(JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), PHP_EOL;
+	$steps = 0;
 	while($solver->step($pid))
 	{
 		echo '.';
+		if(++$steps % 250 === 0) {
+			echo $steps, PHP_EOL;
+		}
 		usleep(1e3);
 	}
 	echo PHP_EOL, 'Done!', PHP_EOL;
