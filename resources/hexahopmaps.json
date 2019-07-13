@@ -2,7 +2,7 @@
     {},
     {
         "map_id": 5,
-        "file": "0_green\\triangular.lev",
+        "file": "0_green/triangular.lev",
         "title": "Triangular",
         "level_number": 1,
         "width": 10,
@@ -13,7 +13,7 @@
     },
     {
         "map_id": 2,
-        "file": "0_green\\asymmetrix.lev",
+        "file": "0_green/asymmetrix.lev",
         "title": "Orbital",
         "level_number": 2,
         "width": 13,
@@ -24,7 +24,7 @@
     },
     {
         "map_id": 3,
-        "file": "0_green\\hive.lev",
+        "file": "0_green/hive.lev",
         "title": "Hive",
         "level_number": 3,
         "width": 8,
@@ -35,7 +35,7 @@
     },
     {
         "map_id": 12,
-        "file": "1_trampoline\\test_trampoline.lev",
+        "file": "1_trampoline/test_trampoline.lev",
         "title": "Trampolines",
         "level_number": 4,
         "width": 11,
@@ -46,7 +46,7 @@
     },
     {
         "map_id": 16,
-        "file": "2_greendoor\\test_green_gate.lev",
+        "file": "2_greendoor/test_green_gate.lev",
         "title": "Green  Walls",
         "level_number": 5,
         "width": 10,
@@ -57,7 +57,7 @@
     },
     {
         "map_id": 6,
-        "file": "1_trampoline\\01.lev",
+        "file": "1_trampoline/01.lev",
         "title": "Mini  Island",
         "level_number": 6,
         "width": 11,
@@ -68,7 +68,7 @@
     },
     {
         "map_id": 11,
-        "file": "1_trampoline\\explorer.lev",
+        "file": "1_trampoline/explorer.lev",
         "title": "Explorer",
         "level_number": 7,
         "width": 13,
@@ -79,7 +79,7 @@
     },
     {
         "map_id": 9,
-        "file": "1_trampoline\\arrow.lev",
+        "file": "1_trampoline/arrow.lev",
         "title": "Weathervane",
         "level_number": 8,
         "width": 10,
@@ -90,7 +90,7 @@
     },
     {
         "map_id": 8,
-        "file": "1_trampoline\\archipeligo.lev",
+        "file": "1_trampoline/archipeligo.lev",
         "title": "Archipelago",
         "level_number": 9,
         "width": 13,
@@ -101,7 +101,7 @@
     },
     {
         "map_id": 34,
-        "file": "3_2hitfloor\\collapse2.lev",
+        "file": "3_2hitfloor/collapse2.lev",
         "title": "Toughened  Tiles",
         "level_number": 10,
         "width": 13,
@@ -112,7 +112,7 @@
     },
     {
         "map_id": 35,
-        "file": "3_2hitfloor\\Island.lev",
+        "file": "3_2hitfloor/Island.lev",
         "title": "Island",
         "level_number": 11,
         "width": 10,
@@ -123,7 +123,7 @@
     },
     {
         "map_id": 37,
-        "file": "3_2hitfloor\\Stripey.lev",
+        "file": "3_2hitfloor/Stripey.lev",
         "title": "Stripes",
         "level_number": 12,
         "width": 11,
@@ -134,7 +134,7 @@
     },
     {
         "map_id": 38,
-        "file": "3_2hitfloor\\test_2hit_floor.lev",
+        "file": "3_2hitfloor/test_2hit_floor.lev",
         "title": "One Two  One Two",
         "level_number": 13,
         "width": 12,
@@ -145,7 +145,7 @@
     },
     {
         "map_id": 13,
-        "file": "2_greendoor\\Loopy.lev",
+        "file": "2_greendoor/Loopy.lev",
         "title": "Not a Knot",
         "level_number": 14,
         "width": 12,
@@ -156,7 +156,7 @@
     },
     {
         "map_id": 17,
-        "file": "2_greendoor\\winding order.lev",
+        "file": "2_greendoor/winding order.lev",
         "title": "Winding  Order",
         "level_number": 15,
         "width": 12,
@@ -167,7 +167,7 @@
     },
     {
         "map_id": 15,
-        "file": "2_greendoor\\Mountain.lev",
+        "file": "2_greendoor/Mountain.lev",
         "title": "A  Mountain",
         "level_number": 16,
         "width": 11,
@@ -178,7 +178,7 @@
     },
     {
         "map_id": 36,
-        "file": "3_2hitfloor\\more stripes.lev",
+        "file": "3_2hitfloor/more stripes.lev",
         "title": "More  Stripes",
         "level_number": 17,
         "width": 12,
@@ -189,7 +189,7 @@
     },
     {
         "map_id": 48,
-        "file": "4_gun\\Test_gun.lev",
+        "file": "4_gun/Test_gun.lev",
         "title": "Laser  Tiles",
         "level_number": 18,
         "width": 12,
@@ -200,7 +200,7 @@
     },
     {
         "map_id": 40,
-        "file": "3_2hitfloor\\Wand.lev",
+        "file": "3_2hitfloor/Wand.lev",
         "title": "Wand",
         "level_number": 19,
         "width": 13,
@@ -211,7 +211,7 @@
     },
     {
         "map_id": 4,
-        "file": "0_green\\there and back.lev",
+        "file": "0_green/there and back.lev",
         "title": "There  and Back",
         "level_number": 20,
         "width": 9,
@@ -222,7 +222,7 @@
     },
     {
         "map_id": 45,
-        "file": "4_gun\\Sniper.lev",
+        "file": "4_gun/Sniper.lev",
         "title": "Sniper",
         "level_number": 21,
         "width": 13,
@@ -233,7 +233,7 @@
     },
     {
         "map_id": 58,
-        "file": "5_spinner\\test_spinner.lev",
+        "file": "5_spinner/test_spinner.lev",
         "title": "Spinner  Tiles",
         "level_number": 22,
         "width": 12,
@@ -244,7 +244,7 @@
     },
     {
         "map_id": 43,
-        "file": "4_gun\\gun platform.lev",
+        "file": "4_gun/gun platform.lev",
         "title": "Gun  Platform",
         "level_number": 23,
         "width": 12,
@@ -255,7 +255,7 @@
     },
     {
         "map_id": 47,
-        "file": "4_gun\\snowflake.lev",
+        "file": "4_gun/snowflake.lev",
         "title": "Snowflake",
         "level_number": 24,
         "width": 10,
@@ -266,7 +266,7 @@
     },
     {
         "map_id": 79,
-        "file": "9_boat\\floating.lev",
+        "file": "9_boat/floating.lev",
         "title": "Floating",
         "level_number": 25,
         "width": 8,
@@ -277,7 +277,7 @@
     },
     {
         "map_id": 60,
-        "file": "5_spinner\\three ways mk 2.lev",
+        "file": "5_spinner/three ways mk 2.lev",
         "title": "Three  Ways To Go",
         "level_number": 26,
         "width": 11,
@@ -299,7 +299,7 @@
     },
     {
         "map_id": 44,
-        "file": "4_gun\\Nucleus.lev",
+        "file": "4_gun/Nucleus.lev",
         "title": "Nucleus",
         "level_number": 28,
         "width": 11,
@@ -310,7 +310,7 @@
     },
     {
         "map_id": 41,
-        "file": "4_gun\\deathtrap.lev",
+        "file": "4_gun/deathtrap.lev",
         "title": "Deathtrap",
         "level_number": 29,
         "width": 12,
@@ -321,7 +321,7 @@
     },
     {
         "map_id": 49,
-        "file": "4_gun\\trigger happy.lev",
+        "file": "4_gun/trigger happy.lev",
         "title": "Trigger  Happy",
         "level_number": 30,
         "width": 13,
@@ -332,7 +332,7 @@
     },
     {
         "map_id": 33,
-        "file": "3_2hitfloor\\all wound up.lev",
+        "file": "3_2hitfloor/all wound up.lev",
         "title": "All  Wound  Up",
         "level_number": 31,
         "width": 12,
@@ -343,7 +343,7 @@
     },
     {
         "map_id": 51,
-        "file": "5_spinner\\Maxe.lev",
+        "file": "5_spinner/Maxe.lev",
         "title": "Maze",
         "level_number": 32,
         "width": 12,
@@ -354,7 +354,7 @@
     },
     {
         "map_id": 55,
-        "file": "5_spinner\\small cog.lev",
+        "file": "5_spinner/small cog.lev",
         "title": "Small  Cog",
         "level_number": 33,
         "width": 4,
@@ -365,7 +365,7 @@
     },
     {
         "map_id": 42,
-        "file": "4_gun\\eagerness.lev",
+        "file": "4_gun/eagerness.lev",
         "title": "Eagerness",
         "level_number": 34,
         "width": 12,
@@ -376,7 +376,7 @@
     },
     {
         "map_id": 10,
-        "file": "1_trampoline\\Bridges.lev",
+        "file": "1_trampoline/Bridges.lev",
         "title": "Bridges",
         "level_number": 35,
         "width": 12,
@@ -387,7 +387,7 @@
     },
     {
         "map_id": 46,
-        "file": "4_gun\\snowflake 2.lev",
+        "file": "4_gun/snowflake 2.lev",
         "title": "Deadly  Snowflake",
         "level_number": 36,
         "width": 8,
@@ -400,7 +400,7 @@
     {},
     {
         "map_id": 57,
-        "file": "5_spinner\\switch.lev",
+        "file": "5_spinner/switch.lev",
         "title": "Switch",
         "level_number": 39,
         "width": 9,
@@ -411,7 +411,7 @@
     },
     {
         "map_id": 7,
-        "file": "1_trampoline\\01_b.lev",
+        "file": "1_trampoline/01_b.lev",
         "title": "Island  Variation",
         "level_number": 40,
         "width": 11,
@@ -422,7 +422,7 @@
     },
     {
         "map_id": 72,
-        "file": "7_item\\test_ice.lev",
+        "file": "7_item/test_ice.lev",
         "title": "Deslippify",
         "level_number": 41,
         "width": 14,
@@ -433,7 +433,7 @@
     },
     {
         "map_id": 50,
-        "file": "5_spinner\\lure.lev",
+        "file": "5_spinner/lure.lev",
         "title": "Lure",
         "level_number": 42,
         "width": 6,
@@ -444,7 +444,7 @@
     },
     {
         "map_id": 53,
-        "file": "5_spinner\\preperation mk 3.lev",
+        "file": "5_spinner/preperation mk 3.lev",
         "title": "All About  Preparation",
         "level_number": 43,
         "width": 11,
@@ -455,7 +455,7 @@
     },
     {
         "map_id": 39,
-        "file": "3_2hitfloor\\Turtle.lev",
+        "file": "3_2hitfloor/Turtle.lev",
         "title": "Turtle",
         "level_number": 44,
         "width": 8,
@@ -467,7 +467,7 @@
     {},
     {
         "map_id": 65,
-        "file": "7_item\\crooked.lev",
+        "file": "7_item/crooked.lev",
         "title": "Crooked",
         "level_number": 46,
         "width": 13,
@@ -478,7 +478,7 @@
     },
     {
         "map_id": 63,
-        "file": "6_ice\\route finder.lev",
+        "file": "6_ice/route finder.lev",
         "title": "Route  Finder",
         "level_number": 47,
         "width": 13,
@@ -489,7 +489,7 @@
     },
     {
         "map_id": 59,
-        "file": "5_spinner\\three more ways.lev",
+        "file": "5_spinner/three more ways.lev",
         "title": "Three  More Ways",
         "level_number": 48,
         "width": 13,
@@ -500,7 +500,7 @@
     },
     {
         "map_id": 62,
-        "file": "6_ice\\refraction.lev",
+        "file": "6_ice/refraction.lev",
         "title": "Refraction",
         "level_number": 49,
         "width": 8,
@@ -511,7 +511,7 @@
     },
     {
         "map_id": 64,
-        "file": "6_ice\\slippy.lev",
+        "file": "6_ice/slippy.lev",
         "title": "A  Slippery  Situation",
         "level_number": 50,
         "width": 14,
@@ -522,7 +522,7 @@
     },
     {
         "map_id": 71,
-        "file": "7_item\\spinners.lev",
+        "file": "7_item/spinners.lev",
         "title": "Spinners",
         "level_number": 51,
         "width": 12,
@@ -536,7 +536,7 @@
     {},
     {
         "map_id": 54,
-        "file": "5_spinner\\revolver cannon.lev",
+        "file": "5_spinner/revolver cannon.lev",
         "title": "Revolver  Cannon",
         "level_number": 55,
         "width": 10,
@@ -547,7 +547,7 @@
     },
     {
         "map_id": 61,
-        "file": "6_ice\\oo.lev",
+        "file": "6_ice/oo.lev",
         "title": "Please  Skate  Safely",
         "level_number": 56,
         "width": 8,
@@ -558,7 +558,7 @@
     },
     {
         "map_id": 68,
-        "file": "7_item\\radioactive ice.lev",
+        "file": "7_item/radioactive ice.lev",
         "title": "Radioactive  Ice",
         "level_number": 57,
         "width": 12,
@@ -569,7 +569,7 @@
     },
     {
         "map_id": 67,
-        "file": "7_item\\kx.lev",
+        "file": "7_item/kx.lev",
         "title": "Carefully  Does It",
         "level_number": 58,
         "width": 13,
@@ -580,7 +580,7 @@
     },
     {
         "map_id": 90,
-        "file": "B_Builder\\airlock ending.lev",
+        "file": "B_Builder/airlock ending.lev",
         "title": "Somewhat  Constructive",
         "level_number": 59,
         "width": 13,
@@ -591,7 +591,7 @@
     },
     {
         "map_id": 69,
-        "file": "7_item\\slider.lev",
+        "file": "7_item/slider.lev",
         "title": "Pro  Skater",
         "level_number": 60,
         "width": 13,
@@ -602,7 +602,7 @@
     },
     {
         "map_id": 21,
-        "file": "2005_11_15\\learn lift.lev",
+        "file": "2005_11_15/learn lift.lev",
         "title": "Lifts",
         "level_number": 61,
         "width": 11,
@@ -613,7 +613,7 @@
     },
     {
         "map_id": 93,
-        "file": "B_Builder\\test_builder.lev",
+        "file": "B_Builder/test_builder.lev",
         "title": "Burn  Your  Bridges",
         "level_number": 62,
         "width": 12,
@@ -624,7 +624,7 @@
     },
     {
         "map_id": 70,
-        "file": "7_item\\spinners mk2.lev",
+        "file": "7_item/spinners mk2.lev",
         "title": "Spinners  II",
         "level_number": 63,
         "width": 12,
