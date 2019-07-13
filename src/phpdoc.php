@@ -21,13 +21,21 @@
 	}
 
 	/**
-	 * Class Player
+	 * Class Point
 	 * @package PHPDoc
-	 * @property boolean alive
 	 * @property int x
 	 * @property int y
 	 * @property int z
 	 */
-	class Player
+	class Point
+	{
+	}
+
+	/**
+	 * Class Player
+	 * @package PHPDoc
+	 * @property boolean alive
+	 */
+	class Player extends Point
 	{
 	}
