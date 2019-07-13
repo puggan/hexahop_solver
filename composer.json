@@ -1,8 +1,8 @@
 {
     "name": "puggan/hexahop_solver",
-    "description": "Hexahop Solver",
+    "description": "Hexahop Solver, see original puzzle at http://hexahop.sourceforge.net/",
     "type": "project",
-    "license": "MIT",
+    "license": "GPLv2",
     "authors": [
         {
             "name": "Thorbjörn Sundragon",
