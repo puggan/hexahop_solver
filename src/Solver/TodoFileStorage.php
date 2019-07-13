@@ -52,7 +52,15 @@
 		 */
 		public function reserve($pid)
 		{
+			if(!is_file($this->filename))
+			{
+				return FALSE;
+			}
 			$f = fopen($this->filename, 'rb');
+			if(!is_resource($f))
+			{
+				return FALSE;
+			}
 			while(!feof($f))
 			{
 				$line = fgetss($f, 1e6);
@@ -79,7 +87,15 @@
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
+			if(!is_file($this->filename))
+			{
+				return;
+			}
 			$f = fopen($this->filename, 'rb+');
+			if(!is_resource($f))
+			{
+				return;
+			}
 			while(!feof($f))
 			{
 				$position_before = ftell($f);
@@ -108,7 +124,15 @@
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
+			if(!is_file($this->filename))
+			{
+				return;
+			}
 			$f = fopen($this->filename, 'rb+');
+			if(!is_resource($f))
+			{
+				return;
+			}
 			while(!feof($f))
 			{
 				$position_before = ftell($f);
@@ -133,6 +157,10 @@
 
 		public function auto_clean($removed = 0, $force = FALSE)
 		{
+			if(!is_file($this->filename))
+			{
+				return;
+			}
 			$this->remove_count += $removed;
 			if(!$force && $this->remove_count <= 100)
 			{
