@@ -1,4 +1,5 @@
 [
+    {},
     {
         "map_id": 5,
         "file": "0_green\\triangular.lev",
@@ -395,6 +396,8 @@
         "start_x": 1,
         "start_y": 10
     },
+    {},
+    {},
     {
         "map_id": 57,
         "file": "5_spinner\\switch.lev",
@@ -461,6 +464,7 @@
         "start_x": 8,
         "start_y": 11
     },
+    {},
     {
         "map_id": 65,
         "file": "7_item\\crooked.lev",
@@ -527,6 +531,9 @@
         "start_x": 1,
         "start_y": 11
     },
+    {},
+    {},
+    {},
     {
         "map_id": 54,
         "file": "5_spinner\\revolver cannon.lev",
