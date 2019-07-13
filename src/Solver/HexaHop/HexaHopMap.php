@@ -4,7 +4,7 @@
 
 	use Puggan\Solver\MapState;
 
-	class HexaHopMap extends MapState
+	class HexaHopMap extends MapState implements \JsonSerializable
 	{
 		private const DIR_N = 0;
 		private const DIR_NE = 1;
@@ -139,7 +139,7 @@
 		/**
 		 * Make a move in the current state
 		 *
-		 * @param int $move move/direction to travel
+		 * @param int $direction move/direction to travel
 		 */
 		protected function _move($direction) : void
 		{
@@ -167,14 +167,15 @@
 		}
 
 		/**
-		 * @param HexaHopMap $a
-		 * @param HexaHopMap $b
+		 * is the current state better that this other state?
 		 *
-		 * @return int -1, 0, 1
+		 * @param HexaHopMap $other
+		 *
+		 * @return bool
 		 */
-		public static function cmp($a, $b) : int
+		public function better($other) : bool
 		{
-			return $a->points - $b->points;
+			return $this->points < $other->points;
 		}
 		//</editor-fold>
 
@@ -433,5 +434,25 @@
 					return $new_point;
 			}
 			throw new \RuntimeException('Bad direction: ' . $direction);
+		}
+
+		public function jsonSerialize()
+		{
+			return [
+				'mapinfo' => $this->mapinfo,
+				'x_min' => $this->x_min,
+				'x_max' => $this->x_max,
+				'y_min' => $this->y_min,
+				'y_max' => $this->y_max,
+				'tiles' => $this->tiles,
+				'items' => $this->items,
+				'player' => $this->player,
+				'points' => $this->points,
+			];
+		}
+
+		public function __clone()
+		{
+			$this->player = clone $this->player;
 		}
 	}
