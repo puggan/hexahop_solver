@@ -12,7 +12,7 @@
 		public function __construct($map_id)
 		{
 			//<editor-fold desc="mkdir $this->path">
-			$path = dirname(__DIR__, 2) . '/data/' . $map_id . '/';
+			$path = dirname(__DIR__, 3) . '/data/' . $map_id . '/';
 			if(!is_dir($path))
 			{
 				if(!mkdir($path) && !is_dir($path))
