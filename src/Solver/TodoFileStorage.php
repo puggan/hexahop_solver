@@ -74,7 +74,7 @@
 					continue;
 				}
 				fclose($f);
-				if(!$path)
+				if($path === '')
 				{
 					return [];
 				}
