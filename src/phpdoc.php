@@ -39,3 +39,14 @@
 	class Player extends Point
 	{
 	}
+
+	/**
+	 * Class TodoFolderStorageJson
+	 * @package PHPDoc
+	 * @property int row_count
+	 * @property string[] files
+	 */
+	class TodoFolderStorageJson
+	{
+
+	}

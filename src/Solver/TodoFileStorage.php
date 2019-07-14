@@ -11,6 +11,7 @@
 		/** @var int $remove_count */
 		private $remove_count;
 
+		/** @var int $removed_position */
 		private $removed_position = 0;
 
 		/**
