@@ -304,8 +304,21 @@
 					break;
 
 				case self::TILE_TRAMPOLINE:
-					throw new \RuntimeException('Tile TRAMPOLINE not implemented');
-					break;
+					$goal_point = $this->next_point($point, $direction, 2);
+					// if jumping from a high place, skip hight tests
+					if($this->player->z <= 0)
+					{
+						$mid_point = $this->next_point($point, $direction);
+						if($this->high_tile($mid_point))
+						{
+							break;
+						}
+						if($this->high_tile($goal_point))
+						{
+							return $this->move_into($mid_point, $direction);
+						}
+					}
+					return $this->move_into($goal_point, $direction);
 
 				case self::TILE_ROTATOR:
 					throw new \RuntimeException('Tile ROTATOR not implemented');
@@ -335,6 +348,7 @@
 				case self::TILE_HIGH_LAND:
 				case self::TILE_HIGH_GREEN:
 				case self::TILE_HIGH_BLUE:
+					// no effect on enter
 					break;
 				*/
 			}
@@ -500,5 +514,45 @@
 				}
 			}
 			return implode(', ', $dir);
+		}
+
+		/**
+		 * @param \PhpDoc\Point $point
+		 *
+		 * @return boolean
+		 */
+		public function high_tile($point) : bool
+		{
+			// out of bounds or water
+			if(empty($this->tiles[$point->y][$point->x]))
+			{
+				return FALSE;
+			}
+
+			switch($this->tiles[$point->y][$point->x] & self::MASK_TILE_TYPE)
+			{
+				case self::TILE_WATER:
+				case self::TILE_LOW_ELEVATOR:
+				case self::TILE_TRAMPOLINE:
+				case self::TILE_ROTATOR:
+				case self::TILE_LASER:
+				case self::TILE_ICE:
+				case self::TILE_BUILD:
+				case self::TILE_BOAT:
+				case self::TILE_ANTI_ICE:
+				case self::TILE_LOW_LAND:
+				case self::TILE_LOW_GREEN:
+				case self::TILE_LOW_BLUE:
+					return FALSE;
+
+				case self::TILE_HIGH_ELEVATOR:
+				case self::TILE_HIGH_LAND:
+				case self::TILE_HIGH_GREEN:
+				case self::TILE_HIGH_BLUE:
+					return TRUE;
+
+				default:
+					throw new \RuntimeException('Unknown title: ' . $this->tiles[$point->y][$point->x]);
+			}
 		}
 	}
