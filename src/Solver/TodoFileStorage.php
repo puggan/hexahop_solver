@@ -167,7 +167,7 @@
 				return;
 			}
 			$this->remove_count += $removed;
-			if(!$force && $this->remove_count <= 100)
+			if(!$force && $this->remove_count <= 1000)
 			{
 				return;
 			}
