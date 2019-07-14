@@ -45,7 +45,7 @@
 		 *
 		 * @return false|int[]
 		 */
-		function get($hash)
+		public function get($hash)
 		{
 			if(!isset($this->ini[$hash]))
 			{
@@ -58,13 +58,13 @@
 		 * @param string $hash
 		 * @param int[] $path
 		 */
-		function save($hash, $path) : void
+		public function save($hash, $path) : void
 		{
 			$this->ini[$hash] = implode(',', $path);
 			$this->_save();
 		}
 
-		function remove($hash) : void
+		public function remove($hash) : void
 		{
 			unset($this->ini[$hash]);
 			$this->_save();

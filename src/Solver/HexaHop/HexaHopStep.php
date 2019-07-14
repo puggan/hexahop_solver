@@ -17,11 +17,14 @@
 	$solver = new HexaHopSolver($level_number);
 	echo $solver->map_info(JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), PHP_EOL;
 	$steps = 0;
+	$timestamp = hrtime(true);
 	while($solver->step($pid))
 	{
 		echo '.';
 		if(++$steps % 250 === 0) {
-			echo $steps, PHP_EOL;
+			$old = $timestamp;
+			$timestamp = hrtime(true);
+			echo $steps, ' @ ', (250e9 / ($timestamp - $old)), PHP_EOL;
 		}
 		usleep(1e3);
 	}
