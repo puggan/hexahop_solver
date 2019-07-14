@@ -1,8 +1,10 @@
+#!/usr/bin/env php
 <?php
 
 	namespace Puggan\Solver\HexaHop;
 
 	define('DISPLAY_STEPS', 1000);
+	define('SLEEP_TIME', 1000);
 
 	if($argc < 2)
 	{
@@ -28,7 +30,7 @@
 			$timestamp = hrtime(true);
 			echo $steps, ' @ ', (DISPLAY_STEPS * 1e9 / ($timestamp - $old)), PHP_EOL;
 		}
-		usleep(1e3);
+		usleep(SLEEP_TIME);
 	}
 	echo PHP_EOL, 'Done!', PHP_EOL;
 	echo file_get_contents(dirname(__DIR__, 3) . '/data/' . $level_number . '/solved.ini'), PHP_EOL;
