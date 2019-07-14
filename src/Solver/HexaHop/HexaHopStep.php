@@ -2,6 +2,8 @@
 
 	namespace Puggan\Solver\HexaHop;
 
+	define('DISPLAY_STEPS', 1000);
+
 	if($argc < 2)
 	{
 		die('$level_number missing');
@@ -21,10 +23,10 @@
 	while($solver->step($pid))
 	{
 		echo '.';
-		if(++$steps % 250 === 0) {
+		if(++$steps % DISPLAY_STEPS === 0) {
 			$old = $timestamp;
 			$timestamp = hrtime(true);
-			echo $steps, ' @ ', (250e9 / ($timestamp - $old)), PHP_EOL;
+			echo $steps, ' @ ', (DISPLAY_STEPS * 1e9 / ($timestamp - $old)), PHP_EOL;
 		}
 		usleep(1e3);
 	}
