@@ -465,4 +465,40 @@
 		{
 			return json_encode($this->mapinfo, $json_option);
 		}
+
+		public function print_path($path) : string
+		{
+			$dir = [];
+			foreach($path as $move)
+			{
+				switch($move)
+				{
+					case self::DIR_N:
+						$dir[] = 'N';
+						break;
+					case self::DIR_NE:
+						$dir[] = 'NE';
+						break;
+					case self::DIR_SE:
+						$dir[] = 'SE';
+						break;
+					case self::DIR_S:
+						$dir[] = 'S';
+						break;
+					case self::DIR_SW:
+						$dir[] = 'SW';
+						break;
+					case self::DIR_NW:
+						$dir[] = 'NW';
+						break;
+					case self::DIR_J:
+						$dir[] = 'Jump';
+						break;
+					default:
+						$dir[] = '?' . $move;
+						break;
+				}
+			}
+			return implode(', ', $dir);
+		}
 	}

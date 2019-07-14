@@ -59,7 +59,16 @@
 			{
 				return FALSE;
 			}
-			foreach($this->loadState($path)->move_all() as $direction => $state)
+			$todo_state = $this->loadState($path);
+			if($todo_state->lost())
+			{
+				throw new \RuntimeException('Invalid path in TODO, already lost: ' . $todo_state->print_path($path) . ' (' . implode(', ', $path) . ')');
+			}
+			if($todo_state->won())
+			{
+				throw new \RuntimeException('Invalid path in TODO, already won: ' . $todo_state->print_path($path));
+			}
+			foreach($todo_state->move_all() as $direction => $state)
 			{
 				if($state->lost())
 				{

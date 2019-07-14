@@ -78,6 +78,9 @@
 			{
 				foreach($path as $move)
 				{
+					if($state->lost()) {
+						throw new \RuntimeException('Invalid path, alredy lost: ' . $state->print_path($path) . ' (' . implode(', ', $path). ')');
+					}
 					$state->_move($move);
 				}
 			}
@@ -92,4 +95,11 @@
 		 * @return bool
 		 */
 		abstract public function better($other) : bool;
+
+		/**
+		 * @param int[] $path
+		 *
+		 * @return string
+		 */
+		abstract public function print_path($path) : string;
 	}
