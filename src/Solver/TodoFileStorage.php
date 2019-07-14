@@ -11,6 +11,8 @@
 		/** @var int $remove_count */
 		private $remove_count;
 
+		private $removed_position = 0;
+
 		/**
 		 * TodoFileStorage constructor.
 		 *
@@ -61,13 +63,19 @@
 			{
 				return FALSE;
 			}
+			fseek($f, $this->removed_position);
+			$first_found = false;
 			while(!feof($f))
 			{
 				$line = fgetss($f, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
+					if(!$first_found) {
+						$this->removed_position = ftell($f);
+					}
 					continue;
 				}
+				$first_found = true;
 				$path = trim(substr($line, 2));
 				if($this->reserved->get($path))
 				{
@@ -101,14 +109,20 @@
 			{
 				return;
 			}
+			fseek($f, $this->removed_position);
+			$first_found = false;
 			while(!feof($f))
 			{
 				$position_before = ftell($f);
 				$line = fgetss($f, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
+					if(!$first_found) {
+						$this->removed_position = ftell($f);
+					}
 					continue;
 				}
+				$first_found = true;
 				$row_path = trim(substr($line, 2));
 				if($row_path === $path_string)
 				{
@@ -189,5 +203,6 @@
 			fclose($f_new);
 			unlink($filenmae_copy);
 			$this->remove_count = 0;
+			$this->removed_position = 0;
 		}
 	}
