@@ -2,11 +2,11 @@
 
 	namespace Puggan\Solver\HexaHop;
 
-	use Puggan\Solver\AliasHashStorage;
+	//use Puggan\Solver\AliasHashStorage;
 	use Puggan\Solver\IniFolderHashStorage;
 	use Puggan\Solver\IniHashStorage;
 	use Puggan\Solver\Solver;
-	use Puggan\Solver\TodoFileStorage;
+	use Puggan\Solver\TodoFolderStorage;
 
 	/**
 	 * Class HexaHopSolver
@@ -19,6 +19,8 @@
 		 * HexaHopSolver constructor.
 		 *
 		 * @param int $level_number
+		 *
+		 * @throws \Exception
 		 */
 		public function __construct($level_number)
 		{
@@ -39,7 +41,7 @@
 			//$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
 			//$hashes = new IniHashStorage($path . 'hashes.ini');
 			$hashes = new IniFolderHashStorage($path . 'hashes/');
-			$todos = new TodoFileStorage($path . 'todo.ini');
+			$todos = new TodoFolderStorage($path . 'todo/');
 			if($new_map)
 			{
 				$todos->add([]);
