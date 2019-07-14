@@ -158,9 +158,9 @@
 				$this->items[self::ITEM_JUMP]--;
 			}
 			$next_point = $this->next_point($this->player, $direction);
-			$this->move_outof($this->player);
+			$old_tile = $this->move_outof($this->player);
 			$this->points++;
-			$this->move_into($next_point, $direction);
+			$this->move_into($next_point, $direction, $old_tile);
 		}
 
 		/**
@@ -249,7 +249,7 @@
 		 * @param \PhpDoc\Point $point
 		 * @param int $direction
 		 */
-		private function move_into($point, $direction)
+		private function move_into($point, $direction, $old_tile)
 		{
 			$this->player->x = $point->x;
 			$this->player->y = $point->y;
@@ -315,10 +315,10 @@
 						}
 						if($this->high_tile($goal_point))
 						{
-							return $this->move_into($mid_point, $direction);
+							return $this->move_into($mid_point, $direction, $old_tile);
 						}
 					}
-					return $this->move_into($goal_point, $direction);
+					return $this->move_into($goal_point, $direction, $old_tile);
 
 				case self::TILE_ROTATOR:
 					throw new \RuntimeException('Tile ROTATOR not implemented');
@@ -369,14 +369,27 @@
 				case self::TILE_LOW_ELEVATOR:
 				case self::TILE_BOAT:
 					$this->player->z = 0;
-					return;
+					break;
 
 				case self::TILE_HIGH_GREEN:
 				case self::TILE_HIGH_LAND:
 				case self::TILE_HIGH_BLUE:
 				case self::TILE_HIGH_ELEVATOR:
 					$this->player->z = 1;
-					return;
+					break;
+			}
+			//</editor-fold>
+
+			//<editor-fold desc="Blue & Green Walls, Lower?">
+			switch($old_tile & self::MASK_TILE_TYPE)
+			{
+				case self::TILE_LOW_BLUE:
+					$this->blue_wall_test();
+					break;
+
+				case self::TILE_LOW_GREEN:
+					$this->green_wall_test();
+					break;
 			}
 			//</editor-fold>
 		}
@@ -392,22 +405,23 @@
 				case self::TILE_LOW_GREEN:
 				case self::TILE_HIGH_GREEN:
 					$this->tiles[$point->y][$point->x] = self::TILE_WATER;
-					return;
+					break;
 
 				case self::TILE_LOW_BLUE:
 					$this->tiles[$point->y][$point->x] = self::TILE_LOW_GREEN;
 					$this->points += 10;
-					return;
+					break;
 
 				case self::TILE_HIGH_BLUE:
 					$this->tiles[$point->y][$point->x] = self::TILE_HIGH_GREEN;
 					$this->points += 10;
-					return;
+					break;
 
 				case self::TILE_ANTI_ICE:
 					$this->tiles[$point->y][$point->x] = self::TILE_LOW_BLUE;
-					return;
+					break;
 			}
+			return $tile;
 		}
 
 		/**
@@ -553,6 +567,55 @@
 
 				default:
 					throw new \RuntimeException('Unknown title: ' . $this->tiles[$point->y][$point->x]);
+			}
+		}
+
+		public function green_wall_test()
+		{
+			foreach($this->tiles as $y => $row)
+			{
+				foreach($row as $x => $tile_with_item)
+				{
+					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_LOW_GREEN)
+					{
+						return;
+					}
+				}
+			}
+
+			foreach($this->tiles as $y => $row)
+			{
+				foreach($row as $x => $tile_with_item)
+				{
+					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_HIGH_GREEN)
+					{
+						$this->tiles[$y][$x] += self::TILE_LOW_GREEN - self::TILE_HIGH_GREEN;
+					}
+				}
+			}
+		}
+
+		public function blue_wall_test()
+		{
+			foreach($this->tiles as $y => $row)
+			{
+				foreach($row as $x => $tile_with_item)
+				{
+					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_LOW_BLUE)
+					{
+						return;
+					}
+				}
+			}
+			foreach($this->tiles as $y => $row)
+			{
+				foreach($row as $x => $tile_with_item)
+				{
+					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_HIGH_BLUE)
+					{
+						$this->tiles[$y][$x] += self::TILE_LOW_BLUE - self::TILE_HIGH_BLUE;
+					}
+				}
 			}
 		}
 	}
