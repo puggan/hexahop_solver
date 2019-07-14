@@ -36,7 +36,7 @@
 			//</editor-fold>
 			$startState = new HexaHopMap($level_number);
 			$solved = new IniHashStorage($path . 'solved.ini');
-			$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
+			//$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
 			//$hashes = new IniHashStorage($path . 'hashes.ini');
 			$hashes = new IniFolderHashStorage($path . 'hashes/');
 			$todos = new TodoFileStorage($path . 'todo.ini');
@@ -44,7 +44,7 @@
 			{
 				$todos->add([]);
 			}
-			parent::__construct($startState, $solved, $alias, $hashes, $todos);
+			parent::__construct($startState, $solved, /*$alias,*/ $hashes, $todos);
 		}
 
 		public function map_info($json_option)

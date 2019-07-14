@@ -28,11 +28,11 @@
 		 * @param HashStorage $hashes
 		 * @param TodoStorage $todos
 		 */
-		public function __construct($startState, $solved, $alias, $hashes, $todos)
+		public function __construct($startState, $solved, /*$alias,*/ $hashes, $todos)
 		{
 			$this->startState = $startState;
 			$this->solved = $solved;
-			$this->alias = $alias;
+			//$this->alias = $alias;
 			$this->hashes = $hashes;
 			$this->todos = $todos;
 		}
@@ -85,10 +85,10 @@
 					$duplicate_state = $this->loadState($duplicate_path);
 					if(!$state->better($duplicate_state))
 					{
-						$this->alias->add($dir_path, $duplicate_path);
+						//$this->alias->add($dir_path, $duplicate_path);
 						continue;
 					}
-					$this->alias->add($duplicate_path, $dir_path);
+					//$this->alias->add($duplicate_path, $dir_path);
 
 					$this->todos->remove_all($duplicate_path);
 				}
