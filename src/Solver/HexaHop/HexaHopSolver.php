@@ -3,6 +3,7 @@
 	namespace Puggan\Solver\HexaHop;
 
 	use Puggan\Solver\AliasHashStorage;
+	use Puggan\Solver\IniFolderHashStorage;
 	use Puggan\Solver\IniHashStorage;
 	use Puggan\Solver\Solver;
 	use Puggan\Solver\TodoFileStorage;
@@ -36,7 +37,8 @@
 			$startState = new HexaHopMap($level_number);
 			$solved = new IniHashStorage($path . 'solved.ini');
 			$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
-			$hashes = new IniHashStorage($path . 'hashes.ini');
+			//$hashes = new IniHashStorage($path . 'hashes.ini');
+			$hashes = new IniFolderHashStorage($path . 'hashes/');
 			$todos = new TodoFileStorage($path . 'todo.ini');
 			if($new_map)
 			{
