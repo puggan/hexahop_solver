@@ -336,9 +336,15 @@
 					$this->move_into($goal_point, $direction, $tile);
 					return;
 
-				// TODO
 				case self::TILE_ROTATOR:
-					throw new \RuntimeException('Tile ROTATOR not implemented');
+					$swap_in_tile = self::TILE_WATER;
+					foreach($this->next_points($point) as $swap_point)
+					{
+						// TODO do items rotate?
+						$swap_out_tile = ($this->tiles[$swap_point->y][$swap_point->x] ?? 0);
+						$this->tiles[$swap_point->y][$swap_point->x] = $swap_in_tile;
+						$swap_in_tile = $swap_out_tile;
+					}
 					break;
 
 				// TODO
