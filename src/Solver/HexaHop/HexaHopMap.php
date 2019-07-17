@@ -448,25 +448,25 @@
 			//<editor-fold desc="set height (z)">
 			switch($tile)
 			{
-				case self::TILE_WATER:
-				case self::TILE_LOW_LAND:
-				case self::TILE_LOW_GREEN:
-				case self::TILE_TRAMPOLINE:
-				case self::TILE_ROTATOR:
-				case self::TILE_LOW_BLUE:
-				case self::TILE_LASER:
-				case self::TILE_ICE:
 				case self::TILE_ANTI_ICE:
-				case self::TILE_BUILD:
-				case self::TILE_LOW_ELEVATOR:
 				case self::TILE_BOAT:
+				case self::TILE_BUILD:
+				case self::TILE_HIGH_ELEVATOR:
+				case self::TILE_ICE:
+				case self::TILE_LASER:
+				case self::TILE_LOW_BLUE:
+				case self::TILE_LOW_GREEN:
+				case self::TILE_LOW_LAND:
+				case self::TILE_ROTATOR:
+				case self::TILE_TRAMPOLINE:
+				case self::TILE_WATER:
 					$this->player->z = 0;
 					break;
 
+				case self::TILE_HIGH_BLUE:
 				case self::TILE_HIGH_GREEN:
 				case self::TILE_HIGH_LAND:
-				case self::TILE_HIGH_BLUE:
-				case self::TILE_HIGH_ELEVATOR:
+				case self::TILE_LOW_ELEVATOR:
 					$this->player->z = 1;
 					break;
 			}
