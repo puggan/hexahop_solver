@@ -370,17 +370,24 @@
 					break;
 
 				case self::TILE_BUILD:
+					$high_built = 0;
+					$low_built = 0;
 					foreach($this->next_points($point) as $build_point)
 					{
 						$build_tile = ($this->tiles[$build_point->y][$build_point->x] ?? -1) & self::MASK_TILE_TYPE;
 						if($build_tile === self::TILE_LOW_GREEN)
 						{
 							$this->tiles[$build_point->y][$build_point->x] += self::TILE_HIGH_GREEN - self::TILE_LOW_GREEN;
+							$high_built++;
 						}
 						else if($build_tile === self::TILE_WATER)
 						{
 							$this->tiles[$build_point->y][$build_point->x] += self::TILE_LOW_GREEN - self::TILE_WATER;
+							$low_built++;
 						}
+					}
+					if($high_built && !$low_built) {
+						$this->wall_test(self::TILE_LOW_GREEN);
 					}
 					break;
 
