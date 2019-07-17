@@ -258,7 +258,7 @@
 		 * @param \PhpDoc\Point $point
 		 * @param int $direction
 		 */
-		private function move_into($point, $direction, $old_tile)
+		private function move_into($point, $direction, $old_tile) : void
 		{
 			$this->player->x = $point->x;
 			$this->player->y = $point->y;
@@ -328,16 +328,20 @@
 						}
 						if($this->high_tile($goal_point))
 						{
-							return $this->move_into($mid_point, $direction, $old_tile);
+							$this->move_into($mid_point, $direction, $old_tile);
+							return;
 						}
 					}
 
-					return $this->move_into($goal_point, $direction, $tile);
+					$this->move_into($goal_point, $direction, $tile);
+					return;
 
+				// TODO
 				case self::TILE_ROTATOR:
 					throw new \RuntimeException('Tile ROTATOR not implemented');
 					break;
 
+				// TODO
 				case self::TILE_LASER:
 					throw new \RuntimeException('Tile LASER not implemented');
 					break;
