@@ -887,16 +887,10 @@
 		{
 			$tile_types = $this->tile_type_count();
 
+			$my_tiles = $this->tiles;
+
 			// avoid giving bad answers on non-implemented tiles
-			if($tile_types[self::TILE_ROTATOR])
-			{
-				return FALSE;
-			}
 			if($tile_types[self::TILE_LASER])
-			{
-				return FALSE;
-			}
-			if($tile_types[self::TILE_BUILD])
 			{
 				return FALSE;
 			}
@@ -905,9 +899,9 @@
 				return FALSE;
 			}
 
-			$reachable = array_fill_keys(array_keys($this->tiles), []);
+			$reachable = [];
 
-			foreach($this->tiles as $y => $row)
+			foreach($my_tiles as $y => $row)
 			{
 				foreach(array_keys($row) as $x)
 				{
@@ -923,13 +917,42 @@
 			{
 				$start_point = array_pop($todo);
 				$neighbors = $this->next_points($start_point);
-				$start_tile = ($this->tiles[$start_point->y][$start_point->x] ?? 0) & self::MASK_TILE_TYPE;
+				$start_tile = ($my_tiles[$start_point->y][$start_point->x] ?? 0) & self::MASK_TILE_TYPE;
 				if($start_tile)
 				{
 					switch($start_tile)
 					{
 						case self::TILE_TRAMPOLINE:
 							$neighbors = array_merge($neighbors, $this->next_points($start_point, 2));
+							break;
+
+						case self::TILE_ROTATOR:
+						case self::TILE_BUILD:
+							$neighbor_count = 0;
+							foreach($neighbors as $neighbor)
+							{
+								$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? 0) & self::MASK_TILE_TYPE;
+								// Dubble rotator can move about everywhere
+								if($neighbor_tile === self::TILE_ROTATOR)
+								{
+									return FALSE;
+								}
+								if($neighbor_tile)
+								{
+									$neighbor_count++;
+								}
+							}
+							if($neighbor_count)
+							{
+								foreach($neighbors as $neighbor)
+								{
+									$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? -1) & self::MASK_TILE_TYPE;
+									if(!$neighbor_tile)
+									{
+										$my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
+									}
+								}
+							}
 							break;
 					}
 					foreach($neighbors as $point)
@@ -939,7 +962,7 @@
 							continue;
 						}
 
-						$tile = ($this->tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
+						$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
 						if(!$tile)
 						{
 							continue;
@@ -950,7 +973,7 @@
 				}
 			}
 
-			foreach($this->tiles as $y => $row)
+			foreach($my_tiles as $y => $row)
 			{
 				foreach($row as $x => $tile_with_item)
 				{
