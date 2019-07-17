@@ -9,7 +9,7 @@
 		/** @var int $prefix_length */
 		protected $prefix_length;
 
-		public function __construct($folder, $prefix_length = 6)
+		public function __construct($folder, $prefix_length = 3)
 		{
 			if(!is_dir($folder) && !mkdir($folder) && !is_dir($folder))
 			{
