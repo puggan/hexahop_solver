@@ -347,7 +347,26 @@
 					break;
 
 				case self::TILE_ICE:
-					throw new \RuntimeException('Tile ICE not implemented');
+					// Anti Ice?
+					if($this->items[self::ITEM_ANIT_ICE]> 0)
+					{
+						$this->items[self::ITEM_ANIT_ICE]--;
+						$this->tiles[$point->y][$point->x] = self::TILE_ANTI_ICE;
+						break;
+					}
+
+					// TODO walltest before or after?
+
+					// Normal Ice
+					foreach(range(1,100) as $distance)
+					{
+						$goal_point = $this->next_point($point, $direction, $distance);
+						if(($this->tiles[$goal_point->y][$goal_point->x] ?? 0) !== self::TILE_ICE)
+						{
+							$this->move_into($goal_point, $direction, $old_tile);
+							return;
+						}
+					}
 					break;
 
 				case self::TILE_BUILD:
