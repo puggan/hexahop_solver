@@ -890,7 +890,7 @@
 			$my_tiles = $this->tiles;
 
 			// avoid giving bad answers on non-implemented tiles
-			if($tile_types[self::TILE_LASER])
+			if($tile_types[self::TILE_LASER] && $tile_types[self::TILE_ICE])
 			{
 				return FALSE;
 			}
@@ -972,6 +972,117 @@
 					}
 				}
 			}
+
+			//<editor-fold desc="Non-Ice Lasers">
+			if($tile_types[self::TILE_LASER])
+			{
+				/** @var \PhpDoc\Point[] $missing_greens */
+				$missing_greens = [];
+				/** @var \PhpDoc\Point[] $reached_lasers */
+				$reached_lasers = [];
+				/** @var \PhpDoc\Point[] $other_lasers */
+				$other_lasers = [];
+				/** @var \PhpDoc\Point[] $other_lasers */
+				$explodable_lasers = [];
+
+				foreach($my_tiles as $y => $row)
+				{
+					foreach($row as $x => $tile_wi)
+					{
+						$tile = $tile_wi & self::MASK_TILE_TYPE;
+						if(empty($reachable[$y][$x]))
+						{
+							if($tile === self::TILE_LASER)
+							{
+								$other_lasers[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+							}
+							else if($tile === self::TILE_LOW_GREEN)
+							{
+								$missing_greens[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+							}
+							else if($tile === self::TILE_HIGH_GREEN)
+							{
+								$missing_greens[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+							}
+						}
+						else if($tile === self::TILE_LASER)
+						{
+							$reached_lasers[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+						}
+					}
+				}
+
+				if(!$missing_greens)
+				{
+					return FALSE;
+				}
+				if(!$reached_lasers)
+				{
+					return TRUE;
+				}
+
+				foreach($reached_lasers as $laser_point)
+				{
+					foreach($missing_greens as $green_point_index => $green_point)
+					{
+						$delta_x = $laser_point->x - $green_point->x;
+						$delta_y = $laser_point->y - $green_point->y;
+						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
+						{
+							unset($missing_greens[$green_point_index]);
+							if(!$missing_greens)
+							{
+								return FALSE;
+							}
+						}
+					}
+				}
+				if(!$other_lasers)
+				{
+					return TRUE;
+				}
+				foreach($reached_lasers as $laser_point)
+				{
+					foreach($other_lasers as $other_point_index => $other_point)
+					{
+						$delta_x = $laser_point->x - $other_point->x;
+						$delta_y = $laser_point->y - $other_point->y;
+						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
+						{
+							$explodable_lasers[] = $other_point;
+							unset($other_lasers[$other_point_index]);
+						}
+					}
+				}
+				if(!$explodable_lasers)
+				{
+					return TRUE;
+				}
+
+				foreach($explodable_lasers as $laser_point)
+				{
+					foreach($missing_greens as $green_point_index => $green_point)
+					{
+						$delta_x = $laser_point->x - $green_point->x;
+						$delta_y = $laser_point->y - $green_point->y;
+						if($delta_x > 1 || $delta_x < -1 || $delta_y > 1 || $delta_y < -1)
+						{
+							continue;
+						}
+						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
+						{
+							unset($missing_greens[$green_point_index]);
+							if(!$missing_greens)
+							{
+								return FALSE;
+							}
+						}
+					}
+				}
+
+				return TRUE;
+			}
+			//</editor-fold>
 
 			foreach($my_tiles as $y => $row)
 			{
