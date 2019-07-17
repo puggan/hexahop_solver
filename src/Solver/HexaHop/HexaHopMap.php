@@ -6,6 +6,7 @@
 
 	class HexaHopMap extends MapState implements \JsonSerializable
 	{
+
 		private const DIR_N = 0;
 		private const DIR_NE = 1;
 		private const DIR_SE = 2;
@@ -36,6 +37,7 @@
 		private const ITEM_JUMP = 2;
 
 		private const MASK_TILE_TYPE = 0x1F;
+		private const MASK_ITEM_TYPE = 0xE0;
 		private const SHIFT_TILE_ITEM = 5;
 
 		/** @var \PHPDoc\MapInfo $mapinfo */
@@ -43,10 +45,13 @@
 
 		/** @var int x_min */
 		private $x_min;
+
 		/** @var int x_max */
 		private $x_max;
+
 		/** @var int y_min */
 		private $y_min;
+
 		/** @var int y_max */
 		private $y_max;
 
@@ -114,6 +119,7 @@
 					}
 				}
 			}
+
 			return TRUE;
 		}
 
@@ -138,6 +144,7 @@
 			{
 				$moves = range(0, 6);
 			}
+
 			return $moves;
 		}
 
@@ -153,6 +160,7 @@
 				if($this->items[self::ITEM_JUMP] < 1)
 				{
 					$this->player->alive = FALSE;
+
 					return;
 				}
 				$this->items[self::ITEM_JUMP]--;
@@ -216,6 +224,7 @@
 			{
 				$json = json_decode(self::getResoure('hexahopmaps.json'), FALSE);
 			}
+
 			return $json[$level_number];
 		}
 
@@ -259,6 +268,7 @@
 			{
 				$this->player->alive = FALSE;
 				$this->player->z = 0;
+
 				return;
 			}
 			//</editor-fold>
@@ -284,6 +294,7 @@
 					case self::TILE_HIGH_BLUE:
 					case self::TILE_HIGH_ELEVATOR:
 						$this->player->alive = FALSE;
+
 						return;
 				}
 			}
@@ -293,6 +304,7 @@
 				case self::TILE_WATER:
 					$this->player->alive = FALSE;
 					$this->player->z = 0;
+
 					return;
 
 				case self::TILE_LOW_ELEVATOR:
@@ -318,6 +330,7 @@
 							return $this->move_into($mid_point, $direction, $old_tile);
 						}
 					}
+
 					return $this->move_into($goal_point, $direction, $old_tile);
 
 				case self::TILE_ROTATOR:
@@ -378,8 +391,8 @@
 				case self::TILE_HIGH_LAND:
 				case self::TILE_HIGH_GREEN:
 				case self::TILE_HIGH_BLUE:
-					// no effect on enter
-					break;
+					 // no effect on enter
+					 break;
 				*/
 			}
 
@@ -451,6 +464,7 @@
 					$this->tiles[$point->y][$point->x] = self::TILE_LOW_BLUE;
 					break;
 			}
+
 			return $tile;
 		}
 
@@ -469,28 +483,34 @@
 			{
 				case self::DIR_N:
 					$new_point->y -= $steps;
+
 					return $new_point;
 
 				case self::DIR_NE:
 					$new_point->x += $steps;
 					$new_point->y -= $steps;
+
 					return $new_point;
 
 				case self::DIR_SE:
 					$new_point->x += $steps;
+
 					return $new_point;
 
 				case self::DIR_S:
 					$new_point->y += $steps;
+
 					return $new_point;
 
 				case self::DIR_SW:
 					$new_point->x -= $steps;
 					$new_point->y += $steps;
+
 					return $new_point;
 
 				case self::DIR_NW:
 					$new_point->x -= $steps;
+
 					return $new_point;
 
 				case self::DIR_J:
@@ -557,6 +577,7 @@
 						break;
 				}
 			}
+
 			return implode(', ', $dir);
 		}
 
