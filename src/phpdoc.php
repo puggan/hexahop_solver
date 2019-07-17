@@ -41,6 +41,15 @@
 	}
 
 	/**
+	 * Class Projectile
+	 * @package PHPDoc
+	 * @property int dir
+	 */
+	class Projectile extends Point
+	{
+	}
+
+	/**
 	 * Class TodoFolderStorageJson
 	 * @package PHPDoc
 	 * @property int row_count

@@ -350,7 +350,82 @@
 
 				// TODO
 				case self::TILE_LASER:
-					throw new \RuntimeException('Tile LASER not implemented');
+					/** @var \PHPDoc\Projectile[] $projectiles */
+					$projectiles = [];
+					/** @var \PHPDoc\Projectile[] $todos */
+					$todos = [];
+					/** @var \PHPDoc\Point $damage */
+					$damage = [];
+					if($direction === self::DIR_J) {
+						$todos = [
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 0],
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 1],
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 2],
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 3],
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 4],
+							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 5],
+						];
+					} else {
+						$todos[] = (object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => $direction];
+					}
+
+					while($todos)
+					{
+						$todo_projectile = array_pop($todos);
+						$todo_key = "{$todo_projectile->x}:{$todo_projectile->y}:{$todo_projectile->dir}";
+						if(isset($projectiles[$todo_key])) {
+							continue;
+						}
+						$hit_point = $this->next_point($todo_projectile, $todo_projectile->dir);
+						$hit_key = "{$hit_point->x}:{$hit_point->y}";
+						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
+						switch($hit_tile)
+						{
+							case -1:
+								break;
+
+							case self::TILE_ICE:
+								throw new \RuntimeException('LASER on ICE not implemented');
+
+							case self::TILE_WATER:
+								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => $todo_projectile->dir];
+								break;
+
+							default:
+								$damage[$hit_key] = $hit_point;
+								break;
+						}
+					}
+
+					foreach($damage as $hit_point)
+					{
+						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
+						switch($hit_tile)
+						{
+							case self::TILE_WATER:
+								break;
+
+							case self::TILE_LASER:
+								// TODO points
+								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
+								foreach($this->next_points($hit_point) as $extra_hit_point)
+								{
+									// TODO points
+									$this->tiles[$extra_hit_point->y][$extra_hit_point->x] = self::TILE_WATER;
+								}
+								break;
+
+							default:
+								// TODO points
+								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
+								break;
+						}
+					}
+
+					if(!$this->tiles[$point->y][$point->x]) {
+						$this->player->alive = false;
+					}
+
 					break;
 
 				case self::TILE_ICE:
