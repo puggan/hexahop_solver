@@ -337,7 +337,37 @@
 					break;
 
 				case self::TILE_BOAT:
-					throw new \RuntimeException('Tile BOAT not implemented');
+					$end_point = $point;
+					foreach(range(1, 20) as $steps)
+					{
+						$test_point = $this->next_point($point, $direction, $steps);
+						$test_tile = $this->tiles[$test_point->y][$test_point->x] ?? -1;
+						if($test_tile > 0)
+						{
+							$test_tile &= self::MASK_TILE_TYPE;
+						}
+						if($test_tile > 0)
+						{
+							break;
+						}
+						$end_point = $test_point;
+						if($test_tile < 0)
+						{
+							$this->player->alive = FALSE;
+							break;
+						}
+					}
+					if($end_point !== $point)
+					{
+						$this->tiles[$point->y][$point->x] -= self::TILE_BOAT;
+						if(isset($this->tiles[$end_point->y][$end_point->x]))
+						{
+							$this->tiles[$end_point->y][$end_point->x] += self::TILE_BOAT;
+						}
+						$this->player->x = $end_point->x;
+						$this->player->y = $end_point->y;
+					}
+
 					break;
 
 				/*
