@@ -519,6 +519,53 @@
 			throw new \RuntimeException('Bad direction: ' . $direction);
 		}
 
+		/**
+		 * @param $current
+		 * @param int $steps
+		 *
+		 * @return \PhpDoc\Point[]
+		 */
+		private function next_points($current, $steps = 1)
+		{
+			$points = [];
+			foreach(range(0,5) as $direction)
+			{
+
+				/** @var \PhpDoc\Point $new_point */
+				$new_point = clone $current;
+				switch($direction)
+				{
+					case self::DIR_N:
+						$new_point->y -= $steps;
+						break;
+
+					case self::DIR_NE:
+						$new_point->x += $steps;
+						$new_point->y -= $steps;
+						break;
+
+					case self::DIR_SE:
+						$new_point->x += $steps;
+						break;
+
+					case self::DIR_S:
+						$new_point->y += $steps;
+						break;
+
+					case self::DIR_SW:
+						$new_point->x -= $steps;
+						$new_point->y += $steps;
+						break;
+
+					case self::DIR_NW:
+						$new_point->x -= $steps;
+						break;
+				}
+				$points[] = $new_point;
+			}
+			return $points;
+		}
+
 		public function jsonSerialize()
 		{
 			return [
@@ -670,8 +717,99 @@
 			}
 		}
 
+		/**
+		 * @return int
+		 */
 		public function points()
 		{
 			return $this->points;
+		}
+
+		/**
+		 * @return int[]
+		 */
+		public function tile_type_count()
+		{
+			$c = array_fill_keys(range(0, 16), 0);
+			foreach($this->tiles as $row)
+			{
+				foreach($row as $tile)
+				{
+					$c[$tile & self::MASK_TILE_TYPE]++;
+				}
+			}
+			return $c;
+		}
+
+		public function imposible()
+		{
+			$tile_types = $this->tile_type_count();
+
+			// avoid giving bad answers on non-implemented tiles
+			if($tile_types[self::TILE_ROTATOR]) return false;
+			if($tile_types[self::TILE_LASER]) return false;
+			if($tile_types[self::TILE_BUILD]) return false;
+			if($tile_types[self::TILE_BOAT]) return false;
+
+			$reachable = array_fill_keys(array_keys($this->tiles), []);
+
+			foreach($this->tiles as $y => $row)
+			{
+				foreach(array_keys($row) as $x)
+				{
+					$reachable[$y][$x] = 0;
+				}
+			}
+
+			$reachable[$this->player->y][$this->player->x] = 1;
+			/** @var \PhpDoc\Point[] $todo */
+			$todo = [$this->player];
+
+			while($todo)
+			{
+				$start_point = array_pop($todo);
+				$neighbors = $this->next_points($start_point);
+				$start_tile = ($this->tiles[$start_point->y][$start_point->x] ?? 0) & self::MASK_TILE_TYPE;
+				if($start_tile)
+				{
+					switch($start_tile)
+					{
+						case self::TILE_TRAMPOLINE:
+							$neighbors = array_merge($neighbors, $this->next_points($start_point, 2));
+							break;
+					}
+					foreach($neighbors as $point)
+					{
+						if(!empty($reachable[$point->y][$point->x]))
+						{
+							continue;
+						}
+
+						$tile = ($this->tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
+						if(!$tile)
+						{
+							continue;
+						}
+						$reachable[$point->y][$point->x] = 1;
+						$todo[] = $point;
+					}
+				}
+			}
+
+			foreach($this->tiles as $y => $row)
+			{
+				foreach($row as $x => $tile_with_item)
+				{
+					$tile = $tile_with_item & self::MASK_TILE_TYPE;
+					if($tile === self::TILE_LOW_GREEN || $tile === self::TILE_HIGH_GREEN)
+					{
+						if(empty($reachable[$y][$x]))
+						{
+							return TRUE;
+						}
+					}
+				}
+			}
+			return FALSE;
 		}
 	}

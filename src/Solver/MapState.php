@@ -102,4 +102,11 @@
 		 * @return string
 		 */
 		abstract public function print_path($path) : string;
+
+		/**
+		 * @return bool
+		 */
+		public function imposible() {
+			return false;
+		}
 	}

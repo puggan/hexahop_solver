@@ -98,7 +98,7 @@
 				{
 					$this->solved->save($hash, $dir_path);
 				}
-				else
+				else if(!$state->imposible())
 				{
 					$this->todos->add($dir_path);
 				}
