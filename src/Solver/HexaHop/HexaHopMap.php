@@ -397,6 +397,8 @@
 						}
 					}
 
+					$green_hit = false;
+					$blue_hit = false;
 					foreach($damage as $hit_point)
 					{
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
@@ -415,6 +417,19 @@
 								}
 								break;
 
+							case self::TILE_LOW_GREEN:
+								$green_hit = true;
+								// TODO points
+								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
+								break;
+
+							case self::TILE_LOW_BLUE:
+								$blue_hit = true;
+								// TODO points
+								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
+								break;
+
+
 							default:
 								// TODO points
 								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
@@ -424,6 +439,13 @@
 
 					if(!$this->tiles[$point->y][$point->x]) {
 						$this->player->alive = false;
+					}
+
+					if($green_hit) {
+						$this->wall_test(self::TILE_LOW_GREEN);
+					}
+					if($blue_hit) {
+						$this->wall_test(self::TILE_LOW_BLUE);
 					}
 
 					break;
