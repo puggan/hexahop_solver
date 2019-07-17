@@ -316,6 +316,7 @@
 					break;
 
 				case self::TILE_TRAMPOLINE:
+					$this->wall_test($old_tile);
 					$goal_point = $this->next_point($point, $direction, 2);
 					// if jumping from a high place, skip hight tests
 					if($this->player->z <= 0)
@@ -331,7 +332,7 @@
 						}
 					}
 
-					return $this->move_into($goal_point, $direction, $old_tile);
+					return $this->move_into($goal_point, $direction, $tile);
 
 				case self::TILE_ROTATOR:
 					throw new \RuntimeException('Tile ROTATOR not implemented');
@@ -423,18 +424,7 @@
 			}
 			//</editor-fold>
 
-			//<editor-fold desc="Blue & Green Walls, Lower?">
-			switch($old_tile & self::MASK_TILE_TYPE)
-			{
-				case self::TILE_LOW_BLUE:
-					$this->blue_wall_test();
-					break;
-
-				case self::TILE_LOW_GREEN:
-					$this->green_wall_test();
-					break;
-			}
-			//</editor-fold>
+			$this->wall_test($old_tile);
 		}
 
 		/**
@@ -811,5 +801,22 @@
 				}
 			}
 			return FALSE;
+		}
+
+		/**
+		 * @param $old_tile
+		 */
+		private function wall_test($old_tile) : void
+		{
+			switch($old_tile & self::MASK_TILE_TYPE)
+			{
+				case self::TILE_LOW_BLUE:
+					$this->blue_wall_test();
+					return;
+
+				case self::TILE_LOW_GREEN:
+					$this->green_wall_test();
+					return;
+			}
 		}
 	}
