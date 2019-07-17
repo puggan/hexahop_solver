@@ -350,13 +350,16 @@
 
 				// TODO
 				case self::TILE_LASER:
+					$green_hit = FALSE;
+					$blue_hit = FALSE;
 					/** @var \PHPDoc\Projectile[] $projectiles */
 					$projectiles = [];
 					/** @var \PHPDoc\Projectile[] $todos */
 					$todos = [];
 					/** @var \PHPDoc\Point $damage */
 					$damage = [];
-					if($direction === self::DIR_J) {
+					if($direction === self::DIR_J)
+					{
 						$todos = [
 							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 0],
 							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 1],
@@ -365,7 +368,9 @@
 							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 4],
 							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 5],
 						];
-					} else {
+					}
+					else
+					{
 						$todos[] = (object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => $direction];
 					}
 
@@ -373,7 +378,8 @@
 					{
 						$todo_projectile = array_pop($todos);
 						$todo_key = "{$todo_projectile->x}:{$todo_projectile->y}:{$todo_projectile->dir}";
-						if(isset($projectiles[$todo_key])) {
+						if(isset($projectiles[$todo_key]))
+						{
 							continue;
 						}
 						$hit_point = $this->next_point($todo_projectile, $todo_projectile->dir);
@@ -397,8 +403,6 @@
 						}
 					}
 
-					$green_hit = false;
-					$blue_hit = false;
 					foreach($damage as $hit_point)
 					{
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
@@ -418,17 +422,16 @@
 								break;
 
 							case self::TILE_LOW_GREEN:
-								$green_hit = true;
+								$green_hit = TRUE;
 								// TODO points
 								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
 								break;
 
 							case self::TILE_LOW_BLUE:
-								$blue_hit = true;
+								$blue_hit = TRUE;
 								// TODO points
 								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
 								break;
-
 
 							default:
 								// TODO points
@@ -437,14 +440,17 @@
 						}
 					}
 
-					if(!$this->tiles[$point->y][$point->x]) {
-						$this->player->alive = false;
+					if(!$this->tiles[$point->y][$point->x])
+					{
+						$this->player->alive = FALSE;
 					}
 
-					if($green_hit) {
+					if($green_hit)
+					{
 						$this->wall_test(self::TILE_LOW_GREEN);
 					}
-					if($blue_hit) {
+					if($blue_hit)
+					{
 						$this->wall_test(self::TILE_LOW_BLUE);
 					}
 
@@ -452,7 +458,7 @@
 
 				case self::TILE_ICE:
 					// Anti Ice?
-					if($this->items[self::ITEM_ANIT_ICE]> 0)
+					if($this->items[self::ITEM_ANIT_ICE] > 0)
 					{
 						$this->items[self::ITEM_ANIT_ICE]--;
 						$this->tiles[$point->y][$point->x] = self::TILE_ANTI_ICE;
@@ -462,7 +468,7 @@
 					// TODO walltest before or after?
 
 					// Normal Ice
-					foreach(range(1,100) as $distance)
+					foreach(range(1, 100) as $distance)
 					{
 						$goal_point = $this->next_point($point, $direction, $distance);
 						if(($this->tiles[$goal_point->y][$goal_point->x] ?? 0) !== self::TILE_ICE)
@@ -490,7 +496,8 @@
 							$low_built++;
 						}
 					}
-					if($high_built && !$low_built) {
+					if($high_built && !$low_built)
+					{
 						$this->wall_test(self::TILE_LOW_GREEN);
 					}
 					break;
@@ -663,7 +670,7 @@
 		private function next_points($current, $steps = 1)
 		{
 			$points = [];
-			foreach(range(0,5) as $direction)
+			foreach(range(0, 5) as $direction)
 			{
 
 				/** @var \PhpDoc\Point $new_point */
@@ -881,10 +888,22 @@
 			$tile_types = $this->tile_type_count();
 
 			// avoid giving bad answers on non-implemented tiles
-			if($tile_types[self::TILE_ROTATOR]) return false;
-			if($tile_types[self::TILE_LASER]) return false;
-			if($tile_types[self::TILE_BUILD]) return false;
-			if($tile_types[self::TILE_BOAT]) return false;
+			if($tile_types[self::TILE_ROTATOR])
+			{
+				return FALSE;
+			}
+			if($tile_types[self::TILE_LASER])
+			{
+				return FALSE;
+			}
+			if($tile_types[self::TILE_BUILD])
+			{
+				return FALSE;
+			}
+			if($tile_types[self::TILE_BOAT])
+			{
+				return FALSE;
+			}
 
 			$reachable = array_fill_keys(array_keys($this->tiles), []);
 
