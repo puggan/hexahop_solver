@@ -370,7 +370,18 @@
 					break;
 
 				case self::TILE_BUILD:
-					throw new \RuntimeException('Tile BUILD not implemented');
+					foreach($this->next_points($point) as $build_point)
+					{
+						$build_tile = ($this->tiles[$build_point->y][$build_point->x] ?? -1) & self::MASK_TILE_TYPE;
+						if($build_tile === self::TILE_LOW_GREEN)
+						{
+							$this->tiles[$build_point->y][$build_point->x] += self::TILE_HIGH_GREEN - self::TILE_LOW_GREEN;
+						}
+						else if($build_tile === self::TILE_WATER)
+						{
+							$this->tiles[$build_point->y][$build_point->x] += self::TILE_LOW_GREEN - self::TILE_WATER;
+						}
+					}
 					break;
 
 				case self::TILE_BOAT:
