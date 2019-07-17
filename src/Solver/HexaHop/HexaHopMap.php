@@ -669,4 +669,9 @@
 				}
 			}
 		}
+
+		public function points()
+		{
+			return $this->points;
+		}
 	}
