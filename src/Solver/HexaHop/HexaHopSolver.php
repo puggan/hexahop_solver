@@ -24,18 +24,8 @@
 		 */
 		public function __construct($level_number)
 		{
-			$new_map = false;
-			//<editor-fold desc="mkdir $this->path">
-			$path = dirname(__DIR__, 3) . '/data/' . $level_number . '/';
-			if(!is_dir($path))
-			{
-				if(!mkdir($path) && !is_dir($path))
-				{
-					throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
-				}
-				$new_map = true;
-			}
-			//</editor-fold>
+			$path = self::data_dir($level_number);
+			$new_map = is_dir($path . '/todo');
 			$startState = new HexaHopMap($level_number);
 			$solved = new IniHashStorage($path . 'solved.ini');
 			//$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
@@ -47,6 +37,24 @@
 				$todos->add([]);
 			}
 			parent::__construct($startState, $solved, /*$alias,*/ $hashes, $todos);
+		}
+
+		/**
+		 * @param $level_number
+		 *
+		 * @return string
+		 */
+		public static function data_dir($level_number) : string
+		{
+			$path = dirname(__DIR__, 3) . '/data/' . $level_number . '/';
+			if(!is_dir($path))
+			{
+				if(!mkdir($path) && !is_dir($path))
+				{
+					throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+				}
+			}
+			return $path;
 		}
 
 		public function map_info($json_option)
