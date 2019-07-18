@@ -95,7 +95,8 @@
     "level_number": 27,
     "width": 12,
     "height": 12,
-    "par": 31,
+    "par": 29,
+    "mappar": 31,
     "start_x": 1,
     "start_y": 10
   },
@@ -245,7 +246,8 @@
     "level_number": 79,
     "width": 14,
     "height": 19,
-    "par": 23,
+    "par": 11,
+    "mappar": 23,
     "start_x": 8,
     "start_y": 8
   },
@@ -515,7 +517,8 @@
     "level_number": 64,
     "width": 13,
     "height": 14,
-    "par": 124,
+    "par": 80,
+    "mappar": 124,
     "start_x": 5,
     "start_y": 6
   },
@@ -695,7 +698,8 @@
     "level_number": 61,
     "width": 12,
     "height": 14,
-    "par": 134,
+    "par": 91,
+    "mappar": 134,
     "start_x": 1,
     "start_y": 11
   },
@@ -785,7 +789,8 @@
     "level_number": 32,
     "width": 8,
     "height": 15,
-    "par": 22,
+    "par": 21,
+    "mappar": 22,
     "start_x": 1,
     "start_y": 11
   },
@@ -805,7 +810,8 @@
     "level_number": 78,
     "width": 12,
     "height": 14,
-    "par": 42,
+    "par": 39,
+    "mappar": 42,
     "start_x": 1,
     "start_y": 14
   },
@@ -895,7 +901,8 @@
     "level_number": 57,
     "width": 13,
     "height": 13,
-    "par": 38,
+    "par": 37,
+    "mappar": 38,
     "start_x": 1,
     "start_y": 11
   },
