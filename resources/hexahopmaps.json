@@ -242,7 +242,7 @@
   {
     "file": "2005_11_19/outposts.lev",
     "title": "Outposts",
-    "level_number": -1,
+    "level_number": 79,
     "width": 14,
     "height": 19,
     "par": 23,
@@ -822,7 +822,7 @@
   {
     "file": "A_Lift/house.lev",
     "title": "House",
-    "level_number": -1,
+    "level_number": 82,
     "width": 15,
     "height": 25,
     "par": 23,
@@ -832,7 +832,7 @@
   {
     "file": "A_Lift/hunting.lev",
     "title": "Hunting",
-    "level_number": -1,
+    "level_number": 83,
     "width": 16,
     "height": 20,
     "par": 52,
@@ -902,7 +902,7 @@
   {
     "file": "B_Builder/overbuild.lev",
     "title": "Overbuild",
-    "level_number": -1,
+    "level_number": 81,
     "width": 12,
     "height": 20,
     "par": 45,
@@ -972,7 +972,7 @@
   {
     "file": "e.lev",
     "title": "Laser Surgery",
-    "level_number": -1,
+    "level_number": 80,
     "width": 12,
     "height": 17,
     "par": 38,
