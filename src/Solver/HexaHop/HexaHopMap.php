@@ -353,10 +353,8 @@
 					}
 					break;
 
-				// TODO
 				case self::TILE_LASER:
-					$green_hit = FALSE;
-					$blue_hit = FALSE;
+					;
 					/** @var \PHPDoc\Projectile[] $projectiles */
 					$projectiles = [];
 					/** @var \PHPDoc\Projectile[] $todos */
@@ -396,6 +394,7 @@
 								break;
 
 							case self::TILE_ICE:
+								// TODO Laser + Ice
 								throw new \RuntimeException('LASER on ICE not implemented');
 
 							case self::TILE_WATER:
@@ -408,38 +407,26 @@
 						}
 					}
 
+					$damage_by_tile_type = array_fill(0, 16, 0);
 					foreach($damage as $hit_point)
 					{
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
+						$damage_by_tile_type[$hit_tile]++;
 						switch($hit_tile)
 						{
 							case self::TILE_WATER:
 								break;
 
 							case self::TILE_LASER:
-								// TODO points
 								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
 								foreach($this->next_points($hit_point) as $extra_hit_point)
 								{
-									// TODO points
+									$damage_by_tile_type[$this->tiles[$extra_hit_point->y][$extra_hit_point->x] ?? 0]++;
 									$this->tiles[$extra_hit_point->y][$extra_hit_point->x] = self::TILE_WATER;
 								}
 								break;
 
-							case self::TILE_LOW_GREEN:
-								$green_hit = TRUE;
-								// TODO points
-								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
-								break;
-
-							case self::TILE_LOW_BLUE:
-								$blue_hit = TRUE;
-								// TODO points
-								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
-								break;
-
 							default:
-								// TODO points
 								$this->tiles[$hit_point->y][$hit_point->x] = self::TILE_WATER;
 								break;
 						}
@@ -450,15 +437,18 @@
 						$this->player->alive = FALSE;
 					}
 
-					if($green_hit)
+					if($damage_by_tile_type[self::TILE_LOW_GREEN])
 					{
 						$this->wall_test(self::TILE_LOW_GREEN);
 					}
-					if($blue_hit)
+					if($damage_by_tile_type[self::TILE_LOW_BLUE])
 					{
 						$this->wall_test(self::TILE_LOW_BLUE);
 					}
 
+					// Water and green tiles give 0 point, all other give 10 points
+					unset($damage_by_tile_type[self::TILE_WATER], $damage_by_tile_type[self::TILE_LOW_GREEN], $damage_by_tile_type[self::TILE_HIGH_GREEN]);
+					$this->points += 10 * array_sum($damage_by_tile_type);
 					break;
 
 				case self::TILE_ICE:
@@ -877,7 +867,7 @@
 		 */
 		public function tile_type_count()
 		{
-			$c = array_fill_keys(range(0, 16), 0);
+			$c = array_fill(0, 16, 0);
 			foreach($this->tiles as $row)
 			{
 				foreach($row as $tile)
