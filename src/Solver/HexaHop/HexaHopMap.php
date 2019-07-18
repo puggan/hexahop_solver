@@ -898,6 +898,37 @@
 			{
 				return FALSE;
 			}
+
+			// Enough steps to step on all greens? Notice: not useable for laser + jump / laser + ice
+			if($this->points + $tile_types[self::TILE_LOW_GREEN] + $tile_types[self::TILE_HIGH_GREEN] > $this->mapinfo->par)
+			{
+				if(!$tile_types[self::TILE_LASER])
+				{
+					return TRUE;
+				}
+				if(!$this->items[self::ITEM_JUMP] && !$tile_types[self::TILE_ICE])
+				{
+					$jump_item_mask = self::ITEM_JUMP << self::SHIFT_TILE_ITEM;
+					$jump_posible = FALSE;
+					foreach($this->tiles as $row)
+					{
+						foreach($row as $tile)
+						{
+							if($tile & $jump_item_mask)
+							{
+								$jump_posible = TRUE;
+								break 2;
+							}
+						}
+					}
+					if(!$jump_posible)
+					{
+						return TRUE;
+					}
+				}
+			}
+
+			// avoid giving bad answers on non-implemented tiles
 			if($tile_types[self::TILE_BOAT])
 			{
 				return FALSE;
