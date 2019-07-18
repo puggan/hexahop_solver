@@ -6,7 +6,6 @@
 
 	class HexaHopMap extends MapState implements \JsonSerializable
 	{
-
 		private const DIR_N = 0;
 		private const DIR_NE = 1;
 		private const DIR_SE = 2;
@@ -87,7 +86,8 @@
 
 			$this->parse_map(new MapStream(self::getResourePath('levels/' . $this->mapinfo->file)));
 
-			if($this->high_tile($this->player)) {
+			if($this->high_tile($this->player))
+			{
 				$this->player->z = 1;
 			}
 
@@ -1130,7 +1130,7 @@
 			$extra_index = 101;
 			$maps = [];
 			/** @var \PHPDoc\MapInfo $map_info */
-			foreach(json_decode(self::getResoure('hexahopmaps.json'), false) as $map_info)
+			foreach(json_decode(self::getResoure('hexahopmaps.json'), FALSE) as $map_info)
 			{
 				if($map_info->level_number < 0)
 				{
@@ -1138,7 +1138,8 @@
 				}
 				else
 				{
-					if(isset($maps[$map_info->level_number])) {
+					if(isset($maps[$map_info->level_number]))
+					{
 						throw new \RuntimeException('Duplicate map at ' . $map_info->level_number);
 					}
 					$maps[$map_info->level_number] = $map_info;
