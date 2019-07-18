@@ -6,7 +6,6 @@
 	 * Class MapInfo
 	 * @package PHPDoc
 	 *
-	 * @property int map_id
 	 * @property string file
 	 * @property string title
 	 * @property int level_number

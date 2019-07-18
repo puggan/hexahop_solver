@@ -222,7 +222,7 @@
 			static $json;
 			if(!$json)
 			{
-				$json = json_decode(self::getResoure('hexahopmaps.json'), FALSE);
+				$json = self::list_maps();
 			}
 
 			return $json[$level_number];
@@ -1116,5 +1116,28 @@
 					$this->green_wall_test();
 					return;
 			}
+		}
+
+		public static function list_maps()
+		{
+			$extra_index = 101;
+			$maps = [];
+			/** @var \PHPDoc\MapInfo $map_info */
+			foreach(json_decode(self::getResoure('hexahopmaps.json'), false) as $map_info)
+			{
+				if($map_info->level_number < 0)
+				{
+					$maps[$extra_index++] = $map_info;
+				}
+				else
+				{
+					if(isset($maps[$map_info->level_number])) {
+						throw new \RuntimeException('Duplicate map at ' . $map_info->level_number);
+					}
+					$maps[$map_info->level_number] = $map_info;
+				}
+			}
+			ksort($maps);
+			return $maps;
 		}
 	}
