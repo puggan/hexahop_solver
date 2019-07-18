@@ -892,6 +892,15 @@
 			$tile_types = $this->tile_type_count();
 
 			$my_tiles = $this->tiles;
+			$player_tile = $this->tiles[$this->player->y][$this->player->x] & self::MASK_TILE_TYPE;
+			$player_on_green = $player_tile === self::TILE_LOW_GREEN || $player_tile === self::TILE_HIGH_GREEN;
+			$missing_green = $tile_types[self::TILE_LOW_GREEN] + $tile_types[self::TILE_HIGH_GREEN];
+
+			// Already won
+			if(!$missing_green)
+			{
+				return FALSE;
+			}
 
 			// avoid giving bad answers on non-implemented tiles
 			if($tile_types[self::TILE_LASER] && $tile_types[self::TILE_ICE])
@@ -900,13 +909,18 @@
 			}
 
 			// Enough steps to step on all greens? Notice: not useable for laser + jump / laser + ice
-			if($this->points + $tile_types[self::TILE_LOW_GREEN] + $tile_types[self::TILE_HIGH_GREEN] > $this->mapinfo->par)
+			if(!$tile_types[self::TILE_LASER])
 			{
-				if(!$tile_types[self::TILE_LASER])
+				if($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->mapinfo->par)
 				{
 					return TRUE;
 				}
-				if(!$this->items[self::ITEM_JUMP] && !$tile_types[self::TILE_ICE])
+			}
+			// TODO: Lasers hitting other lasers? guess they cost more then the 6 green they can destroy
+			else if(!$this->items[self::ITEM_JUMP] && !$tile_types[self::TILE_ICE])
+			{
+				// Enough steps to step/kill on all greens? Notice: not useable for laser + jump / laser + ice
+				if($this->points + $missing_green + ($player_on_green ? -1 : 0) > $this->mapinfo->par)
 				{
 					$jump_item_mask = self::ITEM_JUMP << self::SHIFT_TILE_ITEM;
 					$jump_posible = FALSE;
