@@ -121,7 +121,7 @@
   },
   {
     "file": "2005_11_15/boating.lev",
-    "title": "TODO",
+    "title": "Rental Boat",
     "level_number": -1,
     "width": 11,
     "height": 19,
@@ -131,7 +131,7 @@
   },
   {
     "file": "2005_11_15/ferry.lev",
-    "title": "TODO",
+    "title": "Ferrying",
     "level_number": -1,
     "width": 10,
     "height": 15,
@@ -141,7 +141,7 @@
   },
   {
     "file": "2005_11_15/HUB.LEV",
-    "title": "TODO",
+    "title": "Transport Hub",
     "level_number": -1,
     "width": 12,
     "height": 15,
@@ -171,7 +171,7 @@
   },
   {
     "file": "2005_11_15/lumpy.lev",
-    "title": "TODO",
+    "title": "Trampoline Retrieval",
     "level_number": -1,
     "width": 11,
     "height": 17,
@@ -181,7 +181,7 @@
   },
   {
     "file": "2005_11_15/rolling hexagons.lev",
-    "title": "TODO",
+    "title": "Rolling Hexagons",
     "level_number": -1,
     "width": 8,
     "height": 16,
@@ -201,7 +201,7 @@
   },
   {
     "file": "2005_11_16/breakthrough.lev",
-    "title": "TODO",
+    "title": "Breakthrough",
     "level_number": -1,
     "width": 10,
     "height": 16,
@@ -211,7 +211,7 @@
   },
   {
     "file": "2005_11_19/aa.lev",
-    "title": "TODO",
+    "title": "Laser Safety",
     "level_number": -1,
     "width": 11,
     "height": 20,
@@ -231,7 +231,7 @@
   },
   {
     "file": "2005_11_19/one way up.lev",
-    "title": "TODO",
+    "title": "Only One Way Up",
     "level_number": -1,
     "width": 12,
     "height": 15,
@@ -241,7 +241,7 @@
   },
   {
     "file": "2005_11_19/outposts.lev",
-    "title": "TODO",
+    "title": "Outposts",
     "level_number": -1,
     "width": 14,
     "height": 19,
@@ -251,7 +251,7 @@
   },
   {
     "file": "2005_11_19/turntables.lev",
-    "title": "TODO",
+    "title": "Roundabouts",
     "level_number": -1,
     "width": 12,
     "height": 17,
@@ -281,7 +281,7 @@
   },
   {
     "file": "2_greendoor/more mountain.lev",
-    "title": "TODO",
+    "title": "Another Mountain",
     "level_number": -1,
     "width": 11,
     "height": 14,
@@ -821,7 +821,7 @@
   },
   {
     "file": "A_Lift/house.lev",
-    "title": "TODO",
+    "title": "House",
     "level_number": -1,
     "width": 15,
     "height": 25,
@@ -831,7 +831,7 @@
   },
   {
     "file": "A_Lift/hunting.lev",
-    "title": "TODO",
+    "title": "Hunting",
     "level_number": -1,
     "width": 16,
     "height": 20,
@@ -851,7 +851,7 @@
   },
   {
     "file": "A_Lift/opportunist_mini.lev",
-    "title": "TODO",
+    "title": "Opportunist",
     "level_number": -1,
     "width": 13,
     "height": 11,
@@ -871,7 +871,7 @@
   },
   {
     "file": "A_Lift/upper.lev",
-    "title": "TODO",
+    "title": "Upper",
     "level_number": -1,
     "width": 13,
     "height": 14,
@@ -901,7 +901,7 @@
   },
   {
     "file": "B_Builder/overbuild.lev",
-    "title": "TODO",
+    "title": "Overbuild",
     "level_number": -1,
     "width": 12,
     "height": 20,
@@ -931,7 +931,7 @@
   },
   {
     "file": "c.lev",
-    "title": "TODO",
+    "title": "A Strange Place",
     "level_number": -1,
     "width": 14,
     "height": 15,
@@ -941,7 +941,7 @@
   },
   {
     "file": "commute.lev",
-    "title": "TODO",
+    "title": "Commute",
     "level_number": -1,
     "width": 13,
     "height": 13,
@@ -951,7 +951,7 @@
   },
   {
     "file": "de-icing.lev",
-    "title": "TODO",
+    "title": "Fetch Quest",
     "level_number": -1,
     "width": 12,
     "height": 14,
@@ -961,7 +961,7 @@
   },
   {
     "file": "d.lev",
-    "title": "TODO",
+    "title": "Bouncing Required",
     "level_number": -1,
     "width": 11,
     "height": 16,
@@ -971,7 +971,7 @@
   },
   {
     "file": "e.lev",
-    "title": "TODO",
+    "title": "Laser Surgery",
     "level_number": -1,
     "width": 12,
     "height": 17,
