@@ -87,6 +87,10 @@
 
 			$this->parse_map(new MapStream(self::getResourePath('levels/' . $this->mapinfo->file)));
 
+			if($this->high_tile($this->player)) {
+				$this->player->z = 1;
+			}
+
 			if($path)
 			{
 				foreach($path as $move)
@@ -1118,6 +1122,9 @@
 			}
 		}
 
+		/**
+		 * @return \PHPDoc\MapInfo[]
+		 */
 		public static function list_maps()
 		{
 			$extra_index = 101;
