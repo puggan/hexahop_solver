@@ -124,7 +124,7 @@
   {
     "file": "2005_11_15/boating.lev",
     "title": "Rental Boat",
-    "level_number": -1,
+    "level_number": 91,
     "width": 11,
     "height": 19,
     "par": 33,
@@ -174,7 +174,7 @@
   {
     "file": "2005_11_15/lumpy.lev",
     "title": "Trampoline Retrieval",
-    "level_number": -1,
+    "level_number": 87,
     "width": 11,
     "height": 17,
     "par": 85,
@@ -204,7 +204,7 @@
   {
     "file": "2005_11_16/breakthrough.lev",
     "title": "Breakthrough",
-    "level_number": -1,
+    "level_number": 93,
     "width": 10,
     "height": 16,
     "par": 136,
@@ -214,7 +214,7 @@
   {
     "file": "2005_11_19/aa.lev",
     "title": "Laser Safety",
-    "level_number": -1,
+    "level_number": 89,
     "width": 11,
     "height": 20,
     "par": 96,
@@ -234,7 +234,7 @@
   {
     "file": "2005_11_19/one way up.lev",
     "title": "Only One Way Up",
-    "level_number": -1,
+    "level_number": 90,
     "width": 12,
     "height": 15,
     "par": 120,
@@ -255,7 +255,7 @@
   {
     "file": "2005_11_19/turntables.lev",
     "title": "Roundabouts",
-    "level_number": -1,
+    "level_number": 94,
     "width": 12,
     "height": 17,
     "par": 37,
@@ -285,7 +285,7 @@
   {
     "file": "2_greendoor/more mountain.lev",
     "title": "Another Mountain",
-    "level_number": -1,
+    "level_number": 92,
     "width": 11,
     "height": 14,
     "par": 70,
@@ -559,10 +559,11 @@
   {
     "file": "5_spinner/Sprocket.lev",
     "title": "Sprocket",
-    "level_number": -1,
+    "level_number": 85,
     "width": 13,
     "height": 12,
-    "par": 37,
+    "par": 35,
+    "mappar": 37,
     "start_x": 1,
     "start_y": 11
   },
@@ -862,10 +863,11 @@
   {
     "file": "A_Lift/opportunist_mini.lev",
     "title": "Opportunist",
-    "level_number": -1,
+    "level_number": 88,
     "width": 13,
     "height": 11,
-    "par": 43,
+    "par": 38,
+    "mappar": 43,
     "start_x": 8,
     "start_y": 11
   },
@@ -882,7 +884,7 @@
   {
     "file": "A_Lift/upper.lev",
     "title": "Upper",
-    "level_number": -1,
+    "level_number": 84,
     "width": 13,
     "height": 14,
     "par": 51,
@@ -916,7 +918,8 @@
     "level_number": 81,
     "width": 12,
     "height": 20,
-    "par": 45,
+    "par": 39,
+    "mappar": 45,
     "start_x": 5,
     "start_y": 19
   },
@@ -953,10 +956,11 @@
   {
     "file": "commute.lev",
     "title": "Commute",
-    "level_number": -1,
+    "level_number": 86,
     "width": 13,
     "height": 13,
-    "par": 75,
+    "par": 69,
+    "mappar": 75,
     "start_x": 11,
     "start_y": 10
   },

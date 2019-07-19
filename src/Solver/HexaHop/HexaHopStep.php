@@ -18,6 +18,7 @@
 
 	$pid = getmypid();
 
+	/** @noinspection PhpUnhandledExceptionInspection */
 	$solver = new HexaHopSolver($level_number);
 	echo $solver->map_info(JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), PHP_EOL;
 	$steps = 0;
