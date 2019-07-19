@@ -2,6 +2,9 @@
 
 	namespace Puggan\Solver;
 
+	use Puggan\Solver\HexaHop\HexaHopMap;
+	use Puggan\Solver\HexaHop\HexaHopSolver;
+
 	class Solver
 	{
 		/** @var MapState $startState */
@@ -97,6 +100,17 @@
 				if($state->won())
 				{
 					$this->solved->save($hash, $dir_path);
+
+					// TODO: move to trigger
+					if($state instanceof HexaHopMap && $this->startState instanceof HexaHopMap)
+					{
+						/** @var HexaHopMap $startState */
+						$startState = $this->startState;
+						if($state->points() < $startState->par())
+						{
+							$startState->overridePar($state->points());
+						}
+					}
 				}
 				else if(!$state->imposible())
 				{
