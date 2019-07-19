@@ -398,6 +398,7 @@
 						{
 							continue;
 						}
+						$projectiles[$todo_key] = true;
 						$hit_point = $this->next_point($todo_projectile, $todo_projectile->dir);
 						$hit_key = "{$hit_point->x}:{$hit_point->y}";
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
@@ -407,8 +408,9 @@
 								break;
 
 							case self::TILE_ICE:
-								// TODO Laser + Ice
-								throw new \RuntimeException('LASER on ICE not implemented');
+								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => ($todo_projectile->dir + 5) % 6];
+								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => ($todo_projectile->dir + 1) % 6];
+								break;
 
 							case self::TILE_WATER:
 								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => $todo_projectile->dir];
