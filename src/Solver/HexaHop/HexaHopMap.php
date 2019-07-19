@@ -411,7 +411,7 @@
 						}
 					}
 
-					$damage_by_tile_type = array_fill(0, 16, 0);
+					$damage_by_tile_type = array_fill(0, 17, 0);
 					foreach($damage as $hit_point)
 					{
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
@@ -887,7 +887,7 @@
 		 */
 		public function tile_type_count()
 		{
-			$c = array_fill(0, 16, 0);
+			$c = array_fill(0, 17, 0);
 			foreach($this->tiles as $row)
 			{
 				foreach($row as $tile)
