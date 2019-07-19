@@ -863,6 +863,14 @@
 		}
 
 		/**
+		 * @return int
+		 */
+		public function par()
+		{
+			return $this->mapinfo->par;
+		}
+
+		/**
 		 * @return int[]
 		 */
 		public function tile_type_count()
