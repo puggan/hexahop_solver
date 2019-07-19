@@ -342,7 +342,7 @@
 
 				case self::TILE_ROTATOR:
 					$swap_points = $this->next_points($point);
-					$swap_in_tile = ($this->tiles[$swap_points[5]->y][$swap_points[5]->x] ?? 0) & self::MASK_ITEM_TYPE;
+					$swap_in_tile = ($this->tiles[$swap_points[5]->y][$swap_points[5]->x] ?? 0) & self::MASK_TILE_TYPE;
 					foreach($swap_points as $swap_point)
 					{
 						$swap_out_tile = ($this->tiles[$swap_point->y][$swap_point->x] ?? 0);
