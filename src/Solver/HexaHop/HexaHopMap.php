@@ -252,6 +252,15 @@
 			// Player position: x(4), y(4)
 			$map_stream->skip(8);
 
+			$this->tiles = array_fill(
+				$this->y_min - 1,
+				$this->y_max - $this->y_min + 3,
+				array_fill(
+					$this->x_min - 1,
+					$this->x_max - $this->x_min + 3,
+					self::TILE_WATER
+				)
+			);
 			foreach(range($this->x_min, $this->x_max) as $x)
 			{
 				foreach(range($this->y_min, $this->y_max) as $y)
