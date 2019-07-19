@@ -963,12 +963,6 @@
 				return TRUE;
 			}
 
-			// avoid giving bad answers on non-implemented tiles
-			if($tile_types[self::TILE_BOAT])
-			{
-				return FALSE;
-			}
-
 			$reachable = [];
 
 			foreach($my_tiles as $y => $row)
@@ -1042,6 +1036,24 @@
 					}
 				}
 			}
+
+			// If any boat is reachable, skip the rest of the calculations
+			if($tile_types[self::TILE_BOAT])
+			{
+				foreach($my_tiles as $y => $row)
+				{
+					foreach($row as $x => $tile_wi)
+					{
+						$tile = $tile_wi & self::MASK_TILE_TYPE;
+						if($tile === self::TILE_BOAT && empty($reachable[$y][$x]))
+						{
+							return FALSE;
+						}
+					}
+				}
+			}
+
+
 
 			//<editor-fold desc="Lasers">
 			if($tile_types[self::TILE_LASER])
