@@ -1020,7 +1020,8 @@
     "level_number": 70,
     "width": 9,
     "height": 14,
-    "par": 25,
+    "par": 23,
+    "mappar": 25,
     "start_x": 1,
     "start_y": 14
   }
