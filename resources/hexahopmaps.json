@@ -398,7 +398,8 @@
     "level_number": 19,
     "width": 13,
     "height": 12,
-    "par": 82,
+    "par": 81,
+    "mappar": 82,
     "start_x": 6,
     "start_y": 9
   },
@@ -419,7 +420,8 @@
     "level_number": 29,
     "width": 12,
     "height": 13,
-    "par": 110,
+    "par": 107,
+    "mappar": 110,
     "start_x": 3,
     "start_y": 9
   },
@@ -791,7 +793,7 @@
     "level_number": 32,
     "width": 8,
     "height": 15,
-    "par": 21,
+    "par": 20,
     "mappar": 22,
     "start_x": 1,
     "start_y": 11
