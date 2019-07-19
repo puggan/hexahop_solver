@@ -25,7 +25,7 @@
 		public function __construct($level_number)
 		{
 			$path = self::data_dir($level_number);
-			$new_map = is_dir($path . '/todo');
+			$new_map = !is_dir($path . '/todo');
 			$startState = new HexaHopMap($level_number);
 			$solved = new IniHashStorage($path . 'solved.ini');
 			//$alias = new AliasHashStorage(new IniHashStorage($path . 'alias.ini'));
