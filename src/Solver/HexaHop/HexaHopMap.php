@@ -898,9 +898,30 @@
 			return $c;
 		}
 
+		/**
+		 * @return int[]
+		 */
+		public function item_count()
+		{
+			$c = $this->items;
+			foreach($this->tiles as $row)
+			{
+				foreach($row as $tile)
+				{
+					$item_shifted = $tile & self::MASK_ITEM_TYPE;
+					if($item_shifted)
+					{
+						$c[$item_shifted >> self::SHIFT_TILE_ITEM]++;
+					}
+				}
+			}
+			return $c;
+		}
+
 		public function imposible()
 		{
 			$tile_types = $this->tile_type_count();
+			$total_items = $this->item_count();
 
 			$my_tiles = $this->tiles;
 			$player_tile = $this->tiles[$this->player->y][$this->player->x] & self::MASK_TILE_TYPE;
@@ -913,12 +934,6 @@
 				return FALSE;
 			}
 
-			// avoid giving bad answers on non-implemented tiles
-			if($tile_types[self::TILE_LASER] && $tile_types[self::TILE_ICE])
-			{
-				return FALSE;
-			}
-
 			// Enough steps to step on all greens? Notice: not useable for laser + jump / laser + ice
 			if(!$tile_types[self::TILE_LASER])
 			{
@@ -927,30 +942,10 @@
 					return TRUE;
 				}
 			}
-			// TODO: Lasers hitting other lasers? guess they cost more then the 6 green they can destroy
-			else if(!$this->items[self::ITEM_JUMP] && !$tile_types[self::TILE_ICE])
+			// Enough steps to step/kill on all greens? Notice: not useable for laser + jump / laser + ice
+			else if(!$tile_types[self::TILE_ICE] && $this->points + $missing_green + ($player_on_green ? -1 : 0) - 5 * $total_items[self::ITEM_JUMP] > $this->par)
 			{
-				// Enough steps to step/kill on all greens? Notice: not useable for laser + jump / laser + ice
-				if($this->points + $missing_green + ($player_on_green ? -1 : 0) > $this->par)
-				{
-					$jump_item_mask = self::ITEM_JUMP << self::SHIFT_TILE_ITEM;
-					$jump_posible = FALSE;
-					foreach($this->tiles as $row)
-					{
-						foreach($row as $tile)
-						{
-							if($tile & $jump_item_mask)
-							{
-								$jump_posible = TRUE;
-								break 2;
-							}
-						}
-					}
-					if(!$jump_posible)
-					{
-						return TRUE;
-					}
-				}
+				return TRUE;
 			}
 
 			// avoid giving bad answers on non-implemented tiles
@@ -1033,7 +1028,7 @@
 				}
 			}
 
-			//<editor-fold desc="Non-Ice Lasers">
+			//<editor-fold desc="Lasers">
 			if($tile_types[self::TILE_LASER])
 			{
 				/** @var \PhpDoc\Point[] $missing_greens */
@@ -1072,6 +1067,12 @@
 					}
 				}
 
+				// if all grean are reachable, but nu lasers are reachable, use the cost-calculation
+				if(!$reached_lasers && !$missing_greens)
+				{
+					return ($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par);
+				}
+
 				if(!$missing_greens)
 				{
 					return FALSE;
@@ -1079,6 +1080,12 @@
 				if(!$reached_lasers)
 				{
 					return TRUE;
+				}
+
+				// The destruction of a reachable laster + ice is BIG
+				if($tile_types[self::TILE_ICE])
+				{
+					return FALSE;
 				}
 
 				foreach($reached_lasers as $laser_point)
