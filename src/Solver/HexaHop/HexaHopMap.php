@@ -66,6 +66,9 @@
 		/** @var int points */
 		private $points;
 
+		/** @var int */
+		private $par;
+
 		public function __construct($level_number, $path = NULL)
 		{
 			$this->mapinfo = self::mapinfo($level_number);
@@ -75,6 +78,7 @@
 			}
 
 			$this->points = 0;
+			$this->par = $this->mapinfo->par;
 			$this->items[self::ITEM_ANIT_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
 			$this->player = (object) [
@@ -133,7 +137,7 @@
 		 */
 		public function lost() : bool
 		{
-			return !$this->player->alive || $this->points > $this->mapinfo->par;
+			return !$this->player->alive || $this->points > $this->par;
 		}
 
 		/**
@@ -867,7 +871,15 @@
 		 */
 		public function par()
 		{
-			return $this->mapinfo->par;
+			return $this->par;
+		}
+
+		/**
+		 * @param int $new_par
+		 */
+		public function overridePar($new_par)
+		{
+			$this->par = $new_par;
 		}
 
 		/**
@@ -910,7 +922,7 @@
 			// Enough steps to step on all greens? Notice: not useable for laser + jump / laser + ice
 			if(!$tile_types[self::TILE_LASER])
 			{
-				if($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->mapinfo->par)
+				if($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par)
 				{
 					return TRUE;
 				}
@@ -919,7 +931,7 @@
 			else if(!$this->items[self::ITEM_JUMP] && !$tile_types[self::TILE_ICE])
 			{
 				// Enough steps to step/kill on all greens? Notice: not useable for laser + jump / laser + ice
-				if($this->points + $missing_green + ($player_on_green ? -1 : 0) > $this->mapinfo->par)
+				if($this->points + $missing_green + ($player_on_green ? -1 : 0) > $this->par)
 				{
 					$jump_item_mask = self::ITEM_JUMP << self::SHIFT_TILE_ITEM;
 					$jump_posible = FALSE;
