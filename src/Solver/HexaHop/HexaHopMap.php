@@ -334,6 +334,10 @@
 
 				case self::TILE_TRAMPOLINE:
 					$this->wall_test($old_tile);
+					if($direction === self::DIR_J)
+					{
+						break;
+					}
 					$goal_point = $this->next_point($point, $direction, 2);
 					// if jumping from a high place, skip hight tests
 					if($this->player->z <= 0)
