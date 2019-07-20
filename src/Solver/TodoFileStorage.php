@@ -68,7 +68,7 @@
 			$first_found = false;
 			while(!feof($f))
 			{
-				$line = fgetss($f, 1e6);
+				$line = fgets($f, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
 					if(!$first_found) {
@@ -115,7 +115,7 @@
 			while(!feof($f))
 			{
 				$position_before = ftell($f);
-				$line = fgetss($f, 1e6);
+				$line = fgets($f, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
 					if(!$first_found) {
@@ -156,7 +156,7 @@
 			while(!feof($f))
 			{
 				$position_before = ftell($f);
-				$line = fgetss($f, 1e6);
+				$line = fgets($f, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
 					continue;
@@ -193,7 +193,7 @@
 			$f_new = fopen($this->filename, 'wb');
 			while(!feof($f_copy))
 			{
-				$line = fgetss($f_copy, 1e6);
+				$line = fgets($f_copy, 1e6);
 				if(strpos($line, '0:') !== 0)
 				{
 					continue;

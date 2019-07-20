@@ -143,7 +143,7 @@
 				while(!feof($f))
 				{
 					$position_before = ftell($f);
-					$line = fgetss($f, 1e6);
+					$line = fgets($f, 1e6);
 					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
 					{
 						if($left === 0)
@@ -209,7 +209,7 @@
 				while(!feof($f))
 				{
 					$position_before = ftell($f);
-					$line = fgetss($f, 1e6);
+					$line = fgets($f, 1e6);
 					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
 					{
 						if($left === 0)
@@ -300,7 +300,7 @@
 				while(!feof($f))
 				{
 					$position_before = ftell($f);
-					$line = fgetss($f, 1e6);
+					$line = fgets($f, 1e6);
 					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
 					{
 						if($left === 0)

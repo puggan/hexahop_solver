@@ -44,7 +44,7 @@
 			$f = fopen($filename, 'rb');
 			while(!feof($f))
 			{
-				$line = fgetss($f, 1e6);
+				$line = fgets($f, 1e6);
 				if(strpos($line, $hash_suffix) === 0)
 				{
 					fclose($f);
@@ -100,13 +100,13 @@
 			while(!feof($f))
 			{
 				$before = ftell($f);
-				$line = fgetss($f, 1e6);
+				$line = fgets($f, 1e6);
 				if($new_path !== FALSE && !trim($line))
 				{
 					do
 					{
 						$empty = ftell($f);
-						$line = fgetss($f, 1e6);
+						$line = fgets($f, 1e6);
 					}
 					while(!trim($line) && !feof($f));
 					$length = $empty - $before;
@@ -128,7 +128,7 @@
 				if(strpos($line, $hash_suffix) === 0)
 				{
 					$length = ftell($f) - $before;
-					while(!trim(fgetss($f, 1e6))) {
+					while(!trim(fgets($f, 1e6))) {
 						$length = ftell($f) - $before;
 					}
 					fseek($f, $before);
