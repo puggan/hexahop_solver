@@ -277,6 +277,7 @@
 				$path = array_map('intval', explode(',', $path_str));
 				$m = new HexaHopMap($level_number, $path);
 				$this->assertTrue($m->won(), 'Level ' . $level_number . ' winable');
+				$this->assertEquals($m->points(), $m->par(), 'Level ' . $level_number . ' beat par');
 			}
 		}
 	}
