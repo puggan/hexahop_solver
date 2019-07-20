@@ -6,34 +6,34 @@
 
 	class HexaHopMap extends MapState implements \JsonSerializable
 	{
-		private const DIR_N = 0;
-		private const DIR_NE = 1;
-		private const DIR_SE = 2;
-		private const DIR_S = 3;
-		private const DIR_SW = 4;
-		private const DIR_NW = 5;
-		private const DIR_J = 6;
+		public const DIR_N = 0;
+		public const DIR_NE = 1;
+		public const DIR_SE = 2;
+		public const DIR_S = 3;
+		public const DIR_SW = 4;
+		public const DIR_NW = 5;
+		public const DIR_J = 6;
 
-		private const TILE_WATER = 0;
-		private const TILE_LOW_LAND = 1;
-		private const TILE_LOW_GREEN = 2;
-		private const TILE_HIGH_GREEN = 3;
-		private const TILE_TRAMPOLINE = 4;
-		private const TILE_ROTATOR = 5;
-		private const TILE_HIGH_LAND = 6;
-		private const TILE_LOW_BLUE = 7;
-		private const TILE_HIGH_BLUE = 8;
-		private const TILE_LASER = 9;
-		private const TILE_ICE = 10;
-		private const TILE_ANTI_ICE = 11;
-		private const TILE_BUILD = 12;
+		public const TILE_WATER = 0;
+		public const TILE_LOW_LAND = 1;
+		public const TILE_LOW_GREEN = 2;
+		public const TILE_HIGH_GREEN = 3;
+		public const TILE_TRAMPOLINE = 4;
+		public const TILE_ROTATOR = 5;
+		public const TILE_HIGH_LAND = 6;
+		public const TILE_LOW_BLUE = 7;
+		public const TILE_HIGH_BLUE = 8;
+		public const TILE_LASER = 9;
+		public const TILE_ICE = 10;
+		public const TILE_ANTI_ICE = 11;
+		public const TILE_BUILD = 12;
 		//private const TILE_UNKNOWN_13 = 13;
-		private const TILE_BOAT = 14;
-		private const TILE_LOW_ELEVATOR = 15;
-		private const TILE_HIGH_ELEVATOR = 16;
+		public const TILE_BOAT = 14;
+		public const TILE_LOW_ELEVATOR = 15;
+		public const TILE_HIGH_ELEVATOR = 16;
 
-		private const ITEM_ANIT_ICE = 1;
-		private const ITEM_JUMP = 2;
+		public const ITEM_ANIT_ICE = 1;
+		public const ITEM_JUMP = 2;
 
 		private const MASK_TILE_TYPE = 0x1F;
 		private const MASK_ITEM_TYPE = 0xE0;
