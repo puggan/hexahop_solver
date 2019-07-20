@@ -90,7 +90,7 @@
 	{
 		if(!$map->won())
 		{
-			echo 'Step: ', ($index + 1), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
+			echo 'Step: ', count($path), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
 			echo 'Still alive', PHP_EOL;
 			die(-2);
 		}

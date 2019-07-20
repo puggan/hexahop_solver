@@ -57,7 +57,7 @@
 	{
 		echo file_get_contents($solved_filename), PHP_EOL;
 		echo 'Solved in ', number_format($steps, 0, '.', ' '), ' steps', PHP_EOL;
-		$full_time = ($endtime - $start_time)/1000000000;
+		$full_time = ($endtime - $start_time) / 1000000000;
 		echo 'Solved in ', $full_time, ' secounds', PHP_EOL;
 		if(SLEEP_TIME)
 		{
@@ -77,15 +77,34 @@
 		{
 			echo ' = ', $full_time / 60, ' minutes', PHP_EOL;
 		}
-		echo ' => ', $steps/$full_time, ' steps per secound', PHP_EOL;
+		echo ' => ', $steps / $full_time, ' steps per secound', PHP_EOL;
 
 		$stat_filename = dirname(__DIR__, 3) . '/data/stats.json';
 		if(is_file($stat_filename))
 		{
-			$stats = (array) json_decode(file_get_contents($stat_filename), false);
-			$stats[$level_number]->steps = $steps;
-			$stats[$level_number]->time = $full_time;
-			file_put_contents($stat_filename, json_encode($stats, JSON_PRETTY_PRINT));
+			$stats = (array) json_decode(file_get_contents($stat_filename), FALSE);
+			if($stats[$level_number]->steps > 0)
+			{
+				if($stats[$level_number]->steps < $steps)
+				{
+					echo 'Step count worse than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
+
+				}
+				else if($stats[$level_number]->steps > $steps)
+				{
+					echo 'Step count better than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
+				}
+				else
+				{
+					echo 'Same step-count as last time', PHP_EOL;
+				}
+			}
+			if(!$stats[$level_number]->steps || $stats[$level_number]->steps > $steps)
+			{
+				$stats[$level_number]->steps = $steps;
+				$stats[$level_number]->time = $full_time;
+				file_put_contents($stat_filename, json_encode($stats, JSON_PRETTY_PRINT));
+			}
 		}
 
 		$full_solved_filename = dirname(__DIR__, 3) . '/data/solved/' . $level_number . '.ini';
