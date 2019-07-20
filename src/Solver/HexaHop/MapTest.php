@@ -34,6 +34,13 @@
 		die(1);
 	}
 
+	$alive = true;
+	if($map->impossible())
+	{
+		echo 'Impossible (at start)', PHP_EOL;
+		$alive = false;
+	}
+
 	$path = [];
 	if($path_str || $path_str === '0')
 	{
@@ -47,9 +54,7 @@
 		}
 	}
 
-	$alive = true;
-
-	if($path)
+	if($alive && $path)
 	{
 		$directions = ['North', 'North-East', 'South-East', 'South', ' South-West', 'North-West', 'Jump'];
 		foreach(array_values($path) as $index => $dir)
