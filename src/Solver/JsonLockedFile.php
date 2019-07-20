@@ -53,7 +53,7 @@
 			fclose($this->f);
 		}
 
-		public function close()
+		public function close() : void
 		{
 			flock($this->f, LOCK_UN);
 			$this->locked = FALSE;

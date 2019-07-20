@@ -175,7 +175,7 @@
 			$this->auto_clean();
 		}
 
-		public function auto_clean($removed = 0, $force = FALSE)
+		public function auto_clean($removed = 0, $force = FALSE) : void
 		{
 			if(!is_file($this->filename))
 			{

@@ -23,7 +23,7 @@
 			$this->prefix_length = $prefix_length;
 		}
 
-		private function filename($hash)
+		private function filename($hash) : string
 		{
 			return $this->folder . substr($hash, 0, $this->prefix_length) . '.ini';
 		}
@@ -33,7 +33,7 @@
 		 *
 		 * @return false|int[]
 		 */
-		function get($hash)
+		public function get($hash)
 		{
 			$filename = $this->filename($hash);
 			if(!is_file($filename))

@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+	use PHPDoc\MapInfo;
 	use Puggan\Solver\HexaHop\HexaHopMap;
 
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
@@ -14,7 +15,7 @@
 		die(1);
 	}
 
-	/** @var \PHPDoc\MapInfo[] $maps */
+	/** @var MapInfo[] $maps */
 	$maps = HexaHopMap::list_maps();
 
 	if(empty($maps[$id]->title))

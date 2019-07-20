@@ -47,12 +47,9 @@
 		public static function data_dir($level_number) : string
 		{
 			$path = dirname(__DIR__, 3) . '/data/' . $level_number . '/';
-			if(!is_dir($path))
+			if(!is_dir($path) && !mkdir($path) && !is_dir($path))
 			{
-				if(!mkdir($path) && !is_dir($path))
-				{
-					throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
-				}
+				throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
 			}
 			return $path;
 		}

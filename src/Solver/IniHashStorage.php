@@ -30,7 +30,7 @@
 		/**
 		 * Save list back to file
 		 */
-		private function _save()
+		private function _save() : void
 		{
 			$f = fopen($this->filename, 'wb');
 			foreach($this->ini as $key => $value)

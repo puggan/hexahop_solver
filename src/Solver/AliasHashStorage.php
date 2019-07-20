@@ -15,7 +15,7 @@
 		 * @param int[] $alias
 		 * @param int[] $better
 		 */
-		public function add($alias, $better)
+		public function add($alias, $better) : void
 		{
 			$this->storage->save(implode(',', $alias), $better);
 		}

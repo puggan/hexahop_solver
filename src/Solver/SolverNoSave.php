@@ -40,7 +40,7 @@
 			shuffle($this->path_todos[0]);
 		}
 
-		public function step()
+		public function step() : bool
 		{
 			while($this->depth > 0 && empty($this->path_todos[$this->depth]))
 			{
@@ -117,7 +117,7 @@
 			return TRUE;
 		}
 
-		public function debug()
+		public function debug() : string
 		{
 			// $d = [];
 			// if($this->depth)
@@ -129,7 +129,7 @@
 			// }
 			// $d[] = ['next' => $this->path_todos[$this->depth]];
 			// return $d;
-			/** @var \Puggan\Solver\HexaHop\HexaHopMap $map_state */
+			/** @var HexaHopMap $map_state */
 			$map_state = $this->states[$this->depth];
 			return implode(',', array_slice($this->path, 0, $this->depth + 1)) . ' @ ' . $this->depth . ' (' . $map_state->points() . ')';
 		}

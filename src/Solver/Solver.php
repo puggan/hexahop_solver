@@ -3,7 +3,6 @@
 	namespace Puggan\Solver;
 
 	use Puggan\Solver\HexaHop\HexaHopMap;
-	use Puggan\Solver\HexaHop\HexaHopSolver;
 
 	class Solver
 	{
@@ -13,8 +12,8 @@
 		/** @var HashStorage $solved */
 		private $solved;
 
-		/** @var AliasStorage $alias */
-		private $alias;
+		/* * @var AliasStorage $alias */
+		//private $alias;
 
 		/** @var HashStorage $hashes */
 		private $hashes;
@@ -27,7 +26,7 @@
 		 *
 		 * @param MapState $startState
 		 * @param HashStorage $solved
-		 * @param AliasStorage $alias
+		 * @-param AliasStorage $alias
 		 * @param HashStorage $hashes
 		 * @param TodoStorage $todos
 		 */
@@ -45,7 +44,7 @@
 		 *
 		 * @return MapState
 		 */
-		public function loadState($path)
+		public function loadState($path) : MapState
 		{
 			return $this->startState->path($path);
 		}
@@ -55,7 +54,7 @@
 		 *
 		 * @return bool
 		 */
-		public function step($pid)
+		public function step($pid) : bool
 		{
 			$path = $this->todos->reserve($pid);
 			if($path === FALSE)

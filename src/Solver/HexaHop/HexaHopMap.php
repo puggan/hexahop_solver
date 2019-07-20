@@ -2,6 +2,10 @@
 
 	namespace Puggan\Solver\HexaHop;
 
+	use PHPDoc\MapInfo;
+	use PHPDoc\Player;
+	use PhpDoc\Point;
+	use PHPDoc\Projectile;
 	use Puggan\Solver\MapState;
 
 	class HexaHopMap extends MapState implements \JsonSerializable
@@ -39,7 +43,7 @@
 		public const MASK_ITEM_TYPE = 0xE0;
 		public const SHIFT_TILE_ITEM = 5;
 
-		/** @var \PHPDoc\MapInfo $map_info */
+		/** @var MapInfo $map_info */
 		protected $map_info;
 
 		/** @var int x_min */
@@ -60,7 +64,7 @@
 		/** @var int[] */
 		protected $items = [];
 
-		/** @var \PHPDoc\Player player */
+		/** @var Player player */
 		protected $player;
 
 		/** @var int points */
@@ -205,7 +209,7 @@
 		 *
 		 * @return string
 		 */
-		private static function getResource($filename)
+		private static function getResource($filename) : string
 		{
 			return file_get_contents(self::getResourcePath($filename));
 		}
@@ -215,7 +219,7 @@
 		 *
 		 * @return string
 		 */
-		private static function getResourcePath($filename)
+		private static function getResourcePath($filename) : string
 		{
 			return dirname(__DIR__, 3) . '/resources/' . $filename;
 		}
@@ -223,9 +227,9 @@
 		/**
 		 * @param $level_number
 		 *
-		 * @return \PHPDoc\MapInfo
+		 * @return MapInfo
 		 */
-		private static function read_map_info($level_number)
+		private static function read_map_info($level_number) : MapInfo
 		{
 			static $json;
 			if(!$json)
@@ -272,8 +276,9 @@
 		}
 
 		/**
-		 * @param \PhpDoc\Point $point
+		 * @param Point $point
 		 * @param int $direction
+		 * @param int $old_tile
 		 */
 		private function move_into($point, $direction, $old_tile) : void
 		{
@@ -372,11 +377,11 @@
 
 				case self::TILE_LASER:
 					;
-					/** @var \PHPDoc\Projectile[] $projectiles */
+					/** @var Projectile[] $projectiles */
 					$projectiles = [];
-					/** @var \PHPDoc\Projectile[] $todos */
+					/** @var Projectile[] $todos */
 					$todos = [];
-					/** @var \PHPDoc\Point $damage */
+					/** @var Point $damage */
 					$damage = [];
 					if($direction === self::DIR_J)
 					{
@@ -594,9 +599,11 @@
 		}
 
 		/**
-		 * @param \PhpDoc\Point $point
+		 * @param Point $point
+		 *
+		 * @return int tile
 		 */
-		private function move_out_of($point)
+		private function move_out_of($point) : int
 		{
 			$tile = $this->tiles[$point->y][$point->x];
 			switch($tile & self::MASK_TILE_TYPE)
@@ -625,15 +632,15 @@
 		}
 
 		/**
-		 * @param \PhpDoc\Point $current
+		 * @param Point $current
 		 * @param int $direction
 		 * @param int $steps
 		 *
-		 * @return \PhpDoc\Point
+		 * @return Point
 		 */
-		private function next_point($current, $direction, $steps = 1)
+		private function next_point($current, $direction, $steps = 1) : Point
 		{
-			/** @var \PhpDoc\Point $new_point */
+			/** @var Point $new_point */
 			$new_point = clone $current;
 			switch($direction)
 			{
@@ -679,15 +686,15 @@
 		 * @param $current
 		 * @param int $steps
 		 *
-		 * @return \PhpDoc\Point[]
+		 * @return Point[]
 		 */
-		private function next_points($current, $steps = 1)
+		private function next_points($current, $steps = 1) : array
 		{
 			$points = [];
 			foreach(range(0, 5) as $direction)
 			{
 
-				/** @var \PhpDoc\Point $new_point */
+				/** @var Point $new_point */
 				$new_point = clone $current;
 				switch($direction)
 				{
@@ -785,7 +792,7 @@
 		}
 
 		/**
-		 * @param \PhpDoc\Point $point
+		 * @param Point $point
 		 *
 		 * @return boolean
 		 */
@@ -830,7 +837,7 @@
 			{
 				foreach($row as $x => $tile_with_item)
 				{
-					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_LOW_GREEN)
+					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_LOW_GREEN)
 					{
 						return;
 					}
@@ -841,7 +848,7 @@
 			{
 				foreach($row as $x => $tile_with_item)
 				{
-					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_HIGH_GREEN)
+					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_HIGH_GREEN)
 					{
 						$this->tiles[$y][$x] += self::TILE_LOW_GREEN - self::TILE_HIGH_GREEN;
 					}
@@ -855,7 +862,7 @@
 			{
 				foreach($row as $x => $tile_with_item)
 				{
-					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_LOW_BLUE)
+					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_LOW_BLUE)
 					{
 						return;
 					}
@@ -865,7 +872,7 @@
 			{
 				foreach($row as $x => $tile_with_item)
 				{
-					if(($tile_with_item & self::MASK_TILE_TYPE) == self::TILE_HIGH_BLUE)
+					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_HIGH_BLUE)
 					{
 						$this->tiles[$y][$x] += self::TILE_LOW_BLUE - self::TILE_HIGH_BLUE;
 					}
@@ -876,7 +883,7 @@
 		/**
 		 * @return int
 		 */
-		public function points()
+		public function points() : int
 		{
 			return $this->points;
 		}
@@ -884,7 +891,7 @@
 		/**
 		 * @return int
 		 */
-		public function par()
+		public function par() : int
 		{
 			return $this->par;
 		}
@@ -900,7 +907,7 @@
 		/**
 		 * @return int[]
 		 */
-		public function tile_type_count()
+		public function tile_type_count() : array
 		{
 			$c = array_fill(0, 17, 0);
 			foreach($this->tiles as $row)
@@ -916,7 +923,7 @@
 		/**
 		 * @return int[]
 		 */
-		public function item_count()
+		public function item_count() : array
 		{
 			$c = $this->items;
 			foreach($this->tiles as $row)
@@ -933,7 +940,7 @@
 			return $c;
 		}
 
-		public function impossible()
+		public function impossible() : bool
 		{
 			$tile_types = $this->tile_type_count();
 			$total_items = $this->item_count();
@@ -974,7 +981,7 @@
 			}
 
 			$reachable[$this->player->y][$this->player->x] = 1;
-			/** @var \PhpDoc\Point[] $todo */
+			/** @var Point[] $todo */
 			$todo = [$this->player];
 
 			while($todo)
@@ -1058,13 +1065,13 @@
 			//<editor-fold desc="Lasers">
 			if($tile_types[self::TILE_LASER])
 			{
-				/** @var \PhpDoc\Point[] $missing_greens */
+				/** @var Point[] $missing_greens */
 				$missing_greens = [];
-				/** @var \PhpDoc\Point[] $reached_lasers */
+				/** @var Point[] $reached_lasers */
 				$reached_lasers = [];
-				/** @var \PhpDoc\Point[] $other_lasers */
+				/** @var Point[] $other_lasers */
 				$other_lasers = [];
-				/** @var \PhpDoc\Point[] $other_lasers */
+				/** @var Point[] $other_lasers */
 				$explodeable_lasers = [];
 
 				foreach($my_tiles as $y => $row)
@@ -1213,13 +1220,13 @@
 		}
 
 		/**
-		 * @return \PHPDoc\MapInfo[]
+		 * @return MapInfo[]
 		 */
-		public static function list_maps()
+		public static function list_maps() : array
 		{
 			$extra_index = 101;
 			$maps = [];
-			/** @var \PHPDoc\MapInfo $map_info */
+			/** @var MapInfo $map_info */
 			foreach(json_decode(self::getResource('hexahopmaps.json'), FALSE) as $map_info)
 			{
 				if($map_info->level_number < 0)

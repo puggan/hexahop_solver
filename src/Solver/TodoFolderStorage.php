@@ -2,6 +2,8 @@
 
 	namespace Puggan\Solver;
 
+	use PHPDoc\TodoFolderStorageJson;
+
 	class TodoFolderStorage extends TodoStorage
 	{
 		/** @var string $folder */
@@ -10,7 +12,7 @@
 		private $reserved;
 		/** @var JsonLockedFile $json */
 		private $json;
-		/** @var \PHPDoc\TodoFolderStorageJson */
+		/** @var TodoFolderStorageJson */
 		private $json_cache;
 		private $json_rows_added_in_cache = 0;
 
@@ -61,7 +63,7 @@
 		/**
 		 * @throws \Exception
 		 */
-		private function add_file()
+		private function add_file() : string
 		{
 			$tries = 0;
 			do
@@ -120,8 +122,7 @@
 		 */
 		public function reserve($pid)
 		{
-			$file_info = $this->json->read();
-			foreach($file_info->files as $f_index => $file)
+			foreach($this->json->read()->files as $f_index => $file)
 			{
 				$filename = $this->folder . $file;
 				if(!is_file($filename))
@@ -142,7 +143,6 @@
 				}
 				while(!feof($f))
 				{
-					$position_before = ftell($f);
 					$line = fgets($f, 1e6);
 					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
 					{
@@ -184,7 +184,7 @@
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
 
-			/** @var \PHPDoc\TodoFolderStorageJson $file_info */
+			/** @var TodoFolderStorageJson $file_info */
 			$file_info = $this->json->read();
 			$file_info_updated = FALSE;
 			foreach($file_info->files as $f_index => $file)
@@ -274,7 +274,7 @@
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
 
-			/** @var \PHPDoc\TodoFolderStorageJson $file_info */
+			/** @var TodoFolderStorageJson $file_info */
 			$file_info = $this->json->read();
 			$file_info_updated = FALSE;
 			$path_string2 = $path_string . ',';
