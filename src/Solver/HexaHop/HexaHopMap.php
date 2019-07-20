@@ -35,39 +35,39 @@
 		public const ITEM_ANIT_ICE = 1;
 		public const ITEM_JUMP = 2;
 
-		private const MASK_TILE_TYPE = 0x1F;
-		private const MASK_ITEM_TYPE = 0xE0;
-		private const SHIFT_TILE_ITEM = 5;
+		public const MASK_TILE_TYPE = 0x1F;
+		public const MASK_ITEM_TYPE = 0xE0;
+		public const SHIFT_TILE_ITEM = 5;
 
 		/** @var \PHPDoc\MapInfo $mapinfo */
-		private $mapinfo;
+		protected $mapinfo;
 
 		/** @var int x_min */
-		private $x_min;
+		protected $x_min;
 
 		/** @var int x_max */
-		private $x_max;
+		protected $x_max;
 
 		/** @var int y_min */
-		private $y_min;
+		protected $y_min;
 
 		/** @var int y_max */
-		private $y_max;
+		protected $y_max;
 
 		/** @var int[][] */
-		private $tiles = [];
+		protected $tiles = [];
 
 		/** @var int[] */
-		private $items = [];
+		protected $items = [];
 
 		/** @var \PHPDoc\Player player */
-		private $player;
+		protected $player;
 
 		/** @var int points */
-		private $points;
+		protected $points;
 
 		/** @var int */
-		private $par;
+		protected $par;
 
 		public function __construct($level_number, $path = NULL)
 		{
