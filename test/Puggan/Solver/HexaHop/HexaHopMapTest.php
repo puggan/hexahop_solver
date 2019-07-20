@@ -275,7 +275,13 @@
 			{
 				/** @var int[] $path */
 				$path = array_map('intval', explode(',', $path_str));
-				$m = new HexaHopMap($level_number, $path);
+				$m = new HexaHopMap($level_number);
+				$this->assertFalse($m->impossible(), 'Level ' . $level_number . ' imposible, at start');
+				foreach($path as $index => $dir)
+				{
+					$m = $m->move($dir);
+					$this->assertFalse($m->impossible(), 'Level ' . $level_number . ' imposible, at step ' . ($index + 1));
+				}
 				$this->assertTrue($m->won(), 'Level ' . $level_number . ' winnable');
 				$this->assertEquals($m->points(), $m->par(), 'Level ' . $level_number . ' beat par');
 			}
