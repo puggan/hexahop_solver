@@ -7,7 +7,7 @@
 	 * @package PHPDoc
 	 * @property int dir
 	 */
-	class Projectile extends \Puggan\Solver\Entities\Point
+	class Projectile extends Point
 	{
 		/** @var int */
 		public $dir;
@@ -24,5 +24,16 @@
 		{
 			$this->dir = $dir;
 			parent::__construct($x, $y, $z);
+		}
+
+		/**
+		 * @param Point $point
+		 * @param int $dir
+		 *
+		 * @return Projectile
+		 */
+		public static function PointDir($point, $dir) : Projectile
+		{
+			return new self($point->x, $point->y, $point->z, $dir);
 		}
 	}

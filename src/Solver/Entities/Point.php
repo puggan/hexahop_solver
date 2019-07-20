@@ -31,4 +31,14 @@
 			$this->y = $y;
 			$this->z = $z;
 		}
+
+		/**
+		 * @param Point$point
+		 *
+		 * @return Point
+		 */
+		public static function copy($point) : Point
+		{
+			return new self($point->x, $point->y,$point->z);
+		}
 	}

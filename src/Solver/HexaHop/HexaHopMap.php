@@ -85,12 +85,7 @@
 			$this->par = $this->map_info->par;
 			$this->items[self::ITEM_ANTI_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
-			$this->player = (object) [
-				'alive' => TRUE,
-				'x' => $this->map_info->start_x,
-				'y' => $this->map_info->start_y,
-				'z' => 0,
-			];
+			$this->player = new Player($this->map_info->start_x, $this->map_info->start_y,0);
 
 			$this->parse_map(new MapStream(self::getResourcePath('levels/' . $this->map_info->file)));
 
@@ -386,17 +381,17 @@
 					if($direction === self::DIR_J)
 					{
 						$todos = [
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 0],
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 1],
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 2],
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 3],
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 4],
-							(object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => 5],
+							Projectile::PointDir($point, 0),
+							Projectile::PointDir($point, 1),
+							Projectile::PointDir($point, 2),
+							Projectile::PointDir($point, 3),
+							Projectile::PointDir($point, 4),
+							Projectile::PointDir($point, 5),
 						];
 					}
 					else
 					{
-						$todos[] = (object) ['x' => $point->x, 'y' => $point->y, 'z' => 0, 'dir' => $direction];
+						$todos[] = Projectile::PointDir($point, $direction);
 					}
 
 					while($todos)
@@ -407,7 +402,7 @@
 						{
 							continue;
 						}
-						$projectiles[$todo_key] = true;
+						$projectiles[$todo_key] = $todo_projectile;
 						$hit_point = $this->next_point($todo_projectile, $todo_projectile->dir);
 						$hit_key = "{$hit_point->x}:{$hit_point->y}";
 						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
@@ -417,12 +412,12 @@
 								break;
 
 							case self::TILE_ICE:
-								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => ($todo_projectile->dir + 5) % 6];
-								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => ($todo_projectile->dir + 1) % 6];
+								$todos[] = Projectile::PointDir($hit_point,  ($todo_projectile->dir + 5) % 6);
+								$todos[] = Projectile::PointDir($hit_point,  ($todo_projectile->dir + 1) % 6);
 								break;
 
 							case self::TILE_WATER:
-								$todos[] = (object) ['x' => $hit_point->x, 'y' => $hit_point->y, 'z' => 0, 'dir' => $todo_projectile->dir];
+								$todos[] = Projectile::PointDir($hit_point,  $todo_projectile->dir);
 								break;
 
 							default:
@@ -641,7 +636,7 @@
 		private function next_point($current, $direction, $steps = 1) : Point
 		{
 			/** @var Point $new_point */
-			$new_point = clone $current;
+			$new_point = Point::copy($current);
 			switch($direction)
 			{
 				case self::DIR_N:
@@ -1083,20 +1078,20 @@
 						{
 							if($tile === self::TILE_LASER)
 							{
-								$other_lasers[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+								$other_lasers[] = new Point($x, $y, 0);
 							}
 							else if($tile === self::TILE_LOW_GREEN)
 							{
-								$missing_greens[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+								$missing_greens[] = new Point($x, $y, 0);
 							}
 							else if($tile === self::TILE_HIGH_GREEN)
 							{
-								$missing_greens[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+								$missing_greens[] = new Point($x, $y, 0);
 							}
 						}
 						else if($tile === self::TILE_LASER)
 						{
-							$reached_lasers[] = (object) ['x' => $x, 'y' => $y, 'z' => 0];
+							$reached_lasers[] = new Point($x, $y, 0);
 						}
 					}
 				}
@@ -1239,7 +1234,7 @@
 					{
 						throw new \RuntimeException('Duplicate map at ' . $map_info->level_number);
 					}
-					$maps[$map_info->level_number] = $map_info;
+					$maps[$map_info->level_number] = new MapInfo($map_info);
 				}
 			}
 			ksort($maps);
