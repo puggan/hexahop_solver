@@ -40,15 +40,15 @@
 			{
 				return FALSE;
 			}
-			$hash_sufifx = substr($hash, $this->prefix_length);
+			$hash_suffix = substr($hash, $this->prefix_length);
 			$f = fopen($filename, 'rb');
 			while(!feof($f))
 			{
 				$line = fgetss($f, 1e6);
-				if(strpos($line, $hash_sufifx) === 0)
+				if(strpos($line, $hash_suffix) === 0)
 				{
 					fclose($f);
-					$path_string = substr($line, 1 + strlen($hash_sufifx));
+					$path_string = substr($line, 1 + strlen($hash_suffix));
 					if($path_string === '')
 					{
 						return [];
@@ -85,8 +85,8 @@
 		public function replace($hash, $path = false) : void
 		{
 			$filename = $this->filename($hash);
-			$hash_suffifx = substr($hash, $this->prefix_length);
-			$new_path = $path === false ? false : $hash_suffifx . '=' . implode(',', $path) . PHP_EOL;
+			$hash_suffix = substr($hash, $this->prefix_length);
+			$new_path = $path === false ? false : $hash_suffix . '=' . implode(',', $path) . PHP_EOL;
 			$new_length = $new_path === false ? 0 : strlen($new_path);
 			if(!is_file($filename))
 			{
@@ -125,7 +125,7 @@
 						fseek($f, $after);
 					}
 				}
-				if(strpos($line, $hash_suffifx) === 0)
+				if(strpos($line, $hash_suffix) === 0)
 				{
 					$length = ftell($f) - $before;
 					while(!trim(fgetss($f, 1e6))) {

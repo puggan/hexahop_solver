@@ -9,8 +9,8 @@
 		/** @var HashStorage $solved */
 		protected $solved;
 
-		/** @var int $deepth */
-		protected $deepth = 0;
+		/** @var int $depth */
+		protected $depth = 0;
 
 		/** @var int[] $path */
 		protected $path;
@@ -42,45 +42,45 @@
 
 		public function step()
 		{
-			while($this->deepth > 0 && empty($this->path_todos[$this->deepth]))
+			while($this->depth > 0 && empty($this->path_todos[$this->depth]))
 			{
-				$this->deepth--;
+				$this->depth--;
 			}
 
-			if($this->deepth < 0 || empty($this->path_todos[$this->deepth]))
+			if($this->depth < 0 || empty($this->path_todos[$this->depth]))
 			{
 				return FALSE;
 			}
 
-			$dir = array_pop($this->path_todos[$this->deepth]);
-			$current = $this->states[$this->deepth];
-			$this->deepth++;
-			$this->path[$this->deepth] = $dir;
+			$dir = array_pop($this->path_todos[$this->depth]);
+			$current = $this->states[$this->depth];
+			$this->depth++;
+			$this->path[$this->depth] = $dir;
 			$new = $current->move($dir);
-			$this->states[$this->deepth] = $new;
+			$this->states[$this->depth] = $new;
 
 			// If dead, Undo
 			if($new->lost())
 			{
-				$this->deepth--;
+				$this->depth--;
 				return TRUE;
 			}
 
 			$hash = $new->hash();
-			$this->path_hashes[$this->deepth] = $hash;
+			$this->path_hashes[$this->depth] = $hash;
 
 			// Walking in circles?
-			if(array_search($hash, $this->path_hashes, TRUE) < $this->deepth)
+			if(array_search($hash, $this->path_hashes, TRUE) < $this->depth)
 			{
-				$this->deepth--;
+				$this->depth--;
 				return TRUE;
 			}
 
 			// Won? Save and undo
 			if($new->won())
 			{
-				$this->solved->save($hash, array_slice($this->path, 0, $this->deepth));
-				$this->deepth--;
+				$this->solved->save($hash, array_slice($this->path, 0, $this->depth));
+				$this->depth--;
 
 				// TODO: move to trigger
 				if($new instanceof HexaHopMap)
@@ -101,36 +101,36 @@
 				return TRUE;
 			}
 
-			// If imposible state, Undo
+			// If impossible state, Undo
 			if($new->impossible())
 			{
-				$this->deepth--;
+				$this->depth--;
 				return TRUE;
 			}
 
 			//
-			$this->path_todos[$this->deepth] = $new->possible_moves();
+			$this->path_todos[$this->depth] = $new->possible_moves();
 
 			// Random what order to try the paths
 			/** @noinspection NonSecureShuffleUsageInspection */
-			shuffle($this->path_todos[$this->deepth]);
+			shuffle($this->path_todos[$this->depth]);
 			return TRUE;
 		}
 
 		public function debug()
 		{
 			// $d = [];
-			// if($this->deepth)
+			// if($this->depth)
 			// {
-			// 	foreach(range(0, $this->deepth - 1) as $i)
+			// 	foreach(range(0, $this->depth - 1) as $i)
 			// 	{
 			// 		$d[] = ['dir' => $this->path[$i + 1], 'todo' => $this->path_todos[$i]];
 			// 	}
 			// }
-			// $d[] = ['next' => $this->path_todos[$this->deepth]];
+			// $d[] = ['next' => $this->path_todos[$this->depth]];
 			// return $d;
 			/** @var \Puggan\Solver\HexaHop\HexaHopMap $map_state */
-			$map_state = $this->states[$this->deepth];
-			return implode(',', array_slice($this->path, 0, $this->deepth + 1)) . ' @ ' . $this->deepth . ' (' . $map_state->points() . ')';
+			$map_state = $this->states[$this->depth];
+			return implode(',', array_slice($this->path, 0, $this->depth + 1)) . ' @ ' . $this->depth . ' (' . $map_state->points() . ')';
 		}
 	}

@@ -40,7 +40,7 @@
 				],
 				[
 					HexaHopMap::TILE_ICE,
-					HexaHopMap::TILE_LOW_LAND | HexaHopMap::ITEM_ANIT_ICE << HexaHopMap::SHIFT_TILE_ITEM,
+					HexaHopMap::TILE_LOW_LAND | HexaHopMap::ITEM_ANTI_ICE << HexaHopMap::SHIFT_TILE_ITEM,
 					HexaHopMap::TILE_LASER,
 					HexaHopMap::TILE_WATER,
 				],
@@ -101,9 +101,9 @@
 			$m0 = $this->mockMap1();
 			$items = $m0->item_count();
 			$this->assertIsArray($items, 'item_count-0 returns an array');
-			$this->assertArrayHasKey(HexaHopMap::ITEM_ANIT_ICE, $items, 'item_count-0 has anti-ice');
+			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-0 has anti-ice');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_JUMP, $items, 'item_count-0 has jump');
-			$this->assertEquals(1, $items[HexaHopMap::ITEM_ANIT_ICE], 'item_count-0 have 1 anti-ice');
+			$this->assertEquals(1, $items[HexaHopMap::ITEM_ANTI_ICE], 'item_count-0 have 1 anti-ice');
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-0 have 1 jump');
 
 			// Recount
@@ -114,27 +114,27 @@
 			$m1 = $m0->move(HexaHopMap::DIR_S);
 			$items = $m1->item_count();
 			$this->assertIsArray($items, 'item_count-1 returns an array');
-			$this->assertArrayHasKey(HexaHopMap::ITEM_ANIT_ICE, $items, 'item_count-1 has anti-ice');
+			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-1 has anti-ice');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_JUMP, $items, 'item_count-1 has jump');
-			$this->assertEquals(1, $items[HexaHopMap::ITEM_ANIT_ICE], 'item_count-1 have 1 anti-ice');
+			$this->assertEquals(1, $items[HexaHopMap::ITEM_ANTI_ICE], 'item_count-1 have 1 anti-ice');
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-1 have 1 jump');
 
 			// Pick up jump, & use Anti-Ice
 			$m2 = $m1->move(HexaHopMap::DIR_S);
 			$items = $m2->item_count();
 			$this->assertIsArray($items, 'item_count-2 returns an array');
-			$this->assertArrayHasKey(HexaHopMap::ITEM_ANIT_ICE, $items, 'item_count-2 has anti-ice');
+			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-2 has anti-ice');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_JUMP, $items, 'item_count-2 has jump');
-			$this->assertEquals(0, $items[HexaHopMap::ITEM_ANIT_ICE], 'item_count-2 have 0 anti-ice');
+			$this->assertEquals(0, $items[HexaHopMap::ITEM_ANTI_ICE], 'item_count-2 have 0 anti-ice');
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-2 have 1 jump');
 
 			// Pick use jump
 			$m3 = $m2->move(HexaHopMap::DIR_J);
 			$items = $m3->item_count();
 			$this->assertIsArray($items, 'item_count-3 returns an array');
-			$this->assertArrayHasKey(HexaHopMap::ITEM_ANIT_ICE, $items, 'item_count-3 has anti-ice');
+			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-3 has anti-ice');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_JUMP, $items, 'item_count-3 has jump');
-			$this->assertEquals(0, $items[HexaHopMap::ITEM_ANIT_ICE], 'item_count-3 have 0 anti-ice');
+			$this->assertEquals(0, $items[HexaHopMap::ITEM_ANTI_ICE], 'item_count-3 have 0 anti-ice');
 			$this->assertEquals(0, $items[HexaHopMap::ITEM_JUMP], 'item_count-3 have 0 jump');
 		}
 
@@ -276,7 +276,7 @@
 				/** @var int[] $path */
 				$path = array_map('intval', explode(',', $path_str));
 				$m = new HexaHopMap($level_number, $path);
-				$this->assertTrue($m->won(), 'Level ' . $level_number . ' winable');
+				$this->assertTrue($m->won(), 'Level ' . $level_number . ' winnable');
 				$this->assertEquals($m->points(), $m->par(), 'Level ' . $level_number . ' beat par');
 			}
 		}

@@ -18,7 +18,7 @@
 			$x_min = $x_list[0];
 			$x_max = $x_list[count($x_list) - 1];
 
-			$this->mapinfo = (object) [
+			$this->map_info = (object) [
 				'file' => 'mock.lev',
 				'title' => 'Mock Level',
 				'level_number' => 999,
@@ -30,13 +30,13 @@
 			];
 
 			$this->points = 0;
-			$this->par = $this->mapinfo->par;
-			$this->items[self::ITEM_ANIT_ICE] = 0;
+			$this->par = $this->map_info->par;
+			$this->items[self::ITEM_ANTI_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
 			$this->player = (object) [
 				'alive' => TRUE,
-				'x' => $this->mapinfo->start_x,
-				'y' => $this->mapinfo->start_y,
+				'x' => $this->map_info->start_x,
+				'y' => $this->map_info->start_y,
 				'z' => 0,
 			];
 

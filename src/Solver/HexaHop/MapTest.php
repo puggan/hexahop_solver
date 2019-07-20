@@ -50,7 +50,7 @@
 
 	if($path)
 	{
-		$directions = ['North', 'Nort-East', 'South-East', 'South', ' South-West', 'North-West', 'Jump'];
+		$directions = ['North', 'North-East', 'South-East', 'South', ' South-West', 'North-West', 'Jump'];
 		foreach(array_values($path) as $index => $dir)
 		{
 			if(empty($directions[$dir]))
@@ -78,7 +78,7 @@
 			if($map->impossible())
 			{
 				echo 'Step: ', ($index + 1), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
-				echo 'Imposible', PHP_EOL;
+				echo 'Impossible', PHP_EOL;
 				$alive = false;
 				break;
 			}

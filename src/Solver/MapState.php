@@ -47,7 +47,7 @@
 		abstract protected function _move($move) : void;
 
 		/**
-		 * Execute all posible moves, and return a list
+		 * Execute all possible moves, and return a list
 		 * @return MapState[]
 		 */
 		public function move_all() : array
@@ -79,7 +79,7 @@
 				foreach($path as $move)
 				{
 					if($state->lost()) {
-						throw new \RuntimeException('Invalid path, alredy lost: ' . $state->print_path($path) . ' (' . implode(', ', $path). ')');
+						throw new \RuntimeException('Invalid path, already lost: ' . $state->print_path($path) . ' (' . implode(', ', $path). ')');
 					}
 					$state->_move($move);
 				}

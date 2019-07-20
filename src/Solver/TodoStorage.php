@@ -11,7 +11,7 @@
 		abstract public function add($path): void;
 
 		/**
-		 * Reserve a todo, thats not already reserved
+		 * Reserve a todo, that's not already reserved
 		 * @param int $pid
 		 *
 		 * @return false|int[]

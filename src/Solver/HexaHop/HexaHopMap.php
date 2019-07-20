@@ -32,15 +32,15 @@
 		public const TILE_LOW_ELEVATOR = 15;
 		public const TILE_HIGH_ELEVATOR = 16;
 
-		public const ITEM_ANIT_ICE = 1;
+		public const ITEM_ANTI_ICE = 1;
 		public const ITEM_JUMP = 2;
 
 		public const MASK_TILE_TYPE = 0x1F;
 		public const MASK_ITEM_TYPE = 0xE0;
 		public const SHIFT_TILE_ITEM = 5;
 
-		/** @var \PHPDoc\MapInfo $mapinfo */
-		protected $mapinfo;
+		/** @var \PHPDoc\MapInfo $map_info */
+		protected $map_info;
 
 		/** @var int x_min */
 		protected $x_min;
@@ -71,24 +71,24 @@
 
 		public function __construct($level_number, $path = NULL)
 		{
-			$this->mapinfo = self::mapinfo($level_number);
-			if(!$this->mapinfo)
+			$this->map_info = self::read_map_info($level_number);
+			if(!$this->map_info)
 			{
 				throw new \RuntimeException('invalid level_number. ' . $level_number);
 			}
 
 			$this->points = 0;
-			$this->par = $this->mapinfo->par;
-			$this->items[self::ITEM_ANIT_ICE] = 0;
+			$this->par = $this->map_info->par;
+			$this->items[self::ITEM_ANTI_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
 			$this->player = (object) [
 				'alive' => TRUE,
-				'x' => $this->mapinfo->start_x,
-				'y' => $this->mapinfo->start_y,
+				'x' => $this->map_info->start_x,
+				'y' => $this->map_info->start_y,
 				'z' => 0,
 			];
 
-			$this->parse_map(new MapStream(self::getResourePath('levels/' . $this->mapinfo->file)));
+			$this->parse_map(new MapStream(self::getResourcePath('levels/' . $this->map_info->file)));
 
 			if($this->high_tile($this->player))
 			{
@@ -174,7 +174,7 @@
 				$this->items[self::ITEM_JUMP]--;
 			}
 			$next_point = $this->next_point($this->player, $direction);
-			$old_tile = $this->move_outof($this->player);
+			$old_tile = $this->move_out_of($this->player);
 			$this->points++;
 			$this->move_into($next_point, $direction, $old_tile);
 		}
@@ -205,9 +205,9 @@
 		 *
 		 * @return string
 		 */
-		private static function getResoure($filename)
+		private static function getResource($filename)
 		{
-			return file_get_contents(self::getResourePath($filename));
+			return file_get_contents(self::getResourcePath($filename));
 		}
 
 		/**
@@ -215,7 +215,7 @@
 		 *
 		 * @return string
 		 */
-		private static function getResourePath($filename)
+		private static function getResourcePath($filename)
 		{
 			return dirname(__DIR__, 3) . '/resources/' . $filename;
 		}
@@ -225,7 +225,7 @@
 		 *
 		 * @return \PHPDoc\MapInfo
 		 */
-		private static function mapinfo($level_number)
+		private static function read_map_info($level_number)
 		{
 			static $json;
 			if(!$json)
@@ -339,7 +339,7 @@
 						break;
 					}
 					$goal_point = $this->next_point($point, $direction, 2);
-					// if jumping from a high place, skip hight tests
+					// if jumping from a high place, skip height tests
 					if($this->player->z <= 0)
 					{
 						$mid_point = $this->next_point($point, $direction);
@@ -472,14 +472,14 @@
 
 				case self::TILE_ICE:
 					// Anti Ice?
-					if($this->items[self::ITEM_ANIT_ICE] > 0)
+					if($this->items[self::ITEM_ANTI_ICE] > 0)
 					{
-						$this->items[self::ITEM_ANIT_ICE]--;
+						$this->items[self::ITEM_ANTI_ICE]--;
 						$this->tiles[$point->y][$point->x] = self::TILE_ANTI_ICE;
 						break;
 					}
 
-					// TODO walltest before or after?
+					// TODO wall-test before or after?
 
 					// Normal Ice
 					foreach(range(1, 100) as $distance)
@@ -596,7 +596,7 @@
 		/**
 		 * @param \PhpDoc\Point $point
 		 */
-		private function move_outof($point)
+		private function move_out_of($point)
 		{
 			$tile = $this->tiles[$point->y][$point->x];
 			switch($tile & self::MASK_TILE_TYPE)
@@ -725,7 +725,7 @@
 		public function jsonSerialize()
 		{
 			return [
-				'mapinfo' => $this->mapinfo,
+				'map_info' => $this->map_info,
 				'x_min' => $this->x_min,
 				'x_max' => $this->x_max,
 				'y_min' => $this->y_min,
@@ -744,7 +744,7 @@
 
 		public function map_info($json_option)
 		{
-			return json_encode($this->mapinfo, $json_option);
+			return json_encode($this->map_info, $json_option);
 		}
 
 		public function print_path($path) : string
@@ -949,7 +949,7 @@
 				return FALSE;
 			}
 
-			// Enough steps to step on all greens? Notice: not useable for laser + jump / laser + ice
+			// Enough steps to step on all greens? Notice: not usable for laser + jump / laser + ice
 			if(!$tile_types[self::TILE_LASER])
 			{
 				if($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par)
@@ -957,7 +957,7 @@
 					return TRUE;
 				}
 			}
-			// Enough steps to step/kill on all greens? Notice: not useable for laser + jump / laser + ice
+			// Enough steps to step/kill on all greens? Notice: not usable for laser + jump / laser + ice
 			else if(!$tile_types[self::TILE_ICE] && $this->points + $missing_green + ($player_on_green ? -1 : 0) - 5 * $total_items[self::ITEM_JUMP] > $this->par)
 			{
 				return TRUE;
@@ -996,7 +996,7 @@
 							foreach($neighbors as $neighbor)
 							{
 								$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? 0) & self::MASK_TILE_TYPE;
-								// Dubble rotator can move about everywhere
+								// Double rotator can move about everywhere
 								if($neighbor_tile === self::TILE_ROTATOR)
 								{
 									return FALSE;
@@ -1065,7 +1065,7 @@
 				/** @var \PhpDoc\Point[] $other_lasers */
 				$other_lasers = [];
 				/** @var \PhpDoc\Point[] $other_lasers */
-				$explodable_lasers = [];
+				$explodeable_lasers = [];
 
 				foreach($my_tiles as $y => $row)
 				{
@@ -1094,7 +1094,7 @@
 					}
 				}
 
-				// if all grean are reachable, but nu lasers are reachable, use the cost-calculation
+				// if all green are reachable, but nu lasers are reachable, use the cost-calculation
 				if(!$reached_lasers && !$missing_greens)
 				{
 					return ($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par);
@@ -1109,7 +1109,7 @@
 					return TRUE;
 				}
 
-				// The destruction of a reachable laster + ice is BIG
+				// The destruction of a reachable laser + ice is BIG
 				if($tile_types[self::TILE_ICE])
 				{
 					return FALSE;
@@ -1143,17 +1143,17 @@
 						$delta_y = $laser_point->y - $other_point->y;
 						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
 						{
-							$explodable_lasers[] = $other_point;
+							$explodeable_lasers[] = $other_point;
 							unset($other_lasers[$other_point_index]);
 						}
 					}
 				}
-				if(!$explodable_lasers)
+				if(!$explodeable_lasers)
 				{
 					return TRUE;
 				}
 
-				foreach($explodable_lasers as $laser_point)
+				foreach($explodeable_lasers as $laser_point)
 				{
 					foreach($missing_greens as $green_point_index => $green_point)
 					{
@@ -1220,7 +1220,7 @@
 			$extra_index = 101;
 			$maps = [];
 			/** @var \PHPDoc\MapInfo $map_info */
-			foreach(json_decode(self::getResoure('hexahopmaps.json'), FALSE) as $map_info)
+			foreach(json_decode(self::getResource('hexahopmaps.json'), FALSE) as $map_info)
 			{
 				if($map_info->level_number < 0)
 				{

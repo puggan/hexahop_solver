@@ -47,7 +47,7 @@
 		}
 
 		/**
-		 * Reserve a todo, thats not already reserved
+		 * Reserve a todo, that's not already reserved
 		 *
 		 * @param int $pid
 		 *
@@ -187,9 +187,9 @@
 				return;
 			}
 
-			$filenmae_copy = $this->filename . '.copy';
-			rename($this->filename, $filenmae_copy);
-			$f_copy = fopen($filenmae_copy, 'rb');
+			$filename_copy = $this->filename . '.copy';
+			rename($this->filename, $filename_copy);
+			$f_copy = fopen($filename_copy, 'rb');
 			$f_new = fopen($this->filename, 'wb');
 			while(!feof($f_copy))
 			{
@@ -202,7 +202,7 @@
 			}
 			fclose($f_copy);
 			fclose($f_new);
-			unlink($filenmae_copy);
+			unlink($filename_copy);
 			$this->remove_count = 0;
 			$this->removed_position = 0;
 		}

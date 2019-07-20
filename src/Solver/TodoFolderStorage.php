@@ -112,7 +112,7 @@
 		}
 
 		/**
-		 * Reserve a todo, thats not already reserved
+		 * Reserve a todo, that's not already reserved
 		 *
 		 * @param int $pid
 		 *
