@@ -85,7 +85,7 @@
 			$this->par = $this->map_info->par;
 			$this->items[self::ITEM_ANTI_ICE] = 0;
 			$this->items[self::ITEM_JUMP] = 0;
-			$this->player = new Player($this->map_info->start_x, $this->map_info->start_y,0);
+			$this->player = new Player($this->map_info->start_x, $this->map_info->start_y, 0);
 
 			$this->parse_map(new MapStream(self::getResourcePath('levels/' . $this->map_info->file)));
 
@@ -412,12 +412,12 @@
 								break;
 
 							case self::TILE_ICE:
-								$todos[] = Projectile::PointDir($hit_point,  ($todo_projectile->dir + 5) % 6);
-								$todos[] = Projectile::PointDir($hit_point,  ($todo_projectile->dir + 1) % 6);
+								$todos[] = Projectile::PointDir($hit_point, ($todo_projectile->dir + 5) % 6);
+								$todos[] = Projectile::PointDir($hit_point, ($todo_projectile->dir + 1) % 6);
 								break;
 
 							case self::TILE_WATER:
-								$todos[] = Projectile::PointDir($hit_point,  $todo_projectile->dir);
+								$todos[] = Projectile::PointDir($hit_point, $todo_projectile->dir);
 								break;
 
 							default:
@@ -937,6 +937,7 @@
 
 		public function impossible() : bool
 		{
+			//<editor-fold desc="Init vars, counting stuff">
 			$tile_types = $this->tile_type_count();
 			$total_items = $this->item_count();
 
@@ -950,7 +951,9 @@
 			{
 				return FALSE;
 			}
+			//</editor-fold>
 
+			//<editor-fold desc="Par vs Steps + Greens">
 			// Enough steps to step on all greens? Notice: not usable for laser + jump / laser + ice
 			if(!$tile_types[self::TILE_LASER])
 			{
@@ -964,81 +967,258 @@
 			{
 				return TRUE;
 			}
+			//</editor-fold>
 
+			//<editor-fold desc="Init reachable">
+			/** @var boolean[][][] $reachable keys: z, y, x */
 			$reachable = [];
 
 			foreach($my_tiles as $y => $row)
 			{
 				foreach(array_keys($row) as $x)
 				{
-					$reachable[$y][$x] = 0;
+					$reachable[0][$y][$x] = FALSE;
+					$reachable[1][$y][$x] = FALSE;
 				}
 			}
+			$reachable[$this->player->z][$this->player->y][$this->player->x] = 1;
+			//</editor-fold>
 
-			$reachable[$this->player->y][$this->player->x] = 1;
-			/** @var Point[] $todo */
-			$todo = [$this->player];
-
-			while($todo)
-			{
-				$start_point = array_pop($todo);
-				$neighbors = $this->next_points($start_point);
-				$start_tile = ($my_tiles[$start_point->y][$start_point->x] ?? 0) & self::MASK_TILE_TYPE;
-				if($start_tile)
+			/**
+			 * @param bool $green_wall_lowerable
+			 * @param bool $blue_wall_lowerable
+			 *
+			 * @return bool
+			 */
+			$expand_reachable = function ($green_wall_lowerable, $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$tile_types) {
+				/** @var Point[] $todo */
+				$todo = [];
+				foreach($reachable as $z => $plane)
 				{
-					switch($start_tile)
+					foreach($plane as $y => $row)
 					{
-						case self::TILE_TRAMPOLINE:
-							$neighbors = array_merge($neighbors, $this->next_points($start_point, 2));
-							break;
-
-						case self::TILE_ROTATOR:
-						case self::TILE_BUILD:
-							$neighbor_count = 0;
-							foreach($neighbors as $neighbor)
+						foreach($row as $x => $reached)
+						{
+							if($reached)
 							{
-								$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? 0) & self::MASK_TILE_TYPE;
-								// Double rotator can move about everywhere
-								if($neighbor_tile === self::TILE_ROTATOR)
-								{
-									return FALSE;
-								}
-								if($neighbor_tile)
-								{
-									$neighbor_count++;
-								}
+								$todo[] = new Point($x, $y, $z);
 							}
-							if($neighbor_count)
-							{
+						}
+					}
+				}
+				while($todo)
+				{
+					$start_point = array_pop($todo);
+					$neighbors = $this->next_points($start_point);
+					$start_tile = ($my_tiles[$start_point->y][$start_point->x] ?? self::TILE_WATER) & self::MASK_TILE_TYPE;
+					if($start_tile !== self::TILE_WATER)
+					{
+						switch($start_tile)
+						{
+							case self::TILE_TRAMPOLINE:
+								$neighbors = array_merge($neighbors, $this->next_points($start_point, 2));
+								break;
+
+							case self::TILE_ROTATOR:
+							case self::TILE_BUILD:
+								$neighbor_count = 0;
 								foreach($neighbors as $neighbor)
 								{
-									$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? -1) & self::MASK_TILE_TYPE;
-									if(!$neighbor_tile)
+									$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? 0) & self::MASK_TILE_TYPE;
+									// Double rotator can move about everywhere, rotated builder is a mess too
+									if($neighbor_tile === self::TILE_ROTATOR)
 									{
-										$my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
+										return FALSE;
+									}
+									if($neighbor_tile !== self::TILE_WATER)
+									{
+										$neighbor_count++;
 									}
 								}
+								if($neighbor_count)
+								{
+									foreach($neighbors as $neighbor)
+									{
+										$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? -1) & self::MASK_TILE_TYPE;
+										if($neighbor_tile === self::TILE_WATER)
+										{
+											// As it can be either low or high, treat it as an elevator
+											$my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
+											$tile_types[self::TILE_WATER]--;
+											$tile_types[self::TILE_LOW_ELEVATOR]++;
+										}
+									}
+								}
+								break;
+						}
+						foreach($neighbors as $point)
+						{
+							if(!empty($reachable[$point->z][$point->y][$point->x]))
+							{
+								continue;
 							}
-							break;
-					}
-					foreach($neighbors as $point)
-					{
-						if(!empty($reachable[$point->y][$point->x]))
-						{
-							continue;
-						}
 
-						$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
-						if(!$tile)
-						{
-							continue;
+							$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
+							switch($tile)
+							{
+								case self::TILE_HIGH_GREEN:
+									if($point->z > 0)
+									{
+										$reachable[1][$point->y][$point->x] = TRUE;
+										$todo[] = $point;
+									}
+									if($green_wall_lowerable)
+									{
+										$reachable[0][$point->y][$point->x] = TRUE;
+										$new_point = Point::copy($point);
+										$new_point->z = 0;
+										$todo[] = $new_point;
+									}
+									break;
+
+								case self::TILE_HIGH_BLUE:
+									if($point->z > 0)
+									{
+										$reachable[1][$point->y][$point->x] = TRUE;
+										$todo[] = $point;
+									}
+									if($blue_wall_lowerable)
+									{
+										$reachable[0][$point->y][$point->x] = TRUE;
+										$new_point = Point::copy($point);
+										$new_point->z = 0;
+										$todo[] = $new_point;
+									}
+									break;
+
+								// Always reach z 0 and z 1
+								case self::TILE_LOW_ELEVATOR:
+									$reachable[0][$point->y][$point->x] = TRUE;
+									$reachable[1][$point->y][$point->x] = TRUE;
+									$new_point = Point::copy($point);
+									$new_point->z = 1;
+									$todo[] = $new_point;
+									break;
+
+								// May reach z1 if currently on z1
+								case self::TILE_TRAMPOLINE:
+									$reachable[0][$point->y][$point->x] = TRUE;
+									$reachable[$point->z][$point->y][$point->x] = TRUE;
+									$todo[] = $point;
+									break;
+
+								case self::TILE_ROTATOR:
+								case self::TILE_LASER:
+								case self::TILE_ICE:
+								case self::TILE_BUILD:
+								case self::TILE_BOAT:
+								case self::TILE_ANTI_ICE:
+								case self::TILE_LOW_LAND:
+								case self::TILE_LOW_GREEN:
+								case self::TILE_LOW_BLUE:
+									$reachable[0][$point->y][$point->x] = TRUE;
+									$new_point = Point::copy($point);
+									$new_point->z = 0;
+									$todo[] = $new_point;
+									break;
+
+								case self::TILE_HIGH_ELEVATOR:
+								case self::TILE_HIGH_LAND:
+									if($point->z > 0)
+									{
+										$reachable[1][$point->y][$point->x] = TRUE;
+										$todo[] = $point;
+									}
+									break;
+
+								case self::TILE_WATER:
+								default:
+									break;
+							}
 						}
-						$reachable[$point->y][$point->x] = 1;
-						$todo[] = $point;
+					}
+				}
+				return TRUE;
+			};
+			/**
+			 * @return bool[]
+			 */
+			$wall_test = static function () use ($my_tiles, $reachable, $tile_types) {
+				if($tile_types[self::TILE_HIGH_GREEN] === 0 && $tile_types[self::TILE_HIGH_BLUE] === 0)
+				{
+					return [FALSE, FALSE];
+				}
+				$unreached_low_green = 0;
+				$unreached_low_blue = 0;
+				$high_green = 0;
+				$high_blue = 0;
+				foreach($my_tiles as $y => $row)
+				{
+					foreach($row as $x => $tile_wi)
+					{
+						switch($tile_wi & self::MASK_TILE_TYPE)
+						{
+							case self::TILE_HIGH_GREEN:
+								$high_green++;
+								break;
+
+							case self::TILE_HIGH_BLUE:
+								$high_blue++;
+								break;
+
+							case self::TILE_LOW_GREEN:
+								if($reachable[0][$y][$x])
+								{
+									$unreached_low_green++;
+								}
+								break;
+
+							case self::TILE_LOW_BLUE:
+								if($reachable[0][$y][$x])
+								{
+									$unreached_low_blue++;
+								}
+								break;
+						}
+						if($unreached_low_blue > 0 || $tile_types[self::TILE_HIGH_BLUE] === 0)
+						{
+							if($unreached_low_green > 0 || $tile_types[self::TILE_HIGH_GREEN] === 0)
+							{
+								return [FALSE, FALSE];
+							}
+						}
+					}
+				}
+				return [
+					$tile_types[self::TILE_HIGH_GREEN] > 0 && $unreached_low_green === 0,
+					$tile_types[self::TILE_HIGH_BLUE] > 0 && $unreached_low_blue === 0,
+				];
+			};
+			if($expand_reachable(FALSE, FALSE) === FALSE)
+			{
+				return FALSE;
+			}
+			[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
+			if($green_wall_lowerable || $blue_wall_lowerable)
+			{
+				if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
+				{
+					return FALSE;
+				}
+				if(!$green_wall_lowerable || !$blue_wall_lowerable)
+				{
+					[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
+				}
+				if($green_wall_lowerable && $blue_wall_lowerable)
+				{
+					if($expand_reachable(TRUE, TRUE) === FALSE)
+					{
+						return FALSE;
 					}
 				}
 			}
 
+			//<editor-fold desc="Boats - Abort, no calculation implemented">
 			// If any boat is reachable, skip the rest of the calculations
 			if($tile_types[self::TILE_BOAT])
 			{
@@ -1047,17 +1227,16 @@
 					foreach($row as $x => $tile_wi)
 					{
 						$tile = $tile_wi & self::MASK_TILE_TYPE;
-						if($tile === self::TILE_BOAT && empty($reachable[$y][$x]))
+						if($tile === self::TILE_BOAT && empty($reachable[0][$y][$x]))
 						{
 							return FALSE;
 						}
 					}
 				}
 			}
+			//</editor-fold>
 
-
-
-			//<editor-fold desc="Lasers">
+			//<editor-fold desc="Lasers - Reach or Destroy">
 			if($tile_types[self::TILE_LASER])
 			{
 				/** @var Point[] $missing_greens */
@@ -1074,7 +1253,7 @@
 					foreach($row as $x => $tile_wi)
 					{
 						$tile = $tile_wi & self::MASK_TILE_TYPE;
-						if(empty($reachable[$y][$x]))
+						if(empty($reachable[0][$y][$x]))
 						{
 							if($tile === self::TILE_LASER)
 							{
@@ -1180,6 +1359,7 @@
 			}
 			//</editor-fold>
 
+			//<editor-fold desc="Was all green Reachable">
 			foreach($my_tiles as $y => $row)
 			{
 				foreach($row as $x => $tile_with_item)
@@ -1187,13 +1367,15 @@
 					$tile = $tile_with_item & self::MASK_TILE_TYPE;
 					if($tile === self::TILE_LOW_GREEN || $tile === self::TILE_HIGH_GREEN)
 					{
-						if(empty($reachable[$y][$x]))
+						if(empty($reachable[0][$y][$x]) && empty($reachable[1][$y][$x]))
 						{
 							return TRUE;
 						}
 					}
 				}
 			}
+			//</editor-fold>
+
 			return FALSE;
 		}
 
