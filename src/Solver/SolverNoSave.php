@@ -102,7 +102,7 @@
 			}
 
 			// If imposible state, Undo
-			if($new->imposible())
+			if($new->impossible())
 			{
 				$this->deepth--;
 				return TRUE;

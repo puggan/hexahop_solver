@@ -106,7 +106,7 @@
 		/**
 		 * @return bool
 		 */
-		public function imposible() {
+		public function impossible() {
 			return false;
 		}
 	}

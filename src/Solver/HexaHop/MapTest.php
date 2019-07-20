@@ -75,7 +75,7 @@
 				$alive = false;
 				break;
 			}
-			if($map->imposible())
+			if($map->impossible())
 			{
 				echo 'Step: ', ($index + 1), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
 				echo 'Imposible', PHP_EOL;

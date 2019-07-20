@@ -933,7 +933,7 @@
 			return $c;
 		}
 
-		public function imposible()
+		public function impossible()
 		{
 			$tile_types = $this->tile_type_count();
 			$total_items = $this->item_count();

@@ -112,7 +112,7 @@
 						}
 					}
 				}
-				else if(!$state->imposible())
+				else if(!$state->impossible())
 				{
 					$this->todos->add($dir_path);
 				}
