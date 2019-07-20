@@ -2,10 +2,10 @@
 
 	namespace Puggan\Solver\HexaHop;
 
-	use PHPDoc\MapInfo;
-	use PHPDoc\Player;
-	use PhpDoc\Point;
-	use PHPDoc\Projectile;
+	use Puggan\Solver\Entities\JSON\MapInfo;
+	use Puggan\Solver\Entities\Player;
+	use Puggan\Solver\Entities\Point;
+	use Puggan\Solver\Entities\Projectile;
 	use Puggan\Solver\MapState;
 
 	class HexaHopMap extends MapState implements \JsonSerializable

@@ -2,7 +2,7 @@
 
 	namespace Puggan\Solver;
 
-	use PHPDoc\TodoFolderStorageJson;
+	use Puggan\Solver\Entities\JSON\TodoFolderStorageJson;
 
 	class TodoFolderStorage extends TodoStorage
 	{

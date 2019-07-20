@@ -2,7 +2,7 @@
 
 	namespace Puggan\Mock;
 
-	use PHPDoc\Player;
+	use Puggan\Solver\Entities\Player;
 	use Puggan\Solver\HexaHop\HexaHopMap;
 	use Puggan\Solver\MapState;
 

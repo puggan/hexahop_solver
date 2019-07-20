@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-	use PHPDoc\MapInfo;
+	use Puggan\Solver\Entities\JSON\MapInfo;
 	use Puggan\Solver\HexaHop\HexaHopMap;
 
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
