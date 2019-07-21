@@ -134,7 +134,7 @@
   {
     "file": "2005_11_15/ferry.lev",
     "title": "Ferrying",
-    "level_number": -1,
+    "level_number": 100,
     "width": 10,
     "height": 15,
     "par": 33,
@@ -144,10 +144,11 @@
   {
     "file": "2005_11_15/HUB.LEV",
     "title": "Transport Hub",
-    "level_number": -1,
+    "level_number": 97,
     "width": 12,
     "height": 15,
-    "par": 38,
+    "par": 37,
+    "mappar": 38,
     "start_x": 7,
     "start_y": 9
   },
@@ -184,7 +185,7 @@
   {
     "file": "2005_11_15/rolling hexagons.lev",
     "title": "Rolling Hexagons",
-    "level_number": -1,
+    "level_number": 95,
     "width": 8,
     "height": 16,
     "par": 79,
@@ -805,7 +806,8 @@
     "level_number": 76,
     "width": 12,
     "height": 18,
-    "par": 120,
+    "par": 113,
+    "mappar": 120,
     "start_x": 8,
     "start_y": 14
   },
@@ -947,7 +949,7 @@
   {
     "file": "c.lev",
     "title": "A Strange Place",
-    "level_number": -1,
+    "level_number": 99,
     "width": 14,
     "height": 15,
     "par": 90,
@@ -968,7 +970,7 @@
   {
     "file": "de-icing.lev",
     "title": "Fetch Quest",
-    "level_number": -1,
+    "level_number": 96,
     "width": 12,
     "height": 14,
     "par": 121,
@@ -978,7 +980,7 @@
   {
     "file": "d.lev",
     "title": "Bouncing Required",
-    "level_number": -1,
+    "level_number": 98,
     "width": 11,
     "height": 16,
     "par": 32,
