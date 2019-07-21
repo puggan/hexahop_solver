@@ -996,6 +996,7 @@
 			$reachable[$this->player->z][$this->player->y][$this->player->x] = TRUE;
 			//</editor-fold>
 
+			//<editor-fold desc="Reacable functions">
 			/**
 			 * @param bool $green_wall_lowerable
 			 * @param bool $blue_wall_lowerable
@@ -1205,6 +1206,9 @@
 					$tile_types[self::TILE_HIGH_BLUE] > 0 && $unreached_low_blue === 0 && $unreached_high_green + $unreached_low_green > 0,
 				];
 			};
+			//</editor-fold>
+
+			//<editor-fold desc="Reachable logic">
 			if($expand_reachable(FALSE, FALSE) === FALSE)
 			{
 				return FALSE;
@@ -1246,27 +1250,39 @@
 					return TRUE;
 				}
 			}
+			//</editor-fold>
 
-			//<editor-fold desc="Boats - Abort, no calculation implemented">
-			// If any boat is reachable, skip the rest of the calculations
-			if($tile_types[self::TILE_BOAT])
+			//<editor-fold desc="Count reachable by type">
+			$reachable_types = array_fill(0, 17, 0);
+			foreach($my_tiles as $y => $row)
 			{
-				foreach($my_tiles as $y => $row)
+				foreach($row as $x => $tile_wi)
 				{
-					foreach($row as $x => $tile_wi)
+					if(!empty($reachable[0][$y][$x]) || !empty($reachable[1][$y][$x]))
 					{
 						$tile = $tile_wi & self::MASK_TILE_TYPE;
-						if($tile === self::TILE_BOAT && !empty($reachable[0][$y][$x]))
-						{
-							return FALSE;
-						}
+						$reachable_types[$tile]++;
 					}
 				}
 			}
 			//</editor-fold>
 
+			// We need to end the game on a none-green
+			if(array_sum($reachable_types) === $reachable_types[self::TILE_LOW_GREEN] + $reachable_types[self::TILE_HIGH_GREEN])
+			{
+				return TRUE;
+			}
+
+			//<editor-fold desc="Boats - Abort, no calculation implemented">
+			// If any boat is reachable, skip the rest of the calculations
+			if($reachable_types[self::TILE_BOAT] > 0)
+			{
+				return FALSE;
+			}
+			//</editor-fold>
+
 			//<editor-fold desc="Lasers - Reach or Destroy">
-			if($tile_types[self::TILE_LASER])
+			if($reachable_types[self::TILE_LASER] > 0)
 			{
 				/** @var Point[] $missing_greens */
 				$missing_greens = [];
