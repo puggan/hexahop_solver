@@ -981,7 +981,7 @@
 					$reachable[1][$y][$x] = FALSE;
 				}
 			}
-			$reachable[$this->player->z][$this->player->y][$this->player->x] = 1;
+			$reachable[$this->player->z][$this->player->y][$this->player->x] = true;
 			//</editor-fold>
 
 			/**
@@ -1219,7 +1219,7 @@
 					foreach($row as $x => $tile_wi)
 					{
 						$tile = $tile_wi & self::MASK_TILE_TYPE;
-						if($tile === self::TILE_BOAT && empty($reachable[0][$y][$x]))
+						if($tile === self::TILE_BOAT && !empty($reachable[0][$y][$x]))
 						{
 							return FALSE;
 						}
