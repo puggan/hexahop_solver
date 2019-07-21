@@ -954,16 +954,20 @@
 			//</editor-fold>
 
 			//<editor-fold desc="Par vs Steps + Greens">
-			// Enough steps to step on all greens? Notice: not usable for laser + jump / laser + ice
-			if(!$tile_types[self::TILE_LASER])
+			$minimum_cost = $missing_green + ($player_on_green ? 0 : 1);
+			if($tile_types[self::TILE_LASER])
 			{
-				if($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par)
+				$minimum_cost--;
+				if($total_items[self::ITEM_JUMP]) {
+					$minimum_cost -= 5*5 * $total_items[self::ITEM_JUMP];
+				}
+				if($tile_types[self::TILE_ICE])
 				{
-					return TRUE;
+					$minimum_cost = 1;
 				}
 			}
-			// Enough steps to step/kill on all greens? Notice: not usable for laser + jump / laser + ice
-			else if(!$tile_types[self::TILE_ICE] && $this->points + $missing_green + ($player_on_green ? -1 : 0) - 5 * $total_items[self::ITEM_JUMP] > $this->par)
+			// Enough steps to step on all greens?
+			if($this->points + $minimum_cost > $this->par)
 			{
 				return TRUE;
 			}
@@ -1149,6 +1153,7 @@
 				{
 					return [FALSE, FALSE];
 				}
+				$unreached_high_green = 0;
 				$unreached_low_green = 0;
 				$unreached_low_blue = 0;
 				foreach($my_tiles as $y => $row)
@@ -1157,6 +1162,13 @@
 					{
 						switch($tile_wi & self::MASK_TILE_TYPE)
 						{
+							case self::TILE_HIGH_GREEN:
+								if(!$reachable[1][$y][$x] && !$reachable[0][$y][$x])
+								{
+									$unreached_high_green++;
+								}
+								break;
+
 							case self::TILE_LOW_GREEN:
 								if(!$reachable[0][$y][$x])
 								{
@@ -1182,7 +1194,7 @@
 				}
 				return [
 					$tile_types[self::TILE_HIGH_GREEN] > 0 && $unreached_low_green === 0,
-					$tile_types[self::TILE_HIGH_BLUE] > 0 && $unreached_low_blue === 0,
+					$tile_types[self::TILE_HIGH_BLUE] > 0 && $unreached_low_blue === 0 && $unreached_high_green + $unreached_low_green > 0,
 				];
 			};
 			if($expand_reachable(FALSE, FALSE) === FALSE)
@@ -1191,22 +1203,38 @@
 			}
 			[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
 
-			if($green_wall_lowerable || $blue_wall_lowerable)
+			if($green_wall_lowerable)
 			{
-				if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
+				if($expand_reachable(true, false) === FALSE)
 				{
 					return FALSE;
 				}
-				if(!$green_wall_lowerable || !$blue_wall_lowerable)
+				[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
+			}
+			if($blue_wall_lowerable)
+			{
+				if($expand_reachable($green_wall_lowerable, true) === FALSE)
+				{
+					return FALSE;
+				}
+				if(!$green_wall_lowerable)
 				{
 					[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
-				}
-				if($green_wall_lowerable && $blue_wall_lowerable)
-				{
-					if($expand_reachable(TRUE, TRUE) === FALSE)
+					if($green_wall_lowerable)
 					{
-						return FALSE;
+						if($expand_reachable(TRUE, TRUE) === FALSE)
+						{
+							return FALSE;
+						}
 					}
+				}
+			}
+
+			if($blue_wall_lowerable) {
+				$minimum_cost += 10 * $tile_types[self::TILE_LOW_BLUE];
+				if($this->points + $minimum_cost > $this->par)
+				{
+					return TRUE;
 				}
 			}
 
