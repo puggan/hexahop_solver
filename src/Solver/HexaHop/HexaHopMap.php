@@ -146,12 +146,18 @@
 		 */
 		public function possible_moves() : array
 		{
-			static $moves;
-			if(!$moves)
+			$moves = [];
+			foreach($this->next_points($this->player) as $dir => $point)
 			{
-				$moves = range(0, 6);
+				if(($this->tiles[$point->y][$point->x] ?? self::TILE_WATER) !== self::TILE_WATER)
+				{
+					$moves[] = $dir;
+				}
 			}
-
+			if($this->items[self::ITEM_JUMP] > 0)
+			{
+				$moves[] = self::DIR_J;
+			}
 			return $moves;
 		}
 
@@ -688,7 +694,6 @@
 			$points = [];
 			foreach(range(0, 5) as $direction)
 			{
-
 				/** @var Point $new_point */
 				$new_point = clone $current;
 				switch($direction)
@@ -719,6 +724,7 @@
 						$new_point->x -= $steps;
 						break;
 				}
+
 				$points[] = $new_point;
 			}
 			return $points;
@@ -958,8 +964,9 @@
 			if($tile_types[self::TILE_LASER])
 			{
 				$minimum_cost--;
-				if($total_items[self::ITEM_JUMP]) {
-					$minimum_cost -= 5*5 * $total_items[self::ITEM_JUMP];
+				if($total_items[self::ITEM_JUMP])
+				{
+					$minimum_cost -= 5 * 5 * $total_items[self::ITEM_JUMP];
 				}
 				if($tile_types[self::TILE_ICE])
 				{
@@ -985,7 +992,7 @@
 					$reachable[1][$y][$x] = FALSE;
 				}
 			}
-			$reachable[$this->player->z][$this->player->y][$this->player->x] = true;
+			$reachable[$this->player->z][$this->player->y][$this->player->x] = TRUE;
 			//</editor-fold>
 
 			/**
@@ -1205,7 +1212,7 @@
 
 			if($green_wall_lowerable)
 			{
-				if($expand_reachable(true, false) === FALSE)
+				if($expand_reachable(TRUE, FALSE) === FALSE)
 				{
 					return FALSE;
 				}
@@ -1213,7 +1220,7 @@
 			}
 			if($blue_wall_lowerable)
 			{
-				if($expand_reachable($green_wall_lowerable, true) === FALSE)
+				if($expand_reachable($green_wall_lowerable, TRUE) === FALSE)
 				{
 					return FALSE;
 				}
@@ -1230,7 +1237,8 @@
 				}
 			}
 
-			if($blue_wall_lowerable) {
+			if($blue_wall_lowerable)
+			{
 				$minimum_cost += 10 * $tile_types[self::TILE_LOW_BLUE];
 				if($this->points + $minimum_cost > $this->par)
 				{
