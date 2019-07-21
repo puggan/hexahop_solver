@@ -1006,6 +1006,7 @@
 						}
 					}
 				}
+
 				while($todo)
 				{
 					$start_point = array_pop($todo);
@@ -1143,38 +1144,28 @@
 			/**
 			 * @return bool[]
 			 */
-			$wall_test = static function () use ($my_tiles, $reachable, $tile_types) {
+			$wall_test = static function () use (&$my_tiles, &$reachable, &$tile_types) {
 				if($tile_types[self::TILE_HIGH_GREEN] === 0 && $tile_types[self::TILE_HIGH_BLUE] === 0)
 				{
 					return [FALSE, FALSE];
 				}
 				$unreached_low_green = 0;
 				$unreached_low_blue = 0;
-				$high_green = 0;
-				$high_blue = 0;
 				foreach($my_tiles as $y => $row)
 				{
 					foreach($row as $x => $tile_wi)
 					{
 						switch($tile_wi & self::MASK_TILE_TYPE)
 						{
-							case self::TILE_HIGH_GREEN:
-								$high_green++;
-								break;
-
-							case self::TILE_HIGH_BLUE:
-								$high_blue++;
-								break;
-
 							case self::TILE_LOW_GREEN:
-								if($reachable[0][$y][$x])
+								if(!$reachable[0][$y][$x])
 								{
 									$unreached_low_green++;
 								}
 								break;
 
 							case self::TILE_LOW_BLUE:
-								if($reachable[0][$y][$x])
+								if(!$reachable[0][$y][$x])
 								{
 									$unreached_low_blue++;
 								}
@@ -1199,6 +1190,7 @@
 				return FALSE;
 			}
 			[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
+
 			if($green_wall_lowerable || $blue_wall_lowerable)
 			{
 				if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
