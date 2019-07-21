@@ -149,7 +149,8 @@
 			$moves = [];
 			foreach($this->next_points($this->player) as $dir => $point)
 			{
-				if(($this->tiles[$point->y][$point->x] ?? self::TILE_WATER) & self::MASK_TILE_TYPE !== self::TILE_WATER)
+				$tile = ($this->tiles[$point->y][$point->x] ?? self::TILE_WATER) & self::MASK_TILE_TYPE;
+				if($tile !== self::TILE_WATER)
 				{
 					$moves[] = $dir;
 				}
