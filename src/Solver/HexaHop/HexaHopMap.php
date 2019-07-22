@@ -982,10 +982,11 @@
 
 			foreach($my_tiles as $y => $row)
 			{
-				foreach(array_keys($row) as $x)
+				foreach($row as $x => $tile_wi)
 				{
 					$reachable[0][$y][$x] = FALSE;
 					$reachable[1][$y][$x] = FALSE;
+					$my_tiles[$y][$x] = $tile_wi & self::MASK_TILE_TYPE;
 				}
 			}
 			$reachable[$this->player->z][$this->player->y][$this->player->x] = TRUE;
@@ -1021,13 +1022,12 @@
 				{
 					$start_point = array_pop($todo);
 					$neighbors = $this->next_points($start_point);
-					$start_tile = ($my_tiles[$start_point->y][$start_point->x] ?? self::TILE_WATER) & self::MASK_TILE_TYPE;
+					$start_tile = $my_tiles[$start_point->y][$start_point->x] ?? self::TILE_WATER;
 					if($start_tile !== self::TILE_WATER)
 					{
 						switch($start_tile)
 						{
 							case self::TILE_TRAMPOLINE:
-								$neighbors[] = $this->next_point($start_point, $start_point->dir, 1);
 								$neighbors[] = $this->next_point($start_point, $start_point->dir, 2);
 								break;
 
@@ -1036,7 +1036,7 @@
 								$neighbor_count = 0;
 								foreach($neighbors as $neighbor)
 								{
-									$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? 0) & self::MASK_TILE_TYPE;
+									$neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
 									// Double rotator can move about everywhere, rotated builder is a mess too
 									if($neighbor_tile === self::TILE_ROTATOR)
 									{
@@ -1052,7 +1052,7 @@
 								{
 									foreach($neighbors as $neighbor)
 									{
-										$neighbor_tile = ($my_tiles[$neighbor->y][$neighbor->x] ?? -1) & self::MASK_TILE_TYPE;
+										$neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? -1;
 										if($neighbor_tile === self::TILE_WATER)
 										{
 											// As it can be either low or high, treat it as an elevator
@@ -1066,7 +1066,7 @@
 						}
 						foreach($neighbors as $point)
 						{
-							$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
+							$tile = $my_tiles[$point->y][$point->x] ?? 0;
 							if($tile !== self::TILE_LASER && $tile !== self::TILE_TRAMPOLINE && !empty($reachable[$point->z][$point->y][$point->x]))
 							{
 								continue;
@@ -1192,9 +1192,9 @@
 				$unreached_low_blue = 0;
 				foreach($my_tiles as $y => $row)
 				{
-					foreach($row as $x => $tile_wi)
+					foreach($row as $x => $tile)
 					{
-						switch($tile_wi & self::MASK_TILE_TYPE)
+						switch($tile)
 						{
 							case self::TILE_HIGH_GREEN:
 								if(!$reachable[1][$y][$x] && !$reachable[0][$y][$x])
@@ -1253,9 +1253,8 @@
 
 				foreach($my_tiles as $y => $row)
 				{
-					foreach($row as $x => $tile_wi)
+					foreach($row as $x => $tile)
 					{
-						$tile = $tile_wi & self::MASK_TILE_TYPE;
 						if(empty($reachable[0][$y][$x]))
 						{
 							if($tile === self::TILE_LOW_GREEN)
@@ -1492,9 +1491,8 @@
 			$unreachable_types = array_fill(0, 17, 0);
 			foreach($my_tiles as $y => $row)
 			{
-				foreach($row as $x => $tile_wi)
+				foreach($row as $x => $tile)
 				{
-					$tile = $tile_wi & self::MASK_TILE_TYPE;
 					if(!empty($reachable[0][$y][$x]) || !empty($reachable[1][$y][$x]))
 					{
 						$reachable_types[$tile]++;
@@ -1526,9 +1524,8 @@
 			//<editor-fold desc="Was all green Reachable">
 			foreach($my_tiles as $y => $row)
 			{
-				foreach($row as $x => $tile_with_item)
+				foreach($row as $x => $tile)
 				{
-					$tile = $tile_with_item & self::MASK_TILE_TYPE;
 					if($tile === self::TILE_LOW_GREEN || $tile === self::TILE_HIGH_GREEN)
 					{
 						if(empty($reachable[0][$y][$x]) && empty($reachable[1][$y][$x]))
