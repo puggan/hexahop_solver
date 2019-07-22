@@ -630,11 +630,10 @@
 		 * @param int $direction
 		 * @param int $steps
 		 *
-		 * @return Point
+		 * @return Projectile
 		 */
 		private function next_point($current, $direction, $steps = 1) : Projectile
 		{
-			/** @var Point $new_point */
 			$new_point = Projectile::PointDir($current, $direction, $steps);
 			switch($direction)
 			{
@@ -992,7 +991,7 @@
 			$reachable[$this->player->z][$this->player->y][$this->player->x] = TRUE;
 			//</editor-fold>
 
-			//<editor-fold desc="Reacable functions">
+			//<editor-fold desc="Reachable functions">
 			/**
 			 * @param bool $green_wall_lowerable
 			 * @param bool $blue_wall_lowerable
@@ -1000,7 +999,7 @@
 			 * @return bool
 			 */
 			$expand_reachable = function ($green_wall_lowerable, $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types, &$total_items) {
-				/** @var bool[] $trampolines prevent infinitloops of trampolines */
+				/** @var bool[] $trampolines prevent infinite loops of trampolines */
 				$trampolines = [];
 				/** @var Projectile[] $todo */
 				$todo = [];
@@ -1282,7 +1281,7 @@
 					return FALSE;
 				}
 
-				// Convert Laser Jumpt to 6 laser directions
+				// Convert Laser Jump to 6 laser directions
 				foreach($reachable_lasers as $laser_point)
 				{
 					if($laser_point->dir === Projectile::DIR_J)
@@ -1307,7 +1306,7 @@
 				while($ice_todo)
 				{
 					$ice = array_shift($ice_todo);
-					$hit_by_dir = [false,false,false,false,false,false];
+					$hit_by_dir = [FALSE, FALSE, FALSE, FALSE, FALSE, FALSE];
 					$dir_count = 0;
 					foreach($reachable_lasers as $laser_point)
 					{
@@ -1416,14 +1415,15 @@
 					}
 				}
 
-				if($destroyed_count > 0) {
+				if($destroyed_count > 0)
+				{
 					return TRUE;
 				}
 
 				return NULL;
 			};
 
-			$expand_with_lasers = static function($green_wall_lowerable, $blue_wall_lowerable) use (&$expand_reachable, &$doLasers) {
+			$expand_with_lasers = static function ($green_wall_lowerable, $blue_wall_lowerable) use (&$expand_reachable, &$doLasers) {
 				if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
 				{
 					return FALSE;
@@ -1439,6 +1439,7 @@
 				{
 					return FALSE;
 				}
+				return TRUE;
 			};
 			//</editor-fold>
 
@@ -1466,12 +1467,9 @@
 				if(!$green_wall_lowerable)
 				{
 					[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
-					if($green_wall_lowerable)
+					if($green_wall_lowerable && $expand_with_lasers(TRUE, TRUE) === FALSE)
 					{
-						if($expand_with_lasers(TRUE, TRUE) === FALSE)
-						{
-							return FALSE;
-						}
+						return FALSE;
 					}
 				}
 			}
@@ -1503,8 +1501,6 @@
 					}
 				}
 			}
-			$clean_tiles = $my_tiles;
-			$clean_tiles = array_filter(array_map('array_filter', $clean_tiles));
 			//</editor-fold>
 
 			// We need to end the game on a none-green
