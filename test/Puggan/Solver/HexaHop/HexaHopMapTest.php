@@ -315,7 +315,7 @@
 			unset($m2_4);
 
 			$f3 = $m2_0->move(Projectile::DIR_SW);
-			//$this->assertTrue($f3->impossible(), 'Dead end');
+			$this->assertTrue($f3->impossible(), 'Dead end');
 			unset($m2_0, $f3);
 		}
 

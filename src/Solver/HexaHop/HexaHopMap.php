@@ -1033,6 +1033,7 @@
 							case self::TILE_ROTATOR:
 							case self::TILE_BUILD:
 								$neighbor_count = 0;
+								$rotating_trampoline = FALSE;
 								foreach($neighbors as $neighbor)
 								{
 									$neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
@@ -1044,6 +1045,10 @@
 									if($neighbor_tile !== self::TILE_WATER)
 									{
 										$neighbor_count++;
+									}
+									if(!$rotating_trampoline && $start_tile === self::TILE_ROTATOR && $neighbor_tile === self::TILE_TRAMPOLINE)
+									{
+										$rotating_trampoline = TRUE;
 									}
 								}
 								// If at least one neighbor then all neighbor can be reached
@@ -1061,6 +1066,14 @@
 										}
 									}
 								}
+								if($rotating_trampoline)
+								{
+									foreach(range(0, 5) as $dir)
+									{
+										$neighbors[] = $this->next_point($start_point, $dir, 2);
+										$neighbors[] = $this->next_point($start_point, $dir, 3);
+									}
+								}
 								break;
 						}
 						foreach($neighbors as $point)
@@ -1073,6 +1086,40 @@
 
 							switch($tile)
 							{
+								case self::TILE_LOW_GREEN:
+									// Green is only reachable, if there is a way to leave it.
+									if($point->length === 1)
+									{
+										$green_neighbors = $this->next_points($point);
+										$return_dir = ($point->dir + 3) % 6;
+										$green_have_neighbors = FALSE;
+										foreach($green_neighbors as $green_neighbor_point)
+										{
+											$green_neighbor_tile = $my_tiles[$green_neighbor_point->y][$green_neighbor_point->x] ?? 0;
+											if($green_neighbor_point->dir === $return_dir)
+											{
+												if($green_neighbor_tile === self::TILE_LOW_GREEN || $green_neighbor_tile === self::TILE_HIGH_GREEN)
+												{
+													continue;
+												}
+											}
+											if($green_neighbor_tile !== self::TILE_WATER)
+											{
+												$green_have_neighbors = TRUE;
+												break;
+											}
+										}
+										if(!$green_have_neighbors)
+										{
+											break;
+										}
+									}
+									$reachable[0][$point->y][$point->x] = TRUE;
+									$new_point = clone $point;
+									$new_point->z = 0;
+									$todo[] = $new_point;
+									break;
+
 								case self::TILE_HIGH_GREEN:
 									if($point->z > 0)
 									{
@@ -1152,7 +1199,6 @@
 								case self::TILE_BOAT:
 								case self::TILE_ANTI_ICE:
 								case self::TILE_LOW_LAND:
-								case self::TILE_LOW_GREEN:
 								case self::TILE_LOW_BLUE:
 									$reachable[0][$point->y][$point->x] = TRUE;
 									$new_point = clone $point;
