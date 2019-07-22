@@ -41,4 +41,9 @@
 		{
 			return new self($point->x, $point->y,$point->z);
 		}
+
+		public function __toString() : string
+		{
+			return $this->x . ':' . $this->y . ':' . $this->z;
+		}
 	}
