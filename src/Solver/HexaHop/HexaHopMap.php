@@ -958,6 +958,9 @@
 			{
 				return FALSE;
 			}
+
+			/** @var Projectile[] $reachable_lasers */
+			$reachable_lasers = [];
 			//</editor-fold>
 
 			//<editor-fold desc="Par vs Steps + Greens">
@@ -1003,8 +1006,10 @@
 			 *
 			 * @return bool
 			 */
-			$expand_reachable = function ($green_wall_lowerable, $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$tile_types) {
-				/** @var Point[] $todo */
+			$expand_reachable = function ($green_wall_lowerable, $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types, &$total_items) {
+				/** @var bool[] $trampolines prevent infinitloops of trampolines */
+				$trampolines = [];
+				/** @var Projectile[] $todo */
 				$todo = [];
 				foreach($reachable as $z => $plane)
 				{
@@ -1014,7 +1019,7 @@
 						{
 							if($reached)
 							{
-								$todo[] = new Point($x, $y, $z);
+								$todo[] = new Projectile($x, $y, $z, self::DIR_J);
 							}
 						}
 					}
@@ -1030,7 +1035,8 @@
 						switch($start_tile)
 						{
 							case self::TILE_TRAMPOLINE:
-								$neighbors = array_merge($neighbors, $this->next_points($start_point, 2));
+								$neighbors[] = $this->next_point($start_point, $start_point->dir, 1);
+								$neighbors[] = $this->next_point($start_point, $start_point->dir, 2);
 								break;
 
 							case self::TILE_ROTATOR:
@@ -1049,7 +1055,8 @@
 										$neighbor_count++;
 									}
 								}
-								if($neighbor_count)
+								// If at least one neighbor then all neighbor can be reached
+								if($neighbor_count > 0 || $start_tile === self::TILE_BUILD)
 								{
 									foreach($neighbors as $neighbor)
 									{
@@ -1067,12 +1074,12 @@
 						}
 						foreach($neighbors as $point)
 						{
-							if(!empty($reachable[$point->z][$point->y][$point->x]))
+							$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
+							if($tile !== self::TILE_LASER && $tile !== self::TILE_TRAMPOLINE && !empty($reachable[$point->z][$point->y][$point->x]))
 							{
 								continue;
 							}
 
-							$tile = ($my_tiles[$point->y][$point->x] ?? 0) & self::MASK_TILE_TYPE;
 							switch($tile)
 							{
 								case self::TILE_HIGH_GREEN:
@@ -1114,15 +1121,41 @@
 									$todo[] = $new_point;
 									break;
 
-								// May reach z1 if currently on z1
+								// Each direction are different, don't save it as reached, just add todo
 								case self::TILE_TRAMPOLINE:
 									$reachable[0][$point->y][$point->x] = TRUE;
-									$reachable[$point->z][$point->y][$point->x] = TRUE;
+									$point_key = (string) $point;
+									if(isset($trampolines[$point_key]))
+									{
+										break;
+									}
+									$trampolines[$point_key] = TRUE;
+									$todo[] = $point;
+									break;
+
+								// Each direction are different, don't save it as reached, just add todo
+								case self::TILE_LASER:
+									$reachable[0][$point->y][$point->x] = TRUE;
+
+									if($total_items[self::ITEM_JUMP])
+									{
+										$jump_point = clone $point;
+										$jump_point->dir = self::DIR_J;
+										$reachable_lasers[(string) $jump_point] = $jump_point;
+										$todo[] = $point;
+										break;
+									}
+
+									$point_key = (string) $point;
+									if(isset($reachable_lasers[$point_key]))
+									{
+										break;
+									}
+									$reachable_lasers[$point_key] = $point;
 									$todo[] = $point;
 									break;
 
 								case self::TILE_ROTATOR:
-								case self::TILE_LASER:
 								case self::TILE_ICE:
 								case self::TILE_BUILD:
 								case self::TILE_BOAT:
@@ -1131,7 +1164,7 @@
 								case self::TILE_LOW_GREEN:
 								case self::TILE_LOW_BLUE:
 									$reachable[0][$point->y][$point->x] = TRUE;
-									$new_point = Point::copy($point);
+									$new_point = clone $point;
 									$new_point->z = 0;
 									$todo[] = $new_point;
 									break;
@@ -1206,10 +1239,220 @@
 					$tile_types[self::TILE_HIGH_BLUE] > 0 && $unreached_low_blue === 0 && $unreached_high_green + $unreached_low_green > 0,
 				];
 			};
+
+			/**
+			 * @return bool|null
+			 */
+			$doLasers = static function () use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types) {
+				if(!$reachable_lasers)
+				{
+					return NULL;
+				}
+				$destroyed_count = 0;
+
+				/** @var Point[] $missing_greens */
+				$missing_greens = [];
+				/** @var Point[] $other_lasers */
+				$other_lasers = [];
+				/** @var Point[] $ice_tiles */
+				$ice_tiles = [];
+				/** @var Point[] $other_lasers */
+				$explodeable_lasers = [];
+
+				foreach($my_tiles as $y => $row)
+				{
+					foreach($row as $x => $tile_wi)
+					{
+						$tile = $tile_wi & self::MASK_TILE_TYPE;
+						if(empty($reachable[0][$y][$x]))
+						{
+							if($tile === self::TILE_LOW_GREEN)
+							{
+								$missing_greens[] = new Point($x, $y, 0);
+							}
+							else if($tile === self::TILE_HIGH_GREEN)
+							{
+								$missing_greens[] = new Point($x, $y, 0);
+							}
+							else if($tile === self::TILE_LASER)
+							{
+								$other_lasers[] = new Point($x, $y, 0);
+							}
+						}
+						if($tile === self::TILE_ICE)
+						{
+							$ice_tiles[] = new Point($x, $y, 0);
+						}
+					}
+				}
+
+				if(!$missing_greens)
+				{
+					return FALSE;
+				}
+
+				// Convert Laser Jumpt to 6 laser directions
+				foreach($reachable_lasers as $laser_point)
+				{
+					if($laser_point->dir === self::DIR_J)
+					{
+						foreach(range(0, 5) as $dir)
+						{
+							$l2 = clone $laser_point;
+							$l2->dir = $dir;
+							$l2_key = (string) $l2;
+							if(!isset($reachable_lasers[$l2_key]))
+							{
+								$reachable_lasers[$l2_key] = $l2;
+							}
+						}
+						unset($reachable_lasers[(string) $laser_point]);
+					}
+				}
+
+				// Handle Laser on ice, as more lasers
+				$ice_todo = $ice_tiles;
+				$ice_tested = [];
+				while($ice_todo)
+				{
+					$ice = array_shift($ice_todo);
+					$hit_by_dir = [false,false,false,false,false,false];
+					$dir_count = 0;
+					foreach($reachable_lasers as $laser_point)
+					{
+						if(!$hit_by_dir[$laser_point->dir] && $laser_point->dirDistance($ice) > 0)
+						{
+							$hit_by_dir[$laser_point->dir] = TRUE;
+							$dir_count++;
+						}
+					}
+					if($dir_count)
+					{
+						$laser_count = 0;
+						$lasers_added = 0;
+						foreach(range(0, 5) as $dir)
+						{
+							$ice_laser = Projectile::PointDir($ice, $dir);
+							$laser_key = (string) $ice_laser;
+							if(isset($reachable_lasers[$laser_key]))
+							{
+								$laser_count++;
+								continue;
+							}
+
+							$left_dir = ($dir + 5) % 6;
+							$right_dir = ($dir + 1) % 6;
+							if(!$hit_by_dir[$left_dir] && !$hit_by_dir[$right_dir])
+							{
+								continue;
+							}
+
+							$reachable_lasers[$laser_key] = $ice_laser;
+							$lasers_added++;
+						}
+						if($lasers_added)
+						{
+							$laser_count += $lasers_added;
+							foreach($ice_tested as $old_ice)
+							{
+								$ice_todo[] = $old_ice;
+							}
+							$ice_tested = [];
+						}
+						if($laser_count === 6)
+						{
+							continue;
+						}
+					}
+					$ice_tested[] = $ice;
+				}
+
+				foreach($reachable_lasers as $laser_point)
+				{
+					foreach($missing_greens as $green_point_index => $green_point)
+					{
+						if($laser_point->dirDistance($green_point) > 0)
+						{
+							$destroyed_count++;
+							$tile_types[$my_tiles[$green_point->y][$green_point->x]]--;
+							$tile_types[self::TILE_LOW_ELEVATOR]++;
+							$my_tiles[$green_point->y][$green_point->x] = self::TILE_LOW_ELEVATOR;
+							unset($missing_greens[$green_point_index]);
+							if(!$missing_greens)
+							{
+								return FALSE;
+							}
+						}
+					}
+				}
+				if(!$other_lasers)
+				{
+					return NULL;
+				}
+				foreach($reachable_lasers as $laser_point)
+				{
+					foreach($other_lasers as $other_point_index => $other_point)
+					{
+						if($laser_point->dirDistance($other_point) > 0)
+						{
+							$explodeable_lasers[] = $other_point;
+							unset($other_lasers[$other_point_index]);
+						}
+					}
+				}
+				if(!$explodeable_lasers)
+				{
+					return NULL;
+				}
+
+				foreach($explodeable_lasers as $laser_point)
+				{
+					foreach($missing_greens as $green_point_index => $green_point)
+					{
+						$distance = Projectile::BetweenPoints($laser_point, $green_point);
+						if($distance->length === 1)
+						{
+							$destroyed_count++;
+							$tile_types[$my_tiles[$green_point->y][$green_point->x]]--;
+							$tile_types[self::TILE_LOW_ELEVATOR]++;
+							$my_tiles[$green_point->y][$green_point->x] = self::TILE_LOW_ELEVATOR;
+							unset($missing_greens[$green_point_index]);
+							if(!$missing_greens)
+							{
+								return FALSE;
+							}
+						}
+					}
+				}
+
+				if($destroyed_count > 0) {
+					return TRUE;
+				}
+
+				return NULL;
+			};
+
+			$expand_with_lasers = static function($green_wall_lowerable, $blue_wall_lowerable) use (&$expand_reachable, &$doLasers) {
+				if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
+				{
+					return FALSE;
+				}
+				while(($laser_status = $doLasers()) === TRUE)
+				{
+					if($expand_reachable($green_wall_lowerable, $blue_wall_lowerable) === FALSE)
+					{
+						return FALSE;
+					}
+				}
+				if($laser_status === FALSE)
+				{
+					return FALSE;
+				}
+			};
 			//</editor-fold>
 
 			//<editor-fold desc="Reachable logic">
-			if($expand_reachable(FALSE, FALSE) === FALSE)
+			if($expand_with_lasers(FALSE, FALSE) === FALSE)
 			{
 				return FALSE;
 			}
@@ -1217,7 +1460,7 @@
 
 			if($green_wall_lowerable)
 			{
-				if($expand_reachable(TRUE, FALSE) === FALSE)
+				if($expand_with_lasers(TRUE, FALSE) === FALSE)
 				{
 					return FALSE;
 				}
@@ -1225,7 +1468,7 @@
 			}
 			if($blue_wall_lowerable)
 			{
-				if($expand_reachable($green_wall_lowerable, TRUE) === FALSE)
+				if($expand_with_lasers($green_wall_lowerable, TRUE) === FALSE)
 				{
 					return FALSE;
 				}
@@ -1234,7 +1477,7 @@
 					[$green_wall_lowerable, $blue_wall_lowerable] = $wall_test();
 					if($green_wall_lowerable)
 					{
-						if($expand_reachable(TRUE, TRUE) === FALSE)
+						if($expand_with_lasers(TRUE, TRUE) === FALSE)
 						{
 							return FALSE;
 						}
@@ -1254,21 +1497,28 @@
 
 			//<editor-fold desc="Count reachable by type">
 			$reachable_types = array_fill(0, 17, 0);
+			$unreachable_types = array_fill(0, 17, 0);
 			foreach($my_tiles as $y => $row)
 			{
 				foreach($row as $x => $tile_wi)
 				{
+					$tile = $tile_wi & self::MASK_TILE_TYPE;
 					if(!empty($reachable[0][$y][$x]) || !empty($reachable[1][$y][$x]))
 					{
-						$tile = $tile_wi & self::MASK_TILE_TYPE;
 						$reachable_types[$tile]++;
+					}
+					else
+					{
+						$unreachable_types[$tile]++;
 					}
 				}
 			}
+			$clean_tiles = $my_tiles;
+			$clean_tiles = array_filter(array_map('array_filter', $clean_tiles));
 			//</editor-fold>
 
 			// We need to end the game on a none-green
-			if(array_sum($reachable_types) === $reachable_types[self::TILE_LOW_GREEN] + $reachable_types[self::TILE_HIGH_GREEN])
+			if(!$reachable_lasers && array_sum($reachable_types) === $reachable_types[self::TILE_LOW_GREEN] + $reachable_types[self::TILE_HIGH_GREEN])
 			{
 				return TRUE;
 			}
@@ -1278,129 +1528,6 @@
 			if($reachable_types[self::TILE_BOAT] > 0)
 			{
 				return FALSE;
-			}
-			//</editor-fold>
-
-			//<editor-fold desc="Lasers - Reach or Destroy">
-			if($reachable_types[self::TILE_LASER] > 0)
-			{
-				/** @var Point[] $missing_greens */
-				$missing_greens = [];
-				/** @var Point[] $reached_lasers */
-				$reached_lasers = [];
-				/** @var Point[] $other_lasers */
-				$other_lasers = [];
-				/** @var Point[] $other_lasers */
-				$explodeable_lasers = [];
-
-				foreach($my_tiles as $y => $row)
-				{
-					foreach($row as $x => $tile_wi)
-					{
-						$tile = $tile_wi & self::MASK_TILE_TYPE;
-						if(empty($reachable[0][$y][$x]))
-						{
-							if($tile === self::TILE_LASER)
-							{
-								$other_lasers[] = new Point($x, $y, 0);
-							}
-							else if($tile === self::TILE_LOW_GREEN)
-							{
-								$missing_greens[] = new Point($x, $y, 0);
-							}
-							else if($tile === self::TILE_HIGH_GREEN)
-							{
-								$missing_greens[] = new Point($x, $y, 0);
-							}
-						}
-						else if($tile === self::TILE_LASER)
-						{
-							$reached_lasers[] = new Point($x, $y, 0);
-						}
-					}
-				}
-
-				// if all green are reachable, but nu lasers are reachable, use the cost-calculation
-				if(!$reached_lasers && !$missing_greens)
-				{
-					return ($this->points + $missing_green + ($player_on_green ? 0 : 1) > $this->par);
-				}
-
-				if(!$missing_greens)
-				{
-					return FALSE;
-				}
-				if(!$reached_lasers)
-				{
-					return TRUE;
-				}
-
-				// The destruction of a reachable laser + ice is BIG
-				if($tile_types[self::TILE_ICE])
-				{
-					return FALSE;
-				}
-
-				foreach($reached_lasers as $laser_point)
-				{
-					foreach($missing_greens as $green_point_index => $green_point)
-					{
-						$delta_x = $laser_point->x - $green_point->x;
-						$delta_y = $laser_point->y - $green_point->y;
-						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
-						{
-							unset($missing_greens[$green_point_index]);
-							if(!$missing_greens)
-							{
-								return FALSE;
-							}
-						}
-					}
-				}
-				if(!$other_lasers)
-				{
-					return TRUE;
-				}
-				foreach($reached_lasers as $laser_point)
-				{
-					foreach($other_lasers as $other_point_index => $other_point)
-					{
-						$delta_x = $laser_point->x - $other_point->x;
-						$delta_y = $laser_point->y - $other_point->y;
-						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
-						{
-							$explodeable_lasers[] = $other_point;
-							unset($other_lasers[$other_point_index]);
-						}
-					}
-				}
-				if(!$explodeable_lasers)
-				{
-					return TRUE;
-				}
-
-				foreach($explodeable_lasers as $laser_point)
-				{
-					foreach($missing_greens as $green_point_index => $green_point)
-					{
-						$delta_x = $laser_point->x - $green_point->x;
-						$delta_y = $laser_point->y - $green_point->y;
-						if($delta_x > 1 || $delta_x < -1 || $delta_y > 1 || $delta_y < -1)
-						{
-							continue;
-						}
-						if(!$delta_x || !$delta_y || $delta_x === -$delta_y)
-						{
-							unset($missing_greens[$green_point_index]);
-							if(!$missing_greens)
-							{
-								return FALSE;
-							}
-						}
-					}
-				}
-
-				return TRUE;
 			}
 			//</editor-fold>
 
