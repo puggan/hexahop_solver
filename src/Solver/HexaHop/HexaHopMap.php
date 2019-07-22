@@ -640,10 +640,10 @@
 		 *
 		 * @return Point
 		 */
-		private function next_point($current, $direction, $steps = 1) : Point
+		private function next_point($current, $direction, $steps = 1) : Projectile
 		{
 			/** @var Point $new_point */
-			$new_point = Point::copy($current);
+			$new_point = Projectile::PointDir($current, $direction, $steps);
 			switch($direction)
 			{
 				case self::DIR_N:
@@ -688,7 +688,7 @@
 		 * @param $current
 		 * @param int $steps
 		 *
-		 * @return Point[]
+		 * @return Projectile[]
 		 */
 		private function next_points($current, $steps = 1) : array
 		{
@@ -696,7 +696,7 @@
 			foreach(range(0, 5) as $direction)
 			{
 				/** @var Point $new_point */
-				$new_point = clone $current;
+				$new_point = Projectile::PointDir($current, $direction, $steps);
 				switch($direction)
 				{
 					case self::DIR_N:
