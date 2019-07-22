@@ -230,6 +230,16 @@
 
 		public function testImpossible()
 		{
+			/* Layout:
+			 * W
+			 *   G
+			 * P*  W
+			 *   G
+			 * P   G
+			 *   W
+			 *     P
+			 *
+			 */
 			$mock_tiles = [
 				[
 					HexaHopMap::TILE_WATER,
@@ -250,21 +260,62 @@
 			$m0 = new HexaHopMapMock($mock_tiles, 0, 1, 4);
 			$this->assertFalse($m0->impossible(), 'Possible from start');
 
+			// Move to 1:0 Green
 			$m1 = $m0->move(HexaHopMap::DIR_NE);
+			// Move to 1:1 Green
 			$m2 = $m1->move(HexaHopMap::DIR_S);
+			// Move to 2:1 Green
 			$m3 = $m2->move(HexaHopMap::DIR_SE);
+			// Move to 2:2 Plain
 			$m4 = $m3->move(HexaHopMap::DIR_S);
 			$this->assertFalse($m1->impossible(), 'Winning 1 of 4');
 			$this->assertFalse($m2->impossible(), 'Winning 2 of 4');
 			$this->assertFalse($m3->impossible(), 'Winning 3 of 4');
-			$this->assertFalse($m4->impossible(), 'Won');
+			$this->assertFalse($m4->impossible(), 'Map 1 Winable');
+			unset($m1, $mw, $m3, $m4);
 
+			// Move to 0:0 Water, and die
 			$f0 = $m0->move(HexaHopMap::DIR_N);
 			$this->assertTrue($f0->impossible(), 'Lost');
+
+			// Move to 0:2 Plain, not enough steps to beat par
 			$f1 = $m0->move(HexaHopMap::DIR_S);
 			$this->assertTrue($f1->impossible(), 'Not enough steps');
+
+			// Move to 1:1 Green, and then 2:1 Green, Levaing 1:0 Green unreachable
 			$f2 = $m0->move(HexaHopMap::DIR_SE)->move(HexaHopMap::DIR_SE);
 			$this->assertTrue($f2->impossible(), 'Split');
+			unset($m0, $f0, $f1, $f2);
+
+			/* Layout:
+			 * W
+			 *   G
+			 * X   G*
+			 *   G
+			 *     G
+			 */
+			$mock_tiles = [
+				[
+					HexaHopMap::TILE_WATER,
+					HexaHopMap::TILE_LOW_GREEN,
+					HexaHopMap::TILE_LOW_GREEN,
+				],
+				[
+					HexaHopMap::TILE_LOW_LAND,
+					HexaHopMap::TILE_LOW_GREEN,
+					HexaHopMap::TILE_LOW_GREEN,
+				],
+			];
+
+			$m2_0 = new HexaHopMapMock($mock_tiles, 2, 0, 4);
+			$this->assertFalse($m2_0->impossible(), 'Possible from start, amp 2');
+			$m2_4 = $m2_0->move(HexaHopMap::DIR_S)->move(HexaHopMap::DIR_NW)->move(HexaHopMap::DIR_N)->move(HexaHopMap::DIR_SW);
+			$this->assertTrue($m2_4->won(), 'Map 2 Winable');
+			unset($m2_4);
+
+			$f3 = $m2_0->move(HexaHopMap::DIR_SW);
+			//$this->assertTrue($f3->impossible(), 'Dead end');
+			unset($m2_0, $f3);
 		}
 
 		public function testSolved()
