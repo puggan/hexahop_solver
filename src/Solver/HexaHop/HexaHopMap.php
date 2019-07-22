@@ -1446,7 +1446,7 @@
 					foreach($missing_greens as $green_point_index => $green_point)
 					{
 						$distance = Projectile::BetweenPoints($laser_point, $green_point);
-						if($distance->length === 1)
+						if($distance && $distance->length === 1)
 						{
 							$destroyed_count++;
 							$tile_types[$my_tiles[$green_point->y][$green_point->x]]--;
