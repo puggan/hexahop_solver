@@ -1467,4 +1467,12 @@
 			ksort($maps);
 			return $maps;
 		}
+
+		/**
+		 * @return Player
+		 */
+		public function getPlayer() : Player
+		{
+			return clone $this->player;
+		}
 	}

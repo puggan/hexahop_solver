@@ -40,6 +40,11 @@
 			shuffle($this->path_todos[0]);
 		}
 
+		/**
+		 * @param null|callable $hash_callback ($hash, $path) => bool
+		 *
+		 * @return bool
+		 */
 		public function step() : bool
 		{
 			while($this->depth > 0 && empty($this->path_todos[$this->depth]))
@@ -70,7 +75,7 @@
 			$this->path_hashes[$this->depth] = $hash;
 
 			// Walking in circles?
-			if(array_search($hash, $this->path_hashes, TRUE) < $this->depth)
+			if($this->hash_test($hash, $new))
 			{
 				$this->depth--;
 				return TRUE;
@@ -132,5 +137,16 @@
 			/** @var HexaHopMap $map_state */
 			$map_state = $this->states[$this->depth];
 			return implode(',', array_slice($this->path, 0, $this->depth + 1)) . ' @ ' . $this->depth . ' (' . $map_state->points() . ')';
+		}
+
+		/**
+		 * @param string $hash
+		 * @param HexaHopMap $state
+		 *
+		 * @return bool
+		 */
+		public function hash_test($hash, $state) : bool
+		{
+			return array_search($hash, $this->path_hashes, TRUE) < $this->depth;
 		}
 	}
