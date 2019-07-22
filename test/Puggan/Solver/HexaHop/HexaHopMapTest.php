@@ -4,6 +4,7 @@
 
 	use PHPUnit\Framework\TestCase;
 	use Puggan\Mock\HexaHopMapMock;
+	use Puggan\Solver\Entities\Projectile;
 
 	class HexaHopMapTest extends TestCase
 	{
@@ -71,18 +72,18 @@
 			$m0 = $this->mockMap1();
 			$this->assertEquals(0, $m0->points(), 'New map should have zero points');
 
-			$mp1 = $m0->move(HexaHopMap::DIR_S);
+			$mp1 = $m0->move(Projectile::DIR_S);
 
-			$mg1 = $m0->move(HexaHopMap::DIR_N);
-			$mg2 = $mg1->move(HexaHopMap::DIR_S);
+			$mg1 = $m0->move(Projectile::DIR_N);
+			$mg2 = $mg1->move(Projectile::DIR_S);
 
-			$mb1 = $m0->move(HexaHopMap::DIR_NE);
-			$mb2 = $mb1->move(HexaHopMap::DIR_SW);
+			$mb1 = $m0->move(Projectile::DIR_NE);
+			$mb2 = $mb1->move(Projectile::DIR_SW);
 
-			$ml1 = $m0->move(HexaHopMap::DIR_SE);
-			$ml2 = $ml1->move(HexaHopMap::DIR_SW);
-			$ml3 = $ml2->move(HexaHopMap::DIR_NE);
-			$ml4 = $ml3->move(HexaHopMap::DIR_S);
+			$ml1 = $m0->move(Projectile::DIR_SE);
+			$ml2 = $ml1->move(Projectile::DIR_SW);
+			$ml3 = $ml2->move(Projectile::DIR_NE);
+			$ml4 = $ml3->move(Projectile::DIR_S);
 
 			$this->assertEquals(0, $m0->points(), 'Start map should still have zero points');
 			$this->assertEquals(1, $mp1->points(), 'Normal steps cost 1');
@@ -111,7 +112,7 @@
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-0 still have 1 jump');
 
 			// Pick up Anti-Ice
-			$m1 = $m0->move(HexaHopMap::DIR_S);
+			$m1 = $m0->move(Projectile::DIR_S);
 			$items = $m1->item_count();
 			$this->assertIsArray($items, 'item_count-1 returns an array');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-1 has anti-ice');
@@ -120,7 +121,7 @@
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-1 have 1 jump');
 
 			// Pick up jump, & use Anti-Ice
-			$m2 = $m1->move(HexaHopMap::DIR_S);
+			$m2 = $m1->move(Projectile::DIR_S);
 			$items = $m2->item_count();
 			$this->assertIsArray($items, 'item_count-2 returns an array');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-2 has anti-ice');
@@ -129,7 +130,7 @@
 			$this->assertEquals(1, $items[HexaHopMap::ITEM_JUMP], 'item_count-2 have 1 jump');
 
 			// Pick use jump
-			$m3 = $m2->move(HexaHopMap::DIR_J);
+			$m3 = $m2->move(Projectile::DIR_J);
 			$items = $m3->item_count();
 			$this->assertIsArray($items, 'item_count-3 returns an array');
 			$this->assertArrayHasKey(HexaHopMap::ITEM_ANTI_ICE, $items, 'item_count-3 has anti-ice');
@@ -142,10 +143,10 @@
 		{
 			$m0 = $this->mockMap1();
 			$hash0 = $m0->hash();
-			$mp1 = $m0->move(HexaHopMap::DIR_NW);
-			$mp2 = $mp1->move(HexaHopMap::DIR_SE);
-			$mg1 = $m0->move(HexaHopMap::DIR_N);
-			$mg2 = $mg1->move(HexaHopMap::DIR_S);
+			$mp1 = $m0->move(Projectile::DIR_NW);
+			$mp2 = $mp1->move(Projectile::DIR_SE);
+			$mg1 = $m0->move(Projectile::DIR_N);
+			$mg2 = $mg1->move(Projectile::DIR_S);
 			$this->assertEquals($hash0, $m0->hash(), 'Same hash each time');
 			$this->assertNotEquals($hash0, $mp1->hash(), 'Different hash on different state time');
 			$this->assertEquals($hash0, $mp2->hash(), 'Same hash when returning to an old state');
@@ -156,9 +157,9 @@
 		public function testWon()
 		{
 			$m0 = $this->mockMap1();
-			$m1 = $m0->move(HexaHopMap::DIR_N);
-			$m2 = $m1->move(HexaHopMap::DIR_S);
-			$m3 = $m2->move(HexaHopMap::DIR_SE);
+			$m1 = $m0->move(Projectile::DIR_N);
+			$m2 = $m1->move(Projectile::DIR_S);
+			$m3 = $m2->move(Projectile::DIR_SE);
 			$this->assertFalse($m0->won());
 			$this->assertFalse($m1->won());
 			$this->assertFalse($m2->won());
@@ -168,8 +169,8 @@
 		public function testLost()
 		{
 			$m0 = $this->mockMap1();
-			$m1 = $m0->move(HexaHopMap::DIR_N);
-			$m2 = $m1->move(HexaHopMap::DIR_NW);
+			$m1 = $m0->move(Projectile::DIR_N);
+			$m2 = $m1->move(Projectile::DIR_NW);
 			$this->assertFalse($m0->lost());
 			$this->assertFalse($m1->lost());
 			$this->assertTrue($m2->lost());
@@ -178,7 +179,7 @@
 		public function testBetter()
 		{
 			$m0 = $this->mockMap1();
-			$m2 = $m0->move(HexaHopMap::DIR_NW)->move(HexaHopMap::DIR_SE);
+			$m2 = $m0->move(Projectile::DIR_NW)->move(Projectile::DIR_SE);
 			$this->assertEquals($m0->hash(), $m2->hash());
 			$this->assertTrue($m0->better($m2));
 			$this->assertFalse($m2->better($m0));
@@ -189,8 +190,8 @@
 			$m0 = $this->mockMap1();
 			$moves = $m0->possible_moves();
 			$this->assertIsArray($moves);
-			$this->assertArrayHasKey(HexaHopMap::DIR_N, $moves);
-			$this->assertArrayHasKey(HexaHopMap::DIR_SE, $moves);
+			$this->assertArrayHasKey(Projectile::DIR_N, $moves);
+			$this->assertArrayHasKey(Projectile::DIR_SE, $moves);
 		}
 
 		public function testTile_type_count()
@@ -261,13 +262,13 @@
 			$this->assertFalse($m0->impossible(), 'Possible from start');
 
 			// Move to 1:0 Green
-			$m1 = $m0->move(HexaHopMap::DIR_NE);
+			$m1 = $m0->move(Projectile::DIR_NE);
 			// Move to 1:1 Green
-			$m2 = $m1->move(HexaHopMap::DIR_S);
+			$m2 = $m1->move(Projectile::DIR_S);
 			// Move to 2:1 Green
-			$m3 = $m2->move(HexaHopMap::DIR_SE);
+			$m3 = $m2->move(Projectile::DIR_SE);
 			// Move to 2:2 Plain
-			$m4 = $m3->move(HexaHopMap::DIR_S);
+			$m4 = $m3->move(Projectile::DIR_S);
 			$this->assertFalse($m1->impossible(), 'Winning 1 of 4');
 			$this->assertFalse($m2->impossible(), 'Winning 2 of 4');
 			$this->assertFalse($m3->impossible(), 'Winning 3 of 4');
@@ -275,15 +276,15 @@
 			unset($m1, $mw, $m3, $m4);
 
 			// Move to 0:0 Water, and die
-			$f0 = $m0->move(HexaHopMap::DIR_N);
+			$f0 = $m0->move(Projectile::DIR_N);
 			$this->assertTrue($f0->impossible(), 'Lost');
 
 			// Move to 0:2 Plain, not enough steps to beat par
-			$f1 = $m0->move(HexaHopMap::DIR_S);
+			$f1 = $m0->move(Projectile::DIR_S);
 			$this->assertTrue($f1->impossible(), 'Not enough steps');
 
 			// Move to 1:1 Green, and then 2:1 Green, Levaing 1:0 Green unreachable
-			$f2 = $m0->move(HexaHopMap::DIR_SE)->move(HexaHopMap::DIR_SE);
+			$f2 = $m0->move(Projectile::DIR_SE)->move(Projectile::DIR_SE);
 			$this->assertTrue($f2->impossible(), 'Split');
 			unset($m0, $f0, $f1, $f2);
 
@@ -309,11 +310,11 @@
 
 			$m2_0 = new HexaHopMapMock($mock_tiles, 2, 0, 4);
 			$this->assertFalse($m2_0->impossible(), 'Possible from start, amp 2');
-			$m2_4 = $m2_0->move(HexaHopMap::DIR_S)->move(HexaHopMap::DIR_NW)->move(HexaHopMap::DIR_N)->move(HexaHopMap::DIR_SW);
+			$m2_4 = $m2_0->move(Projectile::DIR_S)->move(Projectile::DIR_NW)->move(Projectile::DIR_N)->move(Projectile::DIR_SW);
 			$this->assertTrue($m2_4->won(), 'Map 2 Winable');
 			unset($m2_4);
 
-			$f3 = $m2_0->move(HexaHopMap::DIR_SW);
+			$f3 = $m2_0->move(Projectile::DIR_SW);
 			//$this->assertTrue($f3->impossible(), 'Dead end');
 			unset($m2_0, $f3);
 		}

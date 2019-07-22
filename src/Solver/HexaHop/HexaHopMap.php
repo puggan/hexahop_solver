@@ -10,14 +10,6 @@
 
 	class HexaHopMap extends MapState implements \JsonSerializable
 	{
-		public const DIR_N = 0;
-		public const DIR_NE = 1;
-		public const DIR_SE = 2;
-		public const DIR_S = 3;
-		public const DIR_SW = 4;
-		public const DIR_NW = 5;
-		public const DIR_J = 6;
-
 		public const TILE_WATER = 0;
 		public const TILE_LOW_LAND = 1;
 		public const TILE_LOW_GREEN = 2;
@@ -157,7 +149,7 @@
 			}
 			if($this->items[self::ITEM_JUMP] > 0)
 			{
-				$moves[] = self::DIR_J;
+				$moves[] = Projectile::DIR_J;
 			}
 			return $moves;
 		}
@@ -169,7 +161,7 @@
 		 */
 		protected function _move($direction) : void
 		{
-			if($direction === self::DIR_J)
+			if($direction === Projectile::DIR_J)
 			{
 				if($this->items[self::ITEM_JUMP] < 1)
 				{
@@ -341,7 +333,7 @@
 
 				case self::TILE_TRAMPOLINE:
 					$this->wall_test($old_tile);
-					if($direction === self::DIR_J)
+					if($direction === Projectile::DIR_J)
 					{
 						break;
 					}
@@ -385,7 +377,7 @@
 					$todos = [];
 					/** @var Point $damage */
 					$damage = [];
-					if($direction === self::DIR_J)
+					if($direction === Projectile::DIR_J)
 					{
 						$todos = [
 							Projectile::PointDir($point, 0),
@@ -646,39 +638,39 @@
 			$new_point = Projectile::PointDir($current, $direction, $steps);
 			switch($direction)
 			{
-				case self::DIR_N:
+				case Projectile::DIR_N:
 					$new_point->y -= $steps;
 
 					return $new_point;
 
-				case self::DIR_NE:
+				case Projectile::DIR_NE:
 					$new_point->x += $steps;
 					$new_point->y -= $steps;
 
 					return $new_point;
 
-				case self::DIR_SE:
+				case Projectile::DIR_SE:
 					$new_point->x += $steps;
 
 					return $new_point;
 
-				case self::DIR_S:
+				case Projectile::DIR_S:
 					$new_point->y += $steps;
 
 					return $new_point;
 
-				case self::DIR_SW:
+				case Projectile::DIR_SW:
 					$new_point->x -= $steps;
 					$new_point->y += $steps;
 
 					return $new_point;
 
-				case self::DIR_NW:
+				case Projectile::DIR_NW:
 					$new_point->x -= $steps;
 
 					return $new_point;
 
-				case self::DIR_J:
+				case Projectile::DIR_J:
 					return $new_point;
 			}
 			throw new \RuntimeException('Bad direction: ' . $direction);
@@ -699,29 +691,29 @@
 				$new_point = Projectile::PointDir($current, $direction, $steps);
 				switch($direction)
 				{
-					case self::DIR_N:
+					case Projectile::DIR_N:
 						$new_point->y -= $steps;
 						break;
 
-					case self::DIR_NE:
+					case Projectile::DIR_NE:
 						$new_point->x += $steps;
 						$new_point->y -= $steps;
 						break;
 
-					case self::DIR_SE:
+					case Projectile::DIR_SE:
 						$new_point->x += $steps;
 						break;
 
-					case self::DIR_S:
+					case Projectile::DIR_S:
 						$new_point->y += $steps;
 						break;
 
-					case self::DIR_SW:
+					case Projectile::DIR_SW:
 						$new_point->x -= $steps;
 						$new_point->y += $steps;
 						break;
 
-					case self::DIR_NW:
+					case Projectile::DIR_NW:
 						$new_point->x -= $steps;
 						break;
 				}
@@ -763,25 +755,25 @@
 			{
 				switch($move)
 				{
-					case self::DIR_N:
+					case Projectile::DIR_N:
 						$dir[] = 'N';
 						break;
-					case self::DIR_NE:
+					case Projectile::DIR_NE:
 						$dir[] = 'NE';
 						break;
-					case self::DIR_SE:
+					case Projectile::DIR_SE:
 						$dir[] = 'SE';
 						break;
-					case self::DIR_S:
+					case Projectile::DIR_S:
 						$dir[] = 'S';
 						break;
-					case self::DIR_SW:
+					case Projectile::DIR_SW:
 						$dir[] = 'SW';
 						break;
-					case self::DIR_NW:
+					case Projectile::DIR_NW:
 						$dir[] = 'NW';
 						break;
-					case self::DIR_J:
+					case Projectile::DIR_J:
 						$dir[] = 'Jump';
 						break;
 					default:
@@ -1019,7 +1011,7 @@
 						{
 							if($reached)
 							{
-								$todo[] = new Projectile($x, $y, $z, self::DIR_J);
+								$todo[] = new Projectile($x, $y, $z, Projectile::DIR_J);
 							}
 						}
 					}
@@ -1140,7 +1132,7 @@
 									if($total_items[self::ITEM_JUMP])
 									{
 										$jump_point = clone $point;
-										$jump_point->dir = self::DIR_J;
+										$jump_point->dir = Projectile::DIR_J;
 										$reachable_lasers[(string) $jump_point] = $jump_point;
 										$todo[] = $point;
 										break;
@@ -1294,7 +1286,7 @@
 				// Convert Laser Jumpt to 6 laser directions
 				foreach($reachable_lasers as $laser_point)
 				{
-					if($laser_point->dir === self::DIR_J)
+					if($laser_point->dir === Projectile::DIR_J)
 					{
 						foreach(range(0, 5) as $dir)
 						{
