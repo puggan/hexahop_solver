@@ -164,7 +164,7 @@
   },
   {
     "file": "2005_11_15/Leftovers",
-    "title": "Lifts",
+    "title": "Leftovers",
     "level_number": 59,
     "width": 14,
     "height": 10,
@@ -432,7 +432,8 @@
     "level_number": 22,
     "width": 12,
     "height": 14,
-    "par": 162,
+    "par": 144,
+    "mappar": 162,
     "start_x": 1,
     "start_y": 11
   },
