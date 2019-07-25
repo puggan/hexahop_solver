@@ -428,7 +428,7 @@
 					$damage_by_tile_type = array_fill(0, 17, 0);
 					foreach($damage as $hit_point)
 					{
-						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? -1);
+						$hit_tile = ($this->tiles[$hit_point->y][$hit_point->x] ?? self::TILE_WATER) & self::MASK_TILE_TYPE;
 						$damage_by_tile_type[$hit_tile]++;
 						switch($hit_tile)
 						{
@@ -1042,6 +1042,10 @@
 									{
 										return FALSE;
 									}
+									if($neighbor_tile === self::TILE_LASER)
+									{
+										return FALSE;
+									}
 									if($neighbor_tile !== self::TILE_WATER)
 									{
 										$neighbor_count++;
@@ -1056,14 +1060,11 @@
 								{
 									foreach($neighbors as $neighbor)
 									{
-										$neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? -1;
-										if($neighbor_tile === self::TILE_WATER)
-										{
-											// As it can be either low or high, treat it as an elevator
-											$my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
-											$tile_types[self::TILE_WATER]--;
-											$tile_types[self::TILE_LOW_ELEVATOR]++;
-										}
+										$neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
+										// As it can be either low or high, treat it as an elevator
+										$tile_types[$neighbor_tile]--;
+										$my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
+										$tile_types[self::TILE_LOW_ELEVATOR]++;
 									}
 								}
 								if($rotating_trampoline)
