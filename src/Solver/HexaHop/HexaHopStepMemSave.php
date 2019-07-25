@@ -102,13 +102,13 @@
 			{
 				$stats[$level_number]->steps = $steps;
 				$stats[$level_number]->time = $full_time;
-//				file_put_contents($stat_filename, json_encode($stats, JSON_PRETTY_PRINT));
+				file_put_contents($stat_filename, json_encode($stats, JSON_PRETTY_PRINT));
 			}
 		}
 
 		$full_solved_filename = dirname(__DIR__, 3) . '/data/solved/' . $level_number . '.ini';
-//		rename($solved_filename, $full_solved_filename);
-//		rmdir(dirname(__DIR__, 3) . '/data/' . $level_number);
+		rename($solved_filename, $full_solved_filename);
+		rmdir(dirname(__DIR__, 3) . '/data/' . $level_number);
 	}
 	else
 	{

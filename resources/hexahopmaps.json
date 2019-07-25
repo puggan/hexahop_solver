@@ -208,7 +208,8 @@
     "level_number": 93,
     "width": 10,
     "height": 16,
-    "par": 136,
+    "par": 107,
+    "mappar": 136,
     "start_x": 7,
     "start_y": 8
   },
