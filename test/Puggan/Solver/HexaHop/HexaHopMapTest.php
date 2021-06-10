@@ -64,7 +64,7 @@
 					HexaHopMap::TILE_WATER,
 				],
 			];
-			return new HexaHopMapMock($mock_tiles, 1, 1);
+			return new HexaHopMapMock($mock_tiles, null, 1, 1);
 		}
 
 		public function testPoints()
@@ -258,7 +258,7 @@
 					HexaHopMap::TILE_LOW_LAND,
 				],
 			];
-			$m0 = new HexaHopMapMock($mock_tiles, 0, 1, 4);
+			$m0 = new HexaHopMapMock($mock_tiles, null, 0, 1, 4);
 			$this->assertFalse($m0->impossible(), 'Possible from start');
 
 			// Move to 1:0 Green
@@ -308,7 +308,7 @@
 				],
 			];
 
-			$m2_0 = new HexaHopMapMock($mock_tiles, 2, 0, 4);
+			$m2_0 = new HexaHopMapMock($mock_tiles, null, 2, 0, 4);
 			$this->assertFalse($m2_0->impossible(), 'Possible from start, amp 2');
 			$m2_4 = $m2_0->move(Projectile::DIR_S)->move(Projectile::DIR_NW)->move(Projectile::DIR_N)->move(Projectile::DIR_SW);
 			$this->assertTrue($m2_4->won(), 'Map 2 Winable');

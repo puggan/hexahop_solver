@@ -11,7 +11,7 @@
 	{
 		/** @noinspection MagicMethodsValidityInspection */
 		/** @noinspection PhpMissingParentConstructorInspection */
-		public function __construct($tiles, $x, $y, $par = 9999, $path = NULL)
+		public function __construct($tiles, $path = null, $x = null, $y = null, $par = 9999)
 		{
 			$this->tiles = $tiles;
 			$y_list = array_keys($tiles);
