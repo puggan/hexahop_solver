@@ -147,6 +147,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
      * @param string $filename
      *
      * @return string
+     * @noinspection PhpSameParameterValueInspection
      */
     private static function getResource(string $filename): string
     {
@@ -539,11 +540,9 @@ class HexaHopMap extends MapState implements \JsonSerializable
                     if ($build_tile === self::TILE_LOW_GREEN) {
                         $this->tiles[$build_point->y][$build_point->x] += self::TILE_HIGH_GREEN - self::TILE_LOW_GREEN;
                         $high_built++;
-                    } else {
-                        if ($build_tile === self::TILE_WATER) {
-                            $this->tiles[$build_point->y][$build_point->x] += self::TILE_LOW_GREEN - self::TILE_WATER;
-                            $low_built++;
-                        }
+                    } elseif ($build_tile === self::TILE_WATER) {
+                        $this->tiles[$build_point->y][$build_point->x] += self::TILE_LOW_GREEN - self::TILE_WATER;
+                        $low_built++;
                     }
                 }
                 if ($high_built && !$low_built) {
@@ -674,6 +673,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
      * @param int $steps
      *
      * @return Projectile[]
+     * @noinspection PhpSameParameterValueInspection
      */
     private function next_points($current, int $steps = 1): array
     {
@@ -922,7 +922,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
         //</editor-fold>
 
         //<editor-fold desc="Init reachable">
-        /** @var bool $reachable keys: z, y, x */
+        /** @var bool[][][] $reachable keys: z, y, x */
         $reachable = [];
 
         foreach ($my_tiles as $y => $row) {
@@ -1210,14 +1210,10 @@ class HexaHopMap extends MapState implements \JsonSerializable
                     if (empty($reachable[0][$y][$x])) {
                         if ($tile === self::TILE_LOW_GREEN) {
                             $missing_greens[] = new Point($x, $y, 0);
-                        } else {
-                            if ($tile === self::TILE_HIGH_GREEN) {
-                                $missing_greens[] = new Point($x, $y, 0);
-                            } else {
-                                if ($tile === self::TILE_LASER) {
-                                    $other_lasers[] = new Point($x, $y, 0);
-                                }
-                            }
+                        } elseif ($tile === self::TILE_HIGH_GREEN) {
+                            $missing_greens[] = new Point($x, $y, 0);
+                        } elseif ($tile === self::TILE_LASER) {
+                            $other_lasers[] = new Point($x, $y, 0);
                         }
                     }
                     if ($tile === self::TILE_ICE) {

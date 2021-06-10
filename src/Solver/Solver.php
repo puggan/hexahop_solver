@@ -98,10 +98,8 @@ class Solver
                         $startState->overridePar($state->points());
                     }
                 }
-            } else {
-                if (!$state->impossible()) {
-                    $this->todos->add($dir_path);
-                }
+            } elseif (!$state->impossible()) {
+                $this->todos->add($dir_path);
             }
         }
         $this->todos->remove($path);

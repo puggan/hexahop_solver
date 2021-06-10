@@ -14,7 +14,7 @@ if ($argc < 2) {
     die('$level_number missing');
 }
 
-(static function ($level_number) {
+(static function (int $level_number) {
     /** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
     require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
@@ -61,14 +61,10 @@ if ($argc < 2) {
         $daySecouns = 3600 * 24;
         if ($full_time > $daySecouns) {
             echo ' = ', $full_time / $daySecouns, ' days', PHP_EOL;
-        } else {
-            if ($full_time > 3600) {
-                echo ' = ', $full_time / 3600, ' hours', PHP_EOL;
-            } else {
-                if ($full_time > 60) {
-                    echo ' = ', $full_time / 60, ' minutes', PHP_EOL;
-                }
-            }
+        } elseif ($full_time > 3600) {
+            echo ' = ', $full_time / 3600, ' hours', PHP_EOL;
+        } elseif ($full_time > 60) {
+            echo ' = ', $full_time / 60, ' minutes', PHP_EOL;
         }
         echo ' => ', $steps / $full_time, ' steps per secound', PHP_EOL;
 
@@ -78,13 +74,11 @@ if ($argc < 2) {
             if ($stats[$level_number]->steps > 0) {
                 if ($stats[$level_number]->steps < $steps) {
                     echo 'Step count worse than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
-                } else {
-                    if ($stats[$level_number]->steps > $steps) {
+                } elseif ($stats[$level_number]->steps > $steps) {
                         echo 'Step count better than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
                     } else {
                         echo 'Same step-count as last time', PHP_EOL;
                     }
-                }
             }
             if (!$stats[$level_number]->steps || $stats[$level_number]->steps > $steps) {
                 $stats[$level_number]->steps = $steps;
