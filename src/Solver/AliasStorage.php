@@ -8,5 +8,5 @@
 		 * @param int[] $alias
 		 * @param int[] $better
 		 */
-		public function add($alias, $better);
+		public function add(array $alias, array $better);
 	}

@@ -34,7 +34,7 @@
 		/**
 		 * @param int $position
 		 */
-		public function goto($position) : void
+		public function goto(int $position) : void
 		{
 			fseek($this->f, $position, SEEK_SET);
 		}
@@ -42,7 +42,7 @@
 		/**
 		 * @param int $offset
 		 */
-		public function skip($offset) : void
+		public function skip(int $offset) : void
 		{
 			fseek($this->f, $offset, SEEK_CUR);
 		}
@@ -52,7 +52,7 @@
 		 *
 		 * @return string
 		 */
-		public function read($length) : string
+		public function read(int $length) : string
 		{
 			return fread($this->f, $length);
 		}

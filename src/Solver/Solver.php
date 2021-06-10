@@ -7,19 +7,19 @@
 	class Solver
 	{
 		/** @var MapState $startState */
-		protected $startState;
+		protected MapState $startState;
 
 		/** @var HashStorage $solved */
-		private $solved;
+		private HashStorage $solved;
 
 		/* * @var AliasStorage $alias */
 		//private $alias;
 
 		/** @var HashStorage $hashes */
-		private $hashes;
+		private HashStorage $hashes;
 
 		/** @var TodoStorage $todos */
-		private $todos;
+		private TodoStorage $todos;
 
 		/**
 		 * Solver constructor.
@@ -30,7 +30,7 @@
 		 * @param HashStorage $hashes
 		 * @param TodoStorage $todos
 		 */
-		public function __construct($startState, $solved, /*$alias,*/ $hashes, $todos)
+		public function __construct(MapState $startState, HashStorage $solved, /*$alias,*/ HashStorage $hashes, TodoStorage $todos)
 		{
 			$this->startState = $startState;
 			$this->solved = $solved;
@@ -44,7 +44,7 @@
 		 *
 		 * @return MapState
 		 */
-		public function loadState($path) : MapState
+		public function loadState(array $path) : MapState
 		{
 			return $this->startState->path($path);
 		}
@@ -54,7 +54,7 @@
 		 *
 		 * @return bool
 		 */
-		public function step($pid) : bool
+		public function step(int $pid) : bool
 		{
 			$path = $this->todos->reserve($pid);
 			if($path === FALSE)

@@ -5,9 +5,9 @@
 	class JsonLockedFile
 	{
 		/** @var string $filename */
-		private $filename;
+		private string $filename;
 		/** @var boolean $locked */
-		private $locked = FALSE;
+		private bool $locked = FALSE;
 		/** @var resource $f */
 		private $f;
 
@@ -16,8 +16,12 @@
 			$this->filename = $filename;
 		}
 
-		public function read()
-		{
+        /**
+         * @return \stdClass|null
+         * @throws \JsonException
+         */
+		public function read(): ?\stdClass
+        {
 			if($this->locked)
 			{
 				throw new \RuntimeException('double read without save() or close()');
@@ -30,7 +34,7 @@
 				{
 					throw new \RuntimeException('Failed to open file: ', $this->filename);
 				}
-				return [];
+				return null;
 			}
 			$this->f = fopen($this->filename, 'rb+');
 			flock($this->f, LOCK_EX);
@@ -38,13 +42,17 @@
 			{
 				throw new \RuntimeException('Failed to open file: ' . $this->filename);
 			}
-			return json_decode(stream_get_contents($this->f), false);
+			return json_decode(stream_get_contents($this->f), false, 512, JSON_THROW_ON_ERROR);
 
 		}
 
-		public function write($data) : void
+        /**
+         * @param \stdClass $data
+         * @throws \JsonException
+         */
+		public function write(\stdClass $data) : void
 		{
-			$json = json_encode($data);
+			$json = json_encode($data, JSON_THROW_ON_ERROR);
 			rewind($this->f);
 			fwrite($this->f, $json);
 			ftruncate($this->f, strlen($json));

@@ -10,5 +10,5 @@
 	class Player extends Point
 	{
 		/** @var bool */
-		public $alive = true;
+		public bool $alive = true;
 	}

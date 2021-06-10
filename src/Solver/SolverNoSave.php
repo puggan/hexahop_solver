@@ -2,27 +2,28 @@
 
 	namespace Puggan\Solver;
 
-	use Puggan\Solver\HexaHop\HexaHopMap;
+	use JetBrains\PhpStorm\Pure;
+    use Puggan\Solver\HexaHop\HexaHopMap;
 
 	class SolverNoSave
 	{
 		/** @var HashStorage $solved */
-		protected $solved;
+		protected HashStorage $solved;
 
 		/** @var int $depth */
-		protected $depth = 0;
+		protected int $depth = 0;
 
 		/** @var int[] $path */
-		protected $path;
+		protected array $path;
 
 		/** @var int[][] $path_todos */
-		protected $path_todos = [];
+		protected array $path_todos = [];
 
 		/** @var MapState[] $states */
-		protected $states;
+		protected array $states;
 
 		/** @var string[] $path_hashes */
-		protected $path_hashes;
+		protected array $path_hashes;
 
 		/**
 		 * SolverNoSave constructor.
@@ -30,7 +31,7 @@
 		 * @param MapState $startState
 		 * @param HashStorage $solved
 		 */
-		public function __construct($startState, $solved)
+		public function __construct(MapState $startState, HashStorage $solved)
 		{
 			$this->solved = $solved;
 			$this->states[0] = $startState;
@@ -41,8 +42,6 @@
 		}
 
 		/**
-		 * @param null|callable $hash_callback ($hash, $path) => bool
-		 *
 		 * @return bool
 		 */
 		public function step() : bool
@@ -122,7 +121,7 @@
 			return TRUE;
 		}
 
-		public function debug() : string
+		#[Pure] public function debug() : string
 		{
 			// $d = [];
 			// if($this->depth)
@@ -139,14 +138,10 @@
 			return implode(',', array_slice($this->path, 0, $this->depth + 1)) . ' @ ' . $this->depth . ' (' . $map_state->points() . ')';
 		}
 
-		/**
-		 * @param string $hash
-		 * @param HexaHopMap $state
-		 *
-		 * @return bool
-		 */
-		public function hash_test($hash, $state) : bool
+		public function hash_test(string $hash, MapState $state) : bool
 		{
-			return array_search($hash, $this->path_hashes, TRUE) < $this->depth;
+            $index = array_search($hash, $this->path_hashes, TRUE);
+            // TODO what to do in the false case? make it return true for now, as it was what the earlier code did.
+            return $index === false || $index < $this->depth;
 		}
 	}

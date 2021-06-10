@@ -5,9 +5,9 @@
 	class IniHashStorage extends HashStorage
 	{
 		/** @var string[] $ini */
-		private $ini;
+		private array|false $ini;
 		/** @var string $filename */
-		private $filename;
+		private string $filename;
 
 		/**
 		 * Load list from file
@@ -45,7 +45,7 @@
 		 *
 		 * @return false|int[]
 		 */
-		public function get($hash)
+		public function get(string $hash): array|bool
 		{
 			if(!isset($this->ini[$hash]))
 			{
@@ -58,13 +58,13 @@
 		 * @param string $hash
 		 * @param int[] $path
 		 */
-		public function save($hash, $path) : void
+		public function save(string $hash, array $path) : void
 		{
 			$this->ini[$hash] = implode(',', $path);
 			$this->_save();
 		}
 
-		public function remove($hash) : void
+		public function remove(string $hash) : void
 		{
 			unset($this->ini[$hash]);
 			$this->_save();

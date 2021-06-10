@@ -1,6 +1,6 @@
-<?php
+<?php /** @noinspection TypoSafeNamingInspection */
 
-	namespace Puggan\Solver\Entities\JSON;
+namespace Puggan\Solver\Entities\JSON;
 
 	/**
 	 * Class MapInfo

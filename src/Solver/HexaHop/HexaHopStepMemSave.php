@@ -14,8 +14,9 @@
 		die('$level_number missing');
 	}
 
-	$level_number = +$argv[1];
+(static function($level_number) {
 
+    /** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 	$start_state = new HexaHopMap($level_number);
@@ -41,7 +42,7 @@
 			$old = $timestamp;
 			$timestamp = hrtime(TRUE);
 			echo $steps, ' @ ', (DISPLAY_STEPS * 1e9 / ($timestamp - $old)), PHP_EOL;
-			echo json_encode($solver->debug()), PHP_EOL;
+			echo json_encode($solver->debug(), JSON_THROW_ON_ERROR), PHP_EOL;
 		}
 		if(SLEEP_TIME > 0)
 		{
@@ -64,9 +65,11 @@
 			echo ' - Sleeping ', $sleep_time, ' secounds, (', 100 * $sleep_time / $full_time, '%)', PHP_EOL;
 			echo ' + Working ', ($full_time - $sleep_time), ' secounds, (', 100 - 100 * $sleep_time / $full_time, '%)', PHP_EOL;
 		}
-		if($full_time > 3600 * 24)
+        /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
+        $daySecouns = 3600 * 24;
+        if($full_time > $daySecouns)
 		{
-			echo ' = ', $full_time / 3600 / 24, ' days', PHP_EOL;
+			echo ' = ', $full_time / $daySecouns, ' days', PHP_EOL;
 		}
 		else if($full_time > 3600)
 		{
@@ -81,7 +84,7 @@
 		$stat_filename = dirname(__DIR__, 3) . '/data/stats.json';
 		if(is_file($stat_filename))
 		{
-			$stats = (array) json_decode(file_get_contents($stat_filename), FALSE);
+			$stats = (array)json_decode(file_get_contents($stat_filename), FALSE, 512, JSON_THROW_ON_ERROR);
 			if($stats[$level_number]->steps > 0)
 			{
 				if($stats[$level_number]->steps < $steps)
@@ -102,7 +105,7 @@
 			{
 				$stats[$level_number]->steps = $steps;
 				$stats[$level_number]->time = $full_time;
-				file_put_contents($stat_filename, json_encode($stats, JSON_PRETTY_PRINT));
+				file_put_contents($stat_filename, json_encode($stats, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
 			}
 		}
 
@@ -115,3 +118,4 @@
 		echo 'Not solved :-(', PHP_EOL;
 		die(1);
 	}
+})(+$argv[1]);

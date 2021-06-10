@@ -4,18 +4,16 @@
 	use Puggan\Solver\Entities\JSON\MapInfo;
 	use Puggan\Solver\HexaHop\HexaHopMap;
 
-	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+/** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
+require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-	$id = $argv[1] ?? NULL;
-	$path_str = $argv[2] ?? NULL;
-
+(static function(?string $id, ?string $path_str) {
 	if(!$id)
 	{
 		echo 'No ID';
 		die(1);
 	}
 
-	/** @var MapInfo[] $maps */
 	$maps = HexaHopMap::list_maps();
 
 	if(empty($maps[$id]->title))
@@ -42,16 +40,9 @@
 	}
 
 	$path = [];
-	if($path_str || $path_str === '0')
+	if($path_str)
 	{
-		if(is_array($path_str))
-		{
-			$path = array_map('intval', $path_str);
-		}
-		else if(is_string($path_str))
-		{
-			$path = array_map('intval', explode(',', $path_str));
-		}
+        $path = array_map('intval', explode(',', $path_str));
 	}
 
 	if($alive && $path)
@@ -97,7 +88,7 @@
 		{
 			echo 'Step: ', count($path), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
 			echo 'Still alive', PHP_EOL;
-			die(-2);
+			die(253);
 		}
 
 		if($map->points() < $map->par())
@@ -108,5 +99,6 @@
 	}
 	else
 	{
-		die(-1);
+		die(254);
 	}
+})($argv[1] ?? NULL, $argv[2] ?? NULL);

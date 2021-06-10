@@ -1,8 +1,10 @@
-<?php
+<?php /** @noinspection TypoSafeNamingInspection */
 
-	namespace Puggan\Solver\HexaHop;
+namespace Puggan\Solver\HexaHop;
 
-	use Puggan\Solver\Entities\JSON\MapInfo;
+	use JetBrains\PhpStorm\ArrayShape;
+    use JetBrains\PhpStorm\Pure;
+    use Puggan\Solver\Entities\JSON\MapInfo;
 	use Puggan\Solver\Entities\Player;
 	use Puggan\Solver\Entities\Point;
 	use Puggan\Solver\Entities\Projectile;
@@ -36,35 +38,41 @@
 		public const SHIFT_TILE_ITEM = 5;
 
 		/** @var MapInfo $map_info */
-		protected $map_info;
+		protected MapInfo $map_info;
 
 		/** @var int x_min */
-		protected $x_min;
+		protected int $x_min;
 
 		/** @var int x_max */
-		protected $x_max;
+		protected int $x_max;
 
 		/** @var int y_min */
-		protected $y_min;
+		protected int $y_min;
 
 		/** @var int y_max */
-		protected $y_max;
+		protected int $y_max;
 
 		/** @var int[][] */
-		protected $tiles = [];
+		protected array $tiles = [];
 
 		/** @var int[] */
-		protected $items = [];
+		protected array $items = [];
 
 		/** @var Player player */
-		protected $player;
+		protected Player $player;
 
 		/** @var int points */
-		protected $points;
+		protected int $points;
 
 		/** @var int */
-		protected $par;
+		protected int $par;
 
+        /**
+         * HexaHopMap constructor.
+         * @param $level_number
+         * @param null $path
+         * @throws \JsonException
+         */
 		public function __construct($level_number, $path = NULL)
 		{
 			$this->map_info = self::read_map_info($level_number);
@@ -90,7 +98,7 @@
 			{
 				foreach($path as $move)
 				{
-					$this->_move($move);
+					$this->non_pure_move($move);
 				}
 			}
 		}
@@ -101,7 +109,7 @@
 		 * Player have won
 		 * @return bool
 		 */
-		public function won() : bool
+		#[Pure] public function won() : bool
 		{
 			if($this->lost())
 			{
@@ -159,7 +167,7 @@
 		 *
 		 * @param int $direction move/direction to travel
 		 */
-		protected function _move($direction) : void
+		protected function non_pure_move(int $direction) : void
 		{
 			if($direction === Projectile::DIR_J)
 			{
@@ -177,22 +185,23 @@
 			$this->move_into($next_point, $direction, $old_tile);
 		}
 
-		/**
-		 * @return string uniq state hash, used to detect duplicates
-		 */
+        /**
+         * @return string uniq state hash, used to detect duplicates
+         * @throws \JsonException
+         */
 		public function hash() : string
 		{
-			return md5(json_encode([$this->player, $this->items, $this->tiles]));
+			return md5(json_encode([$this->player, $this->items, $this->tiles], JSON_THROW_ON_ERROR));
 		}
 
 		/**
 		 * is the current state better that this other state?
 		 *
-		 * @param HexaHopMap $other
+		 * @param MapState $other
 		 *
 		 * @return bool
 		 */
-		public function better($other) : bool
+		public function better(MapState $other) : bool
 		{
 			return $this->points < $other->points;
 		}
@@ -203,7 +212,7 @@
 		 *
 		 * @return string
 		 */
-		private static function getResource($filename) : string
+		private static function getResource(string $filename) : string
 		{
 			return file_get_contents(self::getResourcePath($filename));
 		}
@@ -213,16 +222,18 @@
 		 *
 		 * @return string
 		 */
-		private static function getResourcePath($filename) : string
+		private static function getResourcePath(string $filename) : string
 		{
 			return dirname(__DIR__, 3) . '/resources/' . $filename;
 		}
 
-		/**
-		 * @param $level_number
-		 *
-		 * @return MapInfo
-		 */
+        /**
+         * @param $level_number
+         *
+         * @return MapInfo
+         * @throws \JsonException
+         * @throws \JsonException
+         */
 		private static function read_map_info($level_number) : MapInfo
 		{
 			static $json;
@@ -237,8 +248,8 @@
 		/**
 		 * @param MapStream $map_stream
 		 */
-		private function parse_map($map_stream)
-		{
+		private function parse_map(MapStream $map_stream): void
+        {
 			// Version(1), newline(1), par(4), diff(4)
 			$map_stream->goto(10);
 
@@ -274,7 +285,7 @@
 		 * @param int $direction
 		 * @param int $old_tile
 		 */
-		private function move_into($point, $direction, $old_tile) : void
+		private function move_into(Point $point, int $direction, int $old_tile) : void
 		{
 			$this->player->x = $point->x;
 			$this->player->y = $point->y;
@@ -370,7 +381,6 @@
 					break;
 
 				case self::TILE_LASER:
-					;
 					/** @var Projectile[] $projectiles */
 					$projectiles = [];
 					/** @var Projectile[] $todos */
@@ -563,30 +573,25 @@
 			}
 
 			//<editor-fold desc="set height (z)">
-			switch($tile)
-			{
-				case self::TILE_ANTI_ICE:
-				case self::TILE_BOAT:
-				case self::TILE_BUILD:
-				case self::TILE_HIGH_ELEVATOR:
-				case self::TILE_ICE:
-				case self::TILE_LASER:
-				case self::TILE_LOW_BLUE:
-				case self::TILE_LOW_GREEN:
-				case self::TILE_LOW_LAND:
-				case self::TILE_ROTATOR:
-				case self::TILE_TRAMPOLINE:
-				case self::TILE_WATER:
-					$this->player->z = 0;
-					break;
+            $this->player->z = match ($tile) {
+                self::TILE_ANTI_ICE,
+                self::TILE_BOAT,
+                self::TILE_BUILD,
+                self::TILE_HIGH_ELEVATOR,
+                self::TILE_ICE,
+                self::TILE_LASER,
+                self::TILE_LOW_BLUE,
+                self::TILE_LOW_GREEN,
+                self::TILE_LOW_LAND,
+                self::TILE_ROTATOR,
+                self::TILE_TRAMPOLINE,
+                self::TILE_WATER => 0,
 
-				case self::TILE_HIGH_BLUE:
-				case self::TILE_HIGH_GREEN:
-				case self::TILE_HIGH_LAND:
-				case self::TILE_LOW_ELEVATOR:
-					$this->player->z = 1;
-					break;
-			}
+                self::TILE_HIGH_BLUE,
+                self::TILE_HIGH_GREEN,
+                self::TILE_HIGH_LAND,
+                self::TILE_LOW_ELEVATOR => 1,
+            };
 			//</editor-fold>
 
 			$this->wall_test($old_tile);
@@ -597,7 +602,7 @@
 		 *
 		 * @return int tile
 		 */
-		private function move_out_of($point) : int
+		private function move_out_of(Point $point) : int
 		{
 			$tile = $this->tiles[$point->y][$point->x];
 			switch($tile & self::MASK_TILE_TYPE)
@@ -632,7 +637,7 @@
 		 *
 		 * @return Projectile
 		 */
-		private function next_point($current, $direction, $steps = 1) : Projectile
+		private function next_point(Point $current, int $direction, int $steps = 1) : Projectile
 		{
 			$new_point = Projectile::PointDir($current, $direction, $steps);
 			switch($direction)
@@ -681,12 +686,11 @@
 		 *
 		 * @return Projectile[]
 		 */
-		private function next_points($current, $steps = 1) : array
+		private function next_points($current, int $steps = 1) : array
 		{
 			$points = [];
 			foreach(range(0, 5) as $direction)
 			{
-				/** @var Point $new_point */
 				$new_point = Projectile::PointDir($current, $direction, $steps);
 				switch($direction)
 				{
@@ -722,8 +726,19 @@
 			return $points;
 		}
 
-		public function jsonSerialize()
-		{
+        #[ArrayShape([
+            'items' => "int[]",
+            'map_info' => MapInfo::class,
+            'player' => Player::class,
+            'points' => "int",
+            'tiles' => "int[][]",
+            'x_max' => "int",
+            'x_min' => "int",
+            'y_max' => "int",
+            'y_min' => "int",
+        ])]
+        public function jsonSerialize(): array
+        {
 			return [
 				'map_info' => $this->map_info,
 				'x_min' => $this->x_min,
@@ -742,12 +757,17 @@
 			$this->player = clone $this->player;
 		}
 
-		public function map_info($json_option)
-		{
-			return json_encode($this->map_info, $json_option);
+        /**
+         * @param $json_option
+         * @return bool|string
+         * @throws \JsonException
+         */
+		public function map_info($json_option): bool|string
+        {
+			return json_encode($this->map_info, JSON_THROW_ON_ERROR | $json_option);
 		}
 
-		public function print_path($path) : string
+		public function print_path(array $path) : string
 		{
 			$dir = [];
 			foreach($path as $move)
@@ -789,7 +809,7 @@
 		 *
 		 * @return boolean
 		 */
-		public function high_tile($point) : bool
+		public function high_tile(Point $point) : bool
 		{
 			// out of bounds or water
 			if(empty($this->tiles[$point->y][$point->x]))
@@ -797,38 +817,34 @@
 				return FALSE;
 			}
 
-			switch($this->tiles[$point->y][$point->x] & self::MASK_TILE_TYPE)
-			{
-				case self::TILE_WATER:
-				case self::TILE_LOW_ELEVATOR:
-				case self::TILE_TRAMPOLINE:
-				case self::TILE_ROTATOR:
-				case self::TILE_LASER:
-				case self::TILE_ICE:
-				case self::TILE_BUILD:
-				case self::TILE_BOAT:
-				case self::TILE_ANTI_ICE:
-				case self::TILE_LOW_LAND:
-				case self::TILE_LOW_GREEN:
-				case self::TILE_LOW_BLUE:
-					return FALSE;
+            return match ($this->tiles[$point->y][$point->x] & self::MASK_TILE_TYPE) {
+                self::TILE_WATER,
+                self::TILE_LOW_ELEVATOR,
+                self::TILE_TRAMPOLINE,
+                self::TILE_ROTATOR,
+                self::TILE_LASER,
+                self::TILE_ICE,
+                self::TILE_BUILD,
+                self::TILE_BOAT,
+                self::TILE_ANTI_ICE,
+                self::TILE_LOW_LAND,
+                self::TILE_LOW_GREEN,
+                self::TILE_LOW_BLUE => FALSE,
 
-				case self::TILE_HIGH_ELEVATOR:
-				case self::TILE_HIGH_LAND:
-				case self::TILE_HIGH_GREEN:
-				case self::TILE_HIGH_BLUE:
-					return TRUE;
+                self::TILE_HIGH_ELEVATOR,
+                self::TILE_HIGH_LAND,
+                self::TILE_HIGH_GREEN,
+                self::TILE_HIGH_BLUE => TRUE,
 
-				default:
-					throw new \RuntimeException('Unknown title: ' . $this->tiles[$point->y][$point->x]);
-			}
+                default => throw new \RuntimeException('Unknown title: ' . $this->tiles[$point->y][$point->x]),
+            };
 		}
 
-		public function green_wall_test()
-		{
-			foreach($this->tiles as $y => $row)
+		public function green_wall_test(): void
+        {
+			foreach($this->tiles as $row)
 			{
-				foreach($row as $x => $tile_with_item)
+				foreach($row as $tile_with_item)
 				{
 					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_LOW_GREEN)
 					{
@@ -849,11 +865,11 @@
 			}
 		}
 
-		public function blue_wall_test()
-		{
-			foreach($this->tiles as $y => $row)
+		public function blue_wall_test(): void
+        {
+			foreach($this->tiles as $row)
 			{
-				foreach($row as $x => $tile_with_item)
+				foreach($row as $tile_with_item)
 				{
 					if(($tile_with_item & self::MASK_TILE_TYPE) === self::TILE_LOW_BLUE)
 					{
@@ -892,8 +908,8 @@
 		/**
 		 * @param int $new_par
 		 */
-		public function overridePar($new_par)
-		{
+		public function overridePar(int $new_par): void
+        {
 			$this->par = $new_par;
 		}
 
@@ -998,7 +1014,7 @@
 			 *
 			 * @return bool
 			 */
-			$expand_reachable = function ($green_wall_lowerable, $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types, &$total_items) {
+			$expand_reachable = function (bool $green_wall_lowerable, bool $blue_wall_lowerable) use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types, &$total_items) {
 				/** @var bool[] $trampolines prevent infinite loops of trampolines */
 				$trampolines = [];
 				/** @var Projectile[] $todo */
@@ -1482,7 +1498,8 @@
 						return FALSE;
 					}
 				}
-				if($laser_status === FALSE)
+                /** @noinspection IfReturnReturnSimplificationInspection */
+                if($laser_status === FALSE)
 				{
 					return FALSE;
 				}
@@ -1533,7 +1550,7 @@
 
 			//<editor-fold desc="Count reachable by type">
 			$reachable_types = array_fill(0, 17, 0);
-			$unreachable_types = array_fill(0, 17, 0);
+			//$unreachable_types = array_fill(0, 17, 0);
 			foreach($my_tiles as $y => $row)
 			{
 				foreach($row as $x => $tile)
@@ -1542,10 +1559,12 @@
 					{
 						$reachable_types[$tile]++;
 					}
+					/*
 					else
 					{
 						$unreachable_types[$tile]++;
 					}
+					*/
 				}
 			}
 			//</editor-fold>
@@ -1600,15 +1619,17 @@
 			}
 		}
 
-		/**
-		 * @return MapInfo[]
-		 */
+        /**
+         * @return MapInfo[]
+         * @throws \JsonException
+         * @throws \JsonException
+         */
 		public static function list_maps() : array
 		{
 			$extra_index = 101;
 			$maps = [];
 			/** @var MapInfo $map_info */
-			foreach(json_decode(self::getResource('hexahopmaps.json'), FALSE) as $map_info)
+			foreach(json_decode(self::getResource('hexahopmaps.json'), FALSE, 512, JSON_THROW_ON_ERROR) as $map_info)
 			{
 				if($map_info->level_number < 0)
 				{

@@ -47,7 +47,7 @@
 			{
 				foreach($path as $move)
 				{
-					$this->_move($move);
+					$this->non_pure_move($move);
 				}
 			}
 		}
@@ -57,7 +57,7 @@
 		 *
 		 * @return HexaHopMapMock
 		 */
-		public function move($move) : MapState
+		public function move(int $move) : MapState
 		{
 			return parent::move($move);
 		}

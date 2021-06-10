@@ -6,20 +6,16 @@
 
 	class TodoFolderStorage extends TodoStorage
 	{
-		/** @var string $folder */
-		private $folder;
-		/** @var HashStorage $reserved */
-		private $reserved;
-		/** @var JsonLockedFile $json */
-		private $json;
-		/** @var TodoFolderStorageJson */
-		private $json_cache;
-		private $json_rows_added_in_cache = 0;
+		private string $folder;
+		private HashStorage|IniHashStorage $reserved;
+		private JsonLockedFile $json;
+		private \stdClass|TodoFolderStorageJson $json_cache;
+		private int $json_rows_added_in_cache = 0;
 
-		private $rows_per_file;
+		private int $rows_per_file;
 
 		/** @var int[] $removed_position */
-		private $removed_position = [];
+		private array $removed_position = [];
 
 		/**
 		 * TodoFileStorage constructor.
@@ -29,7 +25,7 @@
 		 *
 		 * @throws \Exception
 		 */
-		public function __construct($folder, $rows_per_file = 100000)
+		public function __construct(string $folder, int $rows_per_file = 100000)
 		{
 			if(!is_dir($folder) && !mkdir($folder) && !is_dir($folder))
 			{
@@ -43,8 +39,8 @@
 			$this->rows_per_file = $rows_per_file;
 			$this->reserved = new IniHashStorage($folder . 'reserved.ini');
 			$this->json = new JsonLockedFile($folder . 'files.json');
-			$this->json_cache = $this->json->read();
-			if($this->json_cache === [])
+            $file_info = $this->json->read();
+			if($file_info === null)
 			{
 				$this->json_cache = (object) [
 					'row_count' => 0,
@@ -56,6 +52,7 @@
 			}
 			else
 			{
+                $this->json_cache = $file_info;
 				$this->json->close();
 			}
 		}
@@ -89,11 +86,15 @@
 		 *
 		 * @throws \Exception
 		 */
-		public function add($path) : void
+		public function add(array $path) : void
 		{
 			if($this->json_rows_added_in_cache >= 10000)
 			{
-				$this->json_cache = $this->json->read();
+                $file_info = $this->json->read();
+                if (!$file_info) {
+                    throw new \RuntimeException('empty file');
+                }
+                $this->json_cache = $file_info;
 				$this->json_cache->row_count += $this->json_rows_added_in_cache;
 				if($this->json_cache->row_count >= $this->rows_per_file)
 				{
@@ -113,16 +114,22 @@
 			$this->json_rows_added_in_cache++;
 		}
 
-		/**
-		 * Reserve a todo, that's not already reserved
-		 *
-		 * @param int $pid
-		 *
-		 * @return false|int[]
-		 */
-		public function reserve($pid)
+        /**
+         * Reserve a todo, that's not already reserved
+         *
+         * @param int $pid
+         *
+         * @return false|int[]
+         * @throws \JsonException
+         * @throws \JsonException
+         */
+		public function reserve(int $pid): array|bool
 		{
-			foreach($this->json->read()->files as $f_index => $file)
+            $file_info = $this->json->read();
+            if (!$file_info) {
+                throw new \RuntimeException('No file');
+            }
+            foreach($file_info->files as $file)
 			{
 				$filename = $this->folder . $file;
 				if(!is_file($filename))
@@ -144,7 +151,7 @@
 				while(!feof($f))
 				{
 					$line = fgets($f, 1e6);
-					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
+					if($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:'))
 					{
 						if($left === 0)
 						{
@@ -176,16 +183,20 @@
 			return FALSE;
 		}
 
-		/**
-		 * @param int[] $path
-		 */
-		public function remove($path) : void
+        /**
+         * @param int[] $path
+         * @throws \JsonException
+         * @throws \JsonException
+         */
+		public function remove(array $path) : void
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
 
-			/** @var TodoFolderStorageJson $file_info */
 			$file_info = $this->json->read();
+            if (!$file_info) {
+                throw new \RuntimeException('empty file');
+            }
 			$file_info_updated = FALSE;
 			foreach($file_info->files as $f_index => $file)
 			{
@@ -210,7 +221,7 @@
 				{
 					$position_before = ftell($f);
 					$line = fgets($f, 1e6);
-					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
+					if($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:'))
 					{
 						if($left === 0)
 						{
@@ -266,16 +277,19 @@
 			}
 		}
 
-		/**
-		 * @param int[] $path
-		 */
-		public function remove_all($path) : void
+        /**
+         * @param int[] $path
+         * @throws \JsonException
+         */
+		public function remove_all(array $path) : void
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
 
-			/** @var TodoFolderStorageJson $file_info */
 			$file_info = $this->json->read();
+			if (!$file_info) {
+			    throw new \RuntimeException('empty file');
+            }
 			$file_info_updated = FALSE;
 			$path_string2 = $path_string . ',';
 			foreach($file_info->files as $f_index => $file)
@@ -301,7 +315,7 @@
 				{
 					$position_before = ftell($f);
 					$line = fgets($f, 1e6);
-					if($line === '' || $line === PHP_EOL || strpos($line, '0:') !== 0)
+					if($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:'))
 					{
 						if($left === 0)
 						{
@@ -311,7 +325,7 @@
 					}
 
 					$row_path = trim(substr($line, 2));
-					if($row_path === $path_string || strpos($row_path, $path_string2) === 0)
+					if($row_path === $path_string || str_starts_with($row_path, $path_string2))
 					{
 						$position_after = ftell($f);
 						fseek($f, $position_before);

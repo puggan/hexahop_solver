@@ -11,10 +11,10 @@
 		die('$level_number missing');
 	}
 
-	$level_number = +$argv[1];
+(static function($level_number) {
 
-
-	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+    /** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
+    require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 	$pid = getmypid();
 
@@ -35,3 +35,4 @@
 	}
 	echo PHP_EOL, 'Done!', PHP_EOL;
 	echo file_get_contents(dirname(__DIR__, 3) . '/data/' . $level_number . '/solved.ini'), PHP_EOL;
+})(+$argv[1]);

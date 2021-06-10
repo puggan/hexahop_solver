@@ -32,19 +32,19 @@
 		 *
 		 * @return MapState Pure function, no side-effect allowed, so not $this
 		 */
-		public function move($move) : self
+		public function move(int $move) : self
 		{
 			$state = clone $this;
-			$state->_move($move);
+			$state->non_pure_move($move);
 			return $state;
 		}
 
 		/**
 		 * Make a move in the current state
 		 *
-		 * @param int $move move/direction to travel
+		 * @param int $direction move/direction to travel
 		 */
-		abstract protected function _move($move) : void;
+		abstract protected function non_pure_move(int $direction) : void;
 
 		/**
 		 * Execute all possible moves, and return a list
@@ -71,19 +71,16 @@
 		 *
 		 * @return MapState
 		 */
-		public function path($path) : self
+		public function path(array $path) : self
 		{
 			$state = clone $this;
-			if(is_array($path))
-			{
-				foreach($path as $move)
-				{
-					if($state->lost()) {
-						throw new \RuntimeException('Invalid path, already lost: ' . $state->print_path($path) . ' (' . implode(', ', $path). ')');
-					}
-					$state->_move($move);
-				}
-			}
+            foreach($path as $move)
+            {
+                if($state->lost()) {
+                    throw new \RuntimeException('Invalid path, already lost: ' . $state->print_path($path) . ' (' . implode(', ', $path). ')');
+                }
+                $state->non_pure_move($move);
+            }
 			return $state;
 		}
 
@@ -94,14 +91,14 @@
 		 *
 		 * @return bool
 		 */
-		abstract public function better($other) : bool;
+		abstract public function better(MapState $other) : bool;
 
 		/**
 		 * @param int[] $path
 		 *
 		 * @return string
 		 */
-		abstract public function print_path($path) : string;
+		abstract public function print_path(array $path) : string;
 
 		/**
 		 * @return bool

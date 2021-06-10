@@ -1,8 +1,10 @@
-<?php
+<?php /** @noinspection TypoSafeNamingInspection */
 
-	namespace Puggan\Solver\Entities;
+namespace Puggan\Solver\Entities;
 
-	/**
+	use JetBrains\PhpStorm\Pure;
+
+    /**
 	 * Class Point
 	 * @package PHPDoc
 	 * @property int x
@@ -12,11 +14,11 @@
 	class Point
 	{
 		/** @var int */
-		public $x;
+		public int $x;
 		/** @var int */
-		public $y;
+		public int $y;
 		/** @var int */
-		public $z;
+		public int $z;
 
 		/**
 		 * Point constructor.
@@ -25,7 +27,7 @@
 		 * @param int $y
 		 * @param int $z
 		 */
-		public function __construct($x, $y, $z)
+		public function __construct(int $x, int $y, int $z)
 		{
 			$this->x = $x;
 			$this->y = $y;
@@ -33,11 +35,11 @@
 		}
 
 		/**
-		 * @param Point$point
+		 * @param Point $point
 		 *
 		 * @return Point
 		 */
-		public static function copy($point) : Point
+		#[Pure] public static function copy(Point $point) : Point
 		{
 			return new self($point->x, $point->y,$point->z);
 		}

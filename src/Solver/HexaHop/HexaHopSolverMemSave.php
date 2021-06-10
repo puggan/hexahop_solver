@@ -2,33 +2,22 @@
 
 	namespace Puggan\Solver\HexaHop;
 
-	use Puggan\Solver\HashStorage;
 	use Puggan\Solver\MapState;
 	use Puggan\Solver\SolverNoSave;
 
 	class HexaHopSolverMemSave extends SolverNoSave
 	{
 		/** @var int[][][][][] */
-		private $position_hashes = [];
+		private array $position_hashes = [];
 
-		/**
-		 * SolverNoSave constructor.
-		 *
-		 * @param MapState $startState
-		 * @param HashStorage $solved
-		 */
+		/*
 		public function __construct($startState, $solved)
 		{
 			parent::__construct($startState, $solved);
 		}
+		*/
 
-		/**
-		 * @param string $hash
-		 * @param HexaHopMap $state
-		 *
-		 * @return bool
-		 */
-		public function hash_test($hash, $state) : bool
+		public function hash_test(string $hash, MapState $state) : bool
 		{
 			if(parent::hash_test($hash, $state))
 			{

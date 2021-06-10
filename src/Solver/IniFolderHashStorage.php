@@ -5,9 +5,9 @@
 	class IniFolderHashStorage extends HashStorage
 	{
 		/** @var string $folder */
-		protected $folder;
+		protected mixed $folder;
 		/** @var int $prefix_length */
-		protected $prefix_length;
+		protected mixed $prefix_length;
 
 		public function __construct($folder, $prefix_length = 3)
 		{
@@ -33,8 +33,8 @@
 		 *
 		 * @return false|int[]
 		 */
-		public function get($hash)
-		{
+		public function get(string $hash): array|bool
+        {
 			$filename = $this->filename($hash);
 			if(!is_file($filename))
 			{
@@ -45,7 +45,7 @@
 			while(!feof($f))
 			{
 				$line = fgets($f, 1e6);
-				if(strpos($line, $hash_suffix) === 0)
+				if(str_starts_with($line, $hash_suffix))
 				{
 					fclose($f);
 					$path_string = substr($line, 1 + strlen($hash_suffix));
@@ -65,7 +65,7 @@
 		 * @param string $hash
 		 * @param int[] $path
 		 */
-		public function save($hash, $path) : void
+		public function save(string $hash, array $path) : void
 		{
 			$this->replace($hash, $path);
 		}
@@ -73,16 +73,16 @@
 		/**
 		 * @param string $hash
 		 */
-		public function remove($hash) : void
+		public function remove(string $hash) : void
 		{
-			$this->replace($hash, false);
+			$this->replace($hash);
 		}
 
 		/**
 		 * @param string $hash
-		 * @param false|int[] $path
+		 * @param bool|int[] $path
 		 */
-		public function replace($hash, $path = false) : void
+		public function replace(string $hash, array|bool $path = false) : void
 		{
 			$filename = $this->filename($hash);
 			$hash_suffix = substr($hash, $this->prefix_length);
@@ -125,8 +125,9 @@
 						fseek($f, $after);
 					}
 				}
-				if(strpos($line, $hash_suffix) === 0)
+				if(str_starts_with($line, $hash_suffix))
 				{
+				    /** @var int $length */
 					$length = ftell($f) - $before;
 					while(!trim(fgets($f, 1e6))) {
 						$length = ftell($f) - $before;

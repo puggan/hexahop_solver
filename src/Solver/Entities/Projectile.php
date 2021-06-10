@@ -2,9 +2,9 @@
 
 	namespace Puggan\Solver\Entities;
 
-	use Puggan\Solver\HexaHop\HexaHopMap;
+	use JetBrains\PhpStorm\Pure;
 
-	/**
+    /**
 	 * Class Projectile
 	 * @package PHPDoc
 	 * @property int dir
@@ -19,10 +19,10 @@
 		public const DIR_NW = 5;
 		public const DIR_NE = 1;
 		/** @var int */
-		public $dir;
+		public int $dir;
 
 		/** @var int */
-		public $length;
+		public int $length;
 
 		/**
 		 * Projectile constructor.
@@ -33,7 +33,7 @@
 		 * @param int $dir
 		 * @param int $length
 		 */
-		public function __construct($x, $y, $z, $dir, $length = 1)
+		#[Pure] public function __construct(int $x, int $y, int $z, int $dir, int $length = 1)
 		{
 			$this->dir = $dir;
 			$this->length = $length;
@@ -47,7 +47,8 @@
 		 *
 		 * @return Projectile
 		 */
-		public static function PointDir($point, $dir, $length = 1) : Projectile
+		#[Pure]
+        public static function PointDir(Point $point, int $dir, int $length = 1) : Projectile
 		{
 			return new self($point->x, $point->y, $point->z, $dir, $length);
 		}
@@ -57,8 +58,8 @@
 		 *
 		 * @return false|int
 		 */
-		public function dirDistance($point)
-		{
+		public function dirDistance(Point $point): bool|int
+        {
 			$delta_x = $point->x - $this->x;
 			$delta_y = $point->y - $this->y;
 			switch($this->dir)
@@ -71,7 +72,9 @@
 					return -$delta_y;
 
 				case self::DIR_NE:
-					if($delta_x + $delta_y !== 0) return false;
+					if($delta_x + $delta_y !== 0) {
+                        return false;
+                    }
 					return $delta_x;
 
 				case self::DIR_SE:
@@ -89,7 +92,9 @@
 					return $delta_y;
 
 				case self::DIR_SW:
-					if($delta_x + $delta_y !== 0) return false;
+					if($delta_x + $delta_y !== 0) {
+                        return false;
+                    }
 					return $delta_y;
 
 				case self::DIR_NW:
@@ -111,12 +116,13 @@
 		/**
 		 * @param Point base
 		 * @param Point target
-		 * @param false|int $override_distance
+		 * @param bool|int $override_distance
 		 *
 		 * @return false|Projectile
 		 */
-		public static function BetweenPoints($base, $target, $override_distance = false)
-		{
+		#[Pure]
+        public static function BetweenPoints($base, $target, bool|int $override_distance = false): bool|Projectile
+        {
 			$delta_x = $target->x - $base->x;
 			$delta_y = $target->y - $base->y;
 			if(!$delta_x)
@@ -139,7 +145,9 @@
 				}
 				return self::PointDir($base, self::DIR_SE, $override_distance ?: $delta_x);
 			}
-			if($delta_x + $delta_y !== 0) return false;
+			if($delta_x + $delta_y !== 0) {
+                return false;
+            }
 			if($delta_x < 0)
 			{
 				return self::PointDir($base, self::DIR_SW, $override_distance ?: -$delta_x);

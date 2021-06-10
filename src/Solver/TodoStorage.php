@@ -8,7 +8,7 @@
 		 * Adds a path to the todo
 		 * @param int[] $path
 		 */
-		abstract public function add($path): void;
+		abstract public function add(array $path): void;
 
 		/**
 		 * Reserve a todo, that's not already reserved
@@ -16,15 +16,15 @@
 		 *
 		 * @return false|int[]
 		 */
-		abstract public function reserve($pid);
+		abstract public function reserve(int $pid): array|bool;
 
 		/**
 		 * @param int[] $path
 		 */
-		abstract public function remove($path): void;
+		abstract public function remove(array $path): void;
 
 		/**
 		 * @param int[] $path
 		 */
-		abstract public function remove_all($path): void;
+		abstract public function remove_all(array $path): void;
 	}

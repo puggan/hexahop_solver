@@ -11,7 +11,7 @@
 		 *
 		 * @return false|int[]
 		 */
-		abstract public function get($hash);
+		abstract public function get(string $hash): array|bool;
 
 		/**
 		 * Add/Replace a hash
@@ -19,14 +19,14 @@
 		 * @param string $hash
 		 * @param int[] $path
 		 */
-		abstract public function save($hash, $path) : void;
+		abstract public function save(string $hash, array $path) : void;
 
 		/**
 		 * Remove an hash
 		 *
 		 * @param string $hash
 		 */
-		abstract public function remove($hash) : void;
+		abstract public function remove(string $hash) : void;
 
 		//<editor-fold desc="ArrayAccess">
 		public function offsetExists($offset) : bool

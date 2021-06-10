@@ -4,22 +4,17 @@
 
 	class TodoFileStorage extends TodoStorage
 	{
-		/** @var string $filename */
-		private $filename;
-		/** @var HashStorage $reserved */
-		private $reserved;
-		/** @var int $remove_count */
-		private $remove_count;
-
-		/** @var int $removed_position */
-		private $removed_position = 0;
+		private string $filename;
+		private HashStorage|IniHashStorage $reserved;
+		private int $remove_count;
+		private int $removed_position = 0;
 
 		/**
 		 * TodoFileStorage constructor.
 		 *
 		 * @param string $filename
 		 */
-		public function __construct($filename)
+		public function __construct(string $filename)
 		{
 			$this->filename = $filename;
 			if($filename[strlen($filename) - 4] === '.')
@@ -38,7 +33,7 @@
 		 *
 		 * @param int[] $path
 		 */
-		public function add($path) : void
+		public function add(array $path) : void
 		{
 			$row = '0:' . implode(',', $path) . PHP_EOL;
 			$f = fopen($this->filename, 'ab');
@@ -53,7 +48,7 @@
 		 *
 		 * @return false|int[]
 		 */
-		public function reserve($pid)
+		public function reserve(int $pid): array|bool
 		{
 			if(!is_file($this->filename))
 			{
@@ -69,7 +64,7 @@
 			while(!feof($f))
 			{
 				$line = fgets($f, 1e6);
-				if(strpos($line, '0:') !== 0)
+				if(!str_starts_with($line, '0:'))
 				{
 					if(!$first_found) {
 						$this->removed_position = ftell($f);
@@ -97,7 +92,7 @@
 		/**
 		 * @param int[] $path
 		 */
-		public function remove($path) : void
+		public function remove(array $path) : void
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
@@ -116,7 +111,7 @@
 			{
 				$position_before = ftell($f);
 				$line = fgets($f, 1e6);
-				if(strpos($line, '0:') !== 0)
+				if(!str_starts_with($line, '0:'))
 				{
 					if(!$first_found) {
 						$this->removed_position = ftell($f);
@@ -140,7 +135,7 @@
 		/**
 		 * @param int[] $path
 		 */
-		public function remove_all($path) : void
+		public function remove_all(array $path) : void
 		{
 			$path_string = implode(',', $path);
 			$this->reserved->remove($path_string);
@@ -157,12 +152,12 @@
 			{
 				$position_before = ftell($f);
 				$line = fgets($f, 1e6);
-				if(strpos($line, '0:') !== 0)
+				if(!str_starts_with($line, '0:'))
 				{
 					continue;
 				}
 				$row_path = trim(substr($line, 2));
-				if($row_path === $path_string || strpos($row_path, $path_string . ',') === 0)
+				if($row_path === $path_string || str_starts_with($row_path, $path_string . ','))
 				{
 					$position_after = ftell($f);
 					fseek($f, $position_before);
@@ -194,7 +189,7 @@
 			while(!feof($f_copy))
 			{
 				$line = fgets($f_copy, 1e6);
-				if(strpos($line, '0:') !== 0)
+				if(!str_starts_with($line, '0:'))
 				{
 					continue;
 				}

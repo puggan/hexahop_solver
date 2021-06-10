@@ -54,8 +54,13 @@
 			return $path;
 		}
 
-		public function map_info($json_option)
-		{
+        /**
+         * @param $json_option
+         * @return bool|string
+         * @throws \JsonException
+         */
+		public function map_info($json_option): bool|string
+        {
 			return $this->startState->map_info($json_option);
 		}
 	}
