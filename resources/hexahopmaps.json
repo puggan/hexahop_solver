@@ -454,7 +454,7 @@
     "level_number": 21,
     "width": 13,
     "height": 13,
-    "par": 56,
+    "par": 51,
     "start_x": 11,
     "start_y": 10
   },
@@ -495,7 +495,7 @@
     "level_number": 25,
     "width": 13,
     "height": 15,
-    "par": 218,
+    "par": 216,
     "start_x": 12,
     "start_y": 9
   },
@@ -536,7 +536,7 @@
     "level_number": 41,
     "width": 11,
     "height": 12,
-    "par": 78,
+    "par": 68,
     "start_x": 1,
     "start_y": 11
   },
@@ -678,7 +678,7 @@
     "level_number": 51,
     "width": 13,
     "height": 15,
-    "par": 69,
+    "par": 61,
     "start_x": 0,
     "start_y": 13
   },
@@ -750,7 +750,7 @@
     "level_number": 58,
     "width": 12,
     "height": 14,
-    "par": 46,
+    "par": 45,
     "start_x": 1,
     "start_y": 13
   },
@@ -790,7 +790,7 @@
     "level_number": 55,
     "width": 12,
     "height": 14,
-    "par": 76,
+    "par": 75,
     "start_x": 5,
     "start_y": 13
   },
