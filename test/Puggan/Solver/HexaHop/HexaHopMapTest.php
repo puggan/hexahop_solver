@@ -338,4 +338,17 @@
 				$this->assertEquals($m->points(), $m->par(), 'Level ' . $level_number . ' beat par');
 			}
 		}
+
+		public function testMapsPosible()
+		{
+			foreach(range(1, 100) as $mapId)
+			{
+				if (in_array($mapId, [60, 73, 80], true)) {
+					// TODO remove exception
+					continue;
+				}
+				$map = new HexaHopMap($mapId);
+				$this->assertFalse($map->impossible(), 'Level ' . $mapId . ' imposible, at start');
+			}
+		}
 	}
