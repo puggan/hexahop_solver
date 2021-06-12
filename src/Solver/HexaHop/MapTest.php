@@ -34,7 +34,7 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
     $alive = true;
     if ($map->impossible()) {
         echo 'Impossible (at start)', PHP_EOL;
-        $alive = false;
+        //$alive = false;
     }
 
     $path = [];
@@ -50,7 +50,7 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
             }
 
             if ($printEveryStep) {
-                echo $view->header($map), $view->map($map), PHP_EOL;
+                echo $view->header($map), 'Moving ', $directions[$dir], PHP_EOL, $view->map($map), PHP_EOL;
             }
 
             /** @var HexaHopMap $map */
@@ -71,8 +71,8 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
             if ($map->impossible()) {
                 echo 'Step: ', ($index + 1), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
                 echo 'Impossible', PHP_EOL;
-                $alive = false;
-                break;
+                //$alive = false;
+                //break;
             }
         }
     }
