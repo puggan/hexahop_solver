@@ -34,10 +34,9 @@ class Bash extends View
     public function header(HexaHopMap $map): string
     {
         $info = $map->info();
-        return <<<TEXT_BLOCK
-=== #{$info->level_number}: {$info->title} [par: {$info->par}] ===
-
-TEXT_BLOCK;
+        $points = $map->points();
+        $parPrefix = $points ? $points . ' /' : 'par:';
+        return "=== #{$info->level_number}: {$info->title} [{$parPrefix} {$info->par}] ===\n";
     }
 
     public function map(HexaHopMap $map): string

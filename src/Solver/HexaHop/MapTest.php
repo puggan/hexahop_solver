@@ -7,11 +7,13 @@ use Puggan\Views\Bash;
 /** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-(static function (?string $id, ?string $path_str) {
+(static function (?string $id, ?string $path_str, ?string $printEveryStep) {
     if (!$id) {
         echo 'No ID', PHP_EOL;
         die(1);
     }
+
+    $view = new Bash();
 
     $maps = HexaHopMap::list_maps();
 
@@ -47,6 +49,10 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
                 break;
             }
 
+            if ($printEveryStep) {
+                echo $view->header($map), $view->map($map), PHP_EOL;
+            }
+
             /** @var HexaHopMap $map */
             $map = $map->move($dir);
 
@@ -71,7 +77,6 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
         }
     }
 
-    $view = new Bash();
     echo $view->header($map);
     $viewMap = $view->map($map);
 
@@ -95,5 +100,6 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
     die(0);
 })(
     $argv[1] ?? null,
-    $argv[2] ?? null
+    $argv[2] ?? null,
+    $argv[3] ?? null
 );
