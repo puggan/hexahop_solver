@@ -751,7 +751,7 @@
         "width": 13,
         "height": 15,
         "par": 241,
-        "start_x": 2,
+        "start_x": 1,
         "start_y": 11
     },
     {
@@ -825,7 +825,7 @@
         "height": 17,
         "par": 38,
         "start_x": 4,
-        "start_y": 14
+        "start_y": 12
     },
     {
         "file": "B_Builder/overbuild.lev",
