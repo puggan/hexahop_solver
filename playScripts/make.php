@@ -19,6 +19,10 @@
             continue;
         }
 
+        if (empty($mapPaths[$mapId])) {
+            echo "Missing solution, Map {$mapId}: {$m[1]}", PHP_EOL;
+        }
+
         $mapPaths[$mapId] = $m[1];
     }
 
