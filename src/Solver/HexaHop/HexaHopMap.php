@@ -961,6 +961,8 @@ class HexaHopMap extends MapState implements \JsonSerializable
             $trampolines = [];
             /** @var Projectile[] $todo */
             $todo = [];
+            /** @var Projectile[] $tested */
+            $tested = [];
             foreach ($reachable as $z => $plane) {
                 foreach ($plane as $y => $row) {
                     foreach ($row as $x => $reached) {
@@ -972,7 +974,13 @@ class HexaHopMap extends MapState implements \JsonSerializable
             }
 
             while ($todo) {
+                $todo = Point::unique($todo);
                 $start_point = array_pop($todo);
+                $start_point_key = (string)$start_point;
+                if (isset($tested[$start_point_key])) {
+                    continue;
+                }
+                $tested[$start_point_key] = $start_point;
                 $neighbors = $this->next_points($start_point);
                 $start_tile = $my_tiles[$start_point->y][$start_point->x] ?? self::TILE_WATER;
                 if ($start_tile !== self::TILE_WATER) {
@@ -1019,14 +1027,8 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     $trampolinePoint = $this->next_point($start_point, $dir1);
                                     $trampolinePoint->z = 0;
                                     foreach (range(0, 5) as $dir2) {
-                                        $trampTarget1 = $this->next_point($trampolinePoint, $dir2);
-                                        $trampTarget2 = $this->next_point($trampolinePoint, $dir2, 2);
-                                        $neighbors[] = $trampTarget1;
-                                        $neighbors[] = $trampTarget2;
-                                        $trampTarget1->z = 1;
-                                        $neighbors[] = $trampTarget1;
-                                        $trampTarget2->z = 1;
-                                        $neighbors[] = $trampTarget2;
+                                        $neighbors[] = $this->next_point($trampolinePoint, $dir2);
+                                        $neighbors[] = $this->next_point($trampolinePoint, $dir2, 2);
                                     }
                                 }
                                 $neighbors = Point::unique($neighbors);
@@ -1044,6 +1046,12 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     }
                                 }
                             }
+                            foreach($neighbors as $neighbor) {
+                                $elevatedPoint = clone $neighbor;
+                                $elevatedPoint->z = 1 - $elevatedPoint->z;
+                                $neighbors[] = $elevatedPoint;
+                            }
+                            $neighbors = Point::unique($neighbors);
                             break;
 
                         case self::TILE_BUILD:
@@ -1055,6 +1063,12 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     $tile_types[self::TILE_BUILDABLE_WATER]++;
                                 }
                             }
+                            foreach($neighbors as $neighbor) {
+                                $elevatedPoint = clone $neighbor;
+                                $elevatedPoint->z = 1 - $elevatedPoint->z;
+                                $neighbors[] = $elevatedPoint;
+                            }
+                            $neighbors = Point::unique($neighbors);
                             break;
                     }
                     foreach ($neighbors as $point) {
@@ -1068,7 +1082,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                 // Green is only reachable, if there is a way to leave it.
                                 if ($point->length === 1) {
                                     $green_neighbors = $this->next_points($point);
-                                    $return_dir = ($point->dir + 3) % 6;
+                                    $return_dir = $point->dir === Projectile::DIR_J ? $point->dir : ($point->dir + 3) % 6;
                                     $green_have_neighbors = false;
                                     foreach ($green_neighbors as $green_neighbor_point) {
                                         $green_neighbor_tile = $my_tiles[$green_neighbor_point->y][$green_neighbor_point->x] ?? 0;
@@ -1165,29 +1179,37 @@ class HexaHopMap extends MapState implements \JsonSerializable
                             case self::TILE_ANTI_ICE:
                             case self::TILE_LOW_LAND:
                             case self::TILE_LOW_BLUE:
-                                $reachable[0][$point->y][$point->x] = true;
-                                $new_point = clone $point;
-                                $new_point->z = 0;
-                                $todo[] = $new_point;
+                                if (!$reachable[0][$point->y][$point->x]) {
+                                    $reachable[0][$point->y][$point->x] = true;
+                                    $new_point = clone $point;
+                                    $new_point->z = 0;
+                                    $todo[] = $new_point;
+                                }
                                 break;
 
                             case self::TILE_HIGH_ELEVATOR:
                             case self::TILE_HIGH_LAND:
                                 if ($point->z > 0) {
-                                    $reachable[1][$point->y][$point->x] = true;
-                                    $todo[] = $point;
+                                    if (!$reachable[1][$point->y][$point->x]) {
+                                        $reachable[1][$point->y][$point->x] = true;
+                                        $todo[] = $point;
+                                    }
                                 }
                                 break;
 
                             case self::TILE_BUILDABLE_WATER:
                                 if ($point->z > 0) {
-                                    $reachable[$point->z][$point->y][$point->x] = true;
-                                    $todo[] = $point;
+                                    if (!$reachable[$point->z][$point->y][$point->x]) {
+                                        $reachable[$point->z][$point->y][$point->x] = true;
+                                        $todo[] = $point;
+                                    }
                                 }
                                 $new_point = clone $point;
                                 $new_point->z = 0;
-                                $reachable[$new_point->z][$new_point->y][$new_point->x] = true;
-                                $todo[] = $new_point;
+                                if (!$reachable[$new_point->z][$new_point->y][$new_point->x]) {
+                                    $reachable[$new_point->z][$new_point->y][$new_point->x] = true;
+                                    $todo[] = $new_point;
+                                }
                                 break;
 
                             case self::TILE_WATER:
