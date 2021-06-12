@@ -24,7 +24,7 @@ class HexaHopSolverMemSave extends SolverNoSave
         }
 
         $path = array_slice($this->path, 0, $this->depth);
-        $player = $state->getPlayer();
+        $player = $state->player();
         $position_hashes = &$this->position_hashes[$player->z][$player->y][$player->x];
         if (isset($position_hashes[$hash]) && count($position_hashes[$hash]) <= $this->depth) {
             return true;

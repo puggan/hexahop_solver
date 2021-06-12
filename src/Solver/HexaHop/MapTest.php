@@ -2,6 +2,7 @@
 <?php
 
 use Puggan\Solver\HexaHop\HexaHopMap;
+use Puggan\Views\Bash;
 
 /** @noinspection PhpIncludeInspection parameter levels seams to be ignored https://youtrack.jetbrains.com/issue/WI-35143 */
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
@@ -70,20 +71,28 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
         }
     }
 
-    if ($alive) {
-        if (!$map->won()) {
-            echo 'Step: ', count($path), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
-            echo 'Still alive', PHP_EOL;
-            die(253);
-        }
+    $view = new Bash();
+    echo $view->header($map);
+    $viewMap = $view->map($map);
 
-        if ($map->points() < $map->par()) {
-            echo 'Beat Par', PHP_EOL;
-            die(1);
-        }
-    } else {
+    if (!$alive) {
+        echo $viewMap, PHP_EOL;
         die(254);
     }
+
+    if (!$map->won()) {
+        echo 'Step: ', count($path), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
+        echo 'Still alive', PHP_EOL, $viewMap, PHP_EOL;
+        die(253);
+    }
+
+    if ($map->points() < $map->par()) {
+        echo 'Beat Par', PHP_EOL, $viewMap, PHP_EOL;
+        die(1);
+    }
+
+    echo $viewMap, PHP_EOL;
+    die(0);
 })(
     $argv[1] ?? null,
     $argv[2] ?? null

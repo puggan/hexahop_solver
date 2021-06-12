@@ -1475,8 +1475,24 @@ class HexaHopMap extends MapState implements \JsonSerializable
     /**
      * @return Player
      */
-    public function getPlayer(): Player
+    public function player(): Player
     {
         return clone $this->player;
+    }
+
+    /**
+     * @return MapInfo
+     */
+    public function info(): MapInfo
+    {
+        return clone $this->map_info;
+    }
+
+    /**
+     * @return int[][]
+     */
+    public function tiles(): array
+    {
+        return $this->tiles;
     }
 }

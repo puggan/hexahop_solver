@@ -75,10 +75,10 @@ if ($argc < 2) {
                 if ($stats[$level_number]->steps < $steps) {
                     echo 'Step count worse than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
                 } elseif ($stats[$level_number]->steps > $steps) {
-                        echo 'Step count better than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
-                    } else {
-                        echo 'Same step-count as last time', PHP_EOL;
-                    }
+                    echo 'Step count better than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
+                } else {
+                    echo 'Same step-count as last time', PHP_EOL;
+                }
             }
             if (!$stats[$level_number]->steps || $stats[$level_number]->steps > $steps) {
                 $stats[$level_number]->steps = $steps;

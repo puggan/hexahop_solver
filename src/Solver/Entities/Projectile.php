@@ -52,7 +52,8 @@ class Projectile extends Point
         $base,
         $target,
         bool|int $override_distance = false
-    ): bool|Projectile {
+    ): bool|Projectile
+    {
         $delta_x = $target->x - $base->x;
         $delta_y = $target->y - $base->y;
         if (!$delta_x) {
@@ -91,7 +92,8 @@ class Projectile extends Point
         Point $point,
         int $dir,
         int $length = 1
-    ): Projectile {
+    ): Projectile
+    {
         return new self($point->x, $point->y, $point->z, $dir, $length);
     }
 

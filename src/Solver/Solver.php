@@ -37,7 +37,8 @@ class Solver
         MapState $startState,
         HashStorage $solved, /*$alias,*/ HashStorage $hashes,
         TodoStorage $todos
-    ) {
+    )
+    {
         $this->startState = $startState;
         $this->solved = $solved;
         //$this->alias = $alias;
