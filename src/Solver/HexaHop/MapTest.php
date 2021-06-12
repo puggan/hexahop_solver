@@ -8,14 +8,14 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 (static function (?string $id, ?string $path_str) {
     if (!$id) {
-        echo 'No ID';
+        echo 'No ID', PHP_EOL;
         die(1);
     }
 
     $maps = HexaHopMap::list_maps();
 
     if (empty($maps[$id]->title)) {
-        echo 'Bad map, no title';
+        echo 'Bad map, no title', PHP_EOL;
         die(1);
     }
 
@@ -24,7 +24,7 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
     $map = new HexaHopMap($id);
 
     if (!$map) {
-        echo 'Bad map';
+        echo 'Bad map', PHP_EOL;
         die(1);
     }
 

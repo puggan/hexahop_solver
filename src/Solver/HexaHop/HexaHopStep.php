@@ -25,7 +25,7 @@ if ($argc < 2) {
         if (++$steps % DISPLAY_STEPS === 0) {
             $old = $timestamp;
             $timestamp = hrtime(true);
-            echo $steps, ' @ ', (DISPLAY_STEPS * 1e9 / ($timestamp - $old)), PHP_EOL;
+            echo PHP_EOL, $steps, ' @ ', (DISPLAY_STEPS * 1e9 / ($timestamp - $old)), ' <- ', implode(',', $solver->lastPath), ' (', count($solver->lastPath), ')', PHP_EOL;
         }
         usleep(SLEEP_TIME);
     }

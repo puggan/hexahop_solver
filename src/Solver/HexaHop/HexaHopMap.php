@@ -717,7 +717,8 @@ class HexaHopMap extends MapState implements \JsonSerializable
      * Player have won
      * @return bool
      */
-    #[Pure] public function won(): bool
+    #[Pure]
+    public function won(): bool
     {
         if ($this->lost()) {
             return false;

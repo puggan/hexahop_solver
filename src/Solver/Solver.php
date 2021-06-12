@@ -21,6 +21,9 @@ class Solver
     /** @var TodoStorage $todos */
     private TodoStorage $todos;
 
+    /** @var string[] $lastPath */
+    public array $lastPath;
+
     /**
      * Solver constructor.
      *
@@ -53,6 +56,7 @@ class Solver
         if ($path === false) {
             return false;
         }
+        $this->lastPath = $path;
         $todo_state = $this->loadState($path);
         if ($todo_state->lost()) {
             throw new \RuntimeException(
