@@ -127,7 +127,7 @@
     "level_number": 91,
     "width": 11,
     "height": 19,
-    "par": 33,
+    "par": 26,
     "start_x": 4,
     "start_y": 14
   },
@@ -147,7 +147,7 @@
     "level_number": 97,
     "width": 12,
     "height": 15,
-    "par": 37,
+    "par": 35,
     "mappar": 38,
     "start_x": 7,
     "start_y": 9
@@ -566,7 +566,7 @@
     "level_number": 85,
     "width": 13,
     "height": 12,
-    "par": 35,
+    "par": 33,
     "mappar": 37,
     "start_x": 1,
     "start_y": 11
@@ -927,7 +927,7 @@
     "level_number": 81,
     "width": 12,
     "height": 20,
-    "par": 39,
+    "par": 36,
     "mappar": 45,
     "start_x": 5,
     "start_y": 19
