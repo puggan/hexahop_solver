@@ -27,6 +27,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
     public const TILE_ANTI_ICE = 11;
     public const TILE_BUILD = 12;
     //private const TILE_UNKNOWN_13 = 13;
+    public const TILE_BUILDABLE_WATER = 13;
     public const TILE_BOAT = 14;
     public const TILE_LOW_ELEVATOR = 15;
     public const TILE_HIGH_ELEVATOR = 16;
@@ -212,6 +213,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
         return match ($this->tiles[$point->y][$point->x] & self::MASK_TILE_TYPE) {
             self::TILE_WATER,
             self::TILE_LOW_ELEVATOR,
+            self::TILE_BUILDABLE_WATER,
             self::TILE_TRAMPOLINE,
             self::TILE_ROTATOR,
             self::TILE_LASER,
@@ -903,6 +905,10 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
         /** @var Projectile[] $reachable_lasers */
         $reachable_lasers = [];
+        /** @var Point[] $reachable_builders */
+        $reachable_builders = [];
+        $reachable_boats = [];
+        $reachable_rotaters = [];
         //</editor-fold>
 
         //<editor-fold desc="Par vs Steps + Greens">
@@ -976,9 +982,9 @@ class HexaHopMap extends MapState implements \JsonSerializable
                             break;
 
                         case self::TILE_ROTATOR:
-                        case self::TILE_BUILD:
                             $neighbor_count = 0;
                             $rotating_trampoline = false;
+                            $rotating_builder = false;
                             foreach ($neighbors as $neighbor) {
                                 $neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
                                 // Double rotator can move about everywhere, rotated builder is a mess too
@@ -986,29 +992,67 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     return false;
                                 }
                                 if ($neighbor_tile === self::TILE_LASER) {
+                                    // TODO $reachable_lasers
                                     return false;
                                 }
                                 if ($neighbor_tile !== self::TILE_WATER) {
                                     $neighbor_count++;
                                 }
-                                if (!$rotating_trampoline && $start_tile === self::TILE_ROTATOR && $neighbor_tile === self::TILE_TRAMPOLINE) {
+                                if ($neighbor_tile === self::TILE_TRAMPOLINE) {
                                     $rotating_trampoline = true;
                                 }
                             }
                             // If at least one neighbor then all neighbor can be reached
-                            if ($neighbor_count > 0 || $start_tile === self::TILE_BUILD) {
+                            if ($neighbor_count > 0) {
                                 foreach ($neighbors as $neighbor) {
                                     $neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
                                     // As it can be either low or high, treat it as an elevator
-                                    $tile_types[$neighbor_tile]--;
-                                    $my_tiles[$neighbor->y][$neighbor->x] = self::TILE_LOW_ELEVATOR;
-                                    $tile_types[self::TILE_LOW_ELEVATOR]++;
+                                    if ($neighbor_tile !== self::TILE_BUILDABLE_WATER) {
+                                        $tile_types[$neighbor_tile]--;
+                                        $my_tiles[$neighbor->y][$neighbor->x] = self::TILE_BUILDABLE_WATER;
+                                        $tile_types[self::TILE_BUILDABLE_WATER]++;
+                                    }
                                 }
                             }
                             if ($rotating_trampoline) {
-                                foreach (range(0, 5) as $dir) {
-                                    $neighbors[] = $this->next_point($start_point, $dir, 2);
-                                    $neighbors[] = $this->next_point($start_point, $dir, 3);
+                                foreach (range(0, 5) as $dir1) {
+                                    $trampolinePoint = $this->next_point($start_point, $dir1);
+                                    $trampolinePoint->z = 0;
+                                    foreach (range(0, 5) as $dir2) {
+                                        $trampTarget1 = $this->next_point($trampolinePoint, $dir2);
+                                        $trampTarget2 = $this->next_point($trampolinePoint, $dir2, 2);
+                                        $neighbors[] = $trampTarget1;
+                                        $neighbors[] = $trampTarget2;
+                                        $trampTarget1->z = 1;
+                                        $neighbors[] = $trampTarget1;
+                                        $trampTarget2->z = 1;
+                                        $neighbors[] = $trampTarget2;
+                                    }
+                                }
+                                $neighbors = Point::unique($neighbors);
+                            }
+                            if ($rotating_builder) {
+                                foreach ($neighbors as $neighbor) {
+                                    foreach (range(0, 5) as $dir1) {
+                                        $buildPoint = $this->next_point($neighbor, $dir1);
+                                        $neighbor_tile = $my_tiles[$buildPoint->y][$buildPoint->x] ?? 0;
+                                        if (in_array($neighbor_tile, [self::TILE_WATER, self::TILE_LOW_GREEN], true)) {
+                                            $tile_types[$neighbor_tile]--;
+                                            $my_tiles[$neighbor->y][$neighbor->x] = self::TILE_BUILDABLE_WATER;
+                                            $tile_types[self::TILE_BUILDABLE_WATER]++;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+
+                        case self::TILE_BUILD:
+                            foreach ($neighbors as $neighbor) {
+                                $neighbor_tile = $my_tiles[$neighbor->y][$neighbor->x] ?? 0;
+                                if (in_array($neighbor_tile, [self::TILE_WATER, self::TILE_LOW_GREEN], true)) {
+                                    $tile_types[$neighbor_tile]--;
+                                    $my_tiles[$neighbor->y][$neighbor->x] = self::TILE_BUILDABLE_WATER;
+                                    $tile_types[self::TILE_BUILDABLE_WATER]++;
                                 }
                             }
                             break;
@@ -1133,6 +1177,17 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     $reachable[1][$point->y][$point->x] = true;
                                     $todo[] = $point;
                                 }
+                                break;
+
+                            case self::TILE_BUILDABLE_WATER:
+                                if ($point->z > 0) {
+                                    $reachable[$point->z][$point->y][$point->x] = true;
+                                    $todo[] = $point;
+                                }
+                                $new_point = clone $point;
+                                $new_point->z = 0;
+                                $reachable[$new_point->z][$new_point->y][$new_point->x] = true;
+                                $todo[] = $new_point;
                                 break;
 
                             case self::TILE_WATER:
