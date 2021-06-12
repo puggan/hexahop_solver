@@ -49,4 +49,16 @@ class Point
     {
         return $this->x . ':' . $this->y . ':' . $this->z;
     }
+
+    /**
+     * @param Point[] $points
+     * @return Point[]
+     */
+    public static function unique(array $points): array {
+        $uniquePoints = [];
+        foreach($points as $point) {
+            $uniquePoints[(string) $point] = $point;
+        }
+        return array_values($uniquePoints);
+    }
 }
