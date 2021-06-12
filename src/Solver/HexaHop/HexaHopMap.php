@@ -179,7 +179,14 @@ class HexaHopMap extends MapState implements \JsonSerializable
         $this->y_max = $map_stream->uint8();
 
         // Player position: x(4), y(4)
-        $map_stream->skip(8);
+        $px = $map_stream->uint32();
+        $py = $map_stream->uint32();
+        if ($this->map_info->start_x !== $px) {
+            throw new \RuntimeException('wrong start position, found X: ' . $px . ' expected ' . $this->map_info->start_x);
+        }
+        if ($this->map_info->start_y !== $py) {
+            throw new \RuntimeException('wrong start position, found Y: ' . $py . ' expected ' . $this->map_info->start_y);
+        }
 
         $this->tiles = array_fill(
             $this->y_min - 1,
