@@ -18,7 +18,7 @@ class Bash extends View
         HexaHopMap::TILE_HIGH_GREEN => 'GR',
         HexaHopMap::TILE_HIGH_LAND => 'LA',
         HexaHopMap::TILE_ICE => 'ic',
-        HexaHopMap::TILE_LASER => 'la',
+        HexaHopMap::TILE_LASER => 'LS',
         HexaHopMap::TILE_LOW_BLUE => 'bl',
         HexaHopMap::TILE_LOW_ELEVATOR => 'el',
         HexaHopMap::TILE_LOW_GREEN => 'gr',
