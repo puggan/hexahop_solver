@@ -529,7 +529,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                     break;
                 }
 
-                // TODO wall-test before or after?
+                $this->wall_test($old_tile);
 
                 // Normal Ice
                 foreach (range(1, 100) as $distance) {
