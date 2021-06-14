@@ -1,3 +1,4 @@
+#!/bin/env php
 <?php
 
 (static function(int $preSleep, int $keyDelay) {
