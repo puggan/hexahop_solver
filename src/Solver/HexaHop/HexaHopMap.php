@@ -534,10 +534,23 @@ class HexaHopMap extends MapState implements \JsonSerializable
                 // Normal Ice
                 foreach (range(1, 100) as $distance) {
                     $goal_point = $this->next_point($point, $direction, $distance);
-                    if (($this->tiles[$goal_point->y][$goal_point->x] ?? 0) !== self::TILE_ICE) {
-                        $this->move_into($goal_point, $direction, $old_tile);
-                        return;
+                    $goal_tile = ($this->tiles[$goal_point->y][$goal_point->x] ?? 0);
+                    if ($goal_tile === self::TILE_ICE) {
+                        continue;
                     }
+
+                    if (!$this->high_tile($goal_point)) {
+                        $this->move_into($goal_point, $direction, $old_tile);
+                    }
+
+                    if($distance < 2) {
+                        break;
+                    }
+
+                    $goal_point = $this->next_point($point, $direction, $distance - 1);
+                    $this->move_into($goal_point, $direction, $old_tile);
+
+                    return;
                 }
                 break;
 
