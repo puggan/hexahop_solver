@@ -71,8 +71,8 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
             if ($map->impossible()) {
                 echo 'Step: ', ($index + 1), ', Points: ', $map->points(), ' / ', $map->par(), PHP_EOL;
                 echo 'Impossible', PHP_EOL;
-                //$alive = false;
-                //break;
+                $alive = false;
+                break;
             }
         }
     }
