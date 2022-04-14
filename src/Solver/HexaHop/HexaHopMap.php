@@ -1087,6 +1087,12 @@ class HexaHopMap extends MapState implements \JsonSerializable
                             }
                             $neighbors = Point::unique($neighbors);
                             break;
+
+                        case self::TILE_LOW_ELEVATOR:
+                            $new_point = Point::copy($start_point);
+                            $new_point->z = 1;
+                            $todo[] = $new_point;
+                            break;
                     }
                     foreach ($neighbors as $point) {
                         $tile = $my_tiles[$point->y][$point->x] ?? 0;
