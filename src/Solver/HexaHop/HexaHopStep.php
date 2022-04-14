@@ -3,8 +3,8 @@
 
 namespace Puggan\Solver\HexaHop;
 
-define('DISPLAY_STEPS', 1000);
-define('SLEEP_TIME', 1000);
+define('DISPLAY_STEPS', 1_000);
+define('SLEEP_TIME', 1_000);
 
 if ($argc < 2) {
     die('$level_number missing');

@@ -5,8 +5,8 @@ namespace Puggan\Solver\HexaHop;
 
 use Puggan\Solver\IniHashStorage;
 
-define('DOT_STEPS', 1000);
-define('DISPLAY_STEPS', 100000);
+define('DOT_STEPS', 1_000);
+define('DISPLAY_STEPS', 100_000);
 define('SLEEP_TIME', 0);
 
 if ($argc < 2) {
@@ -49,7 +49,7 @@ if ($argc < 2) {
     if (is_file($solved_filename)) {
         echo file_get_contents($solved_filename), PHP_EOL;
         echo 'Solved in ', number_format($steps, 0, '.', ' '), ' steps', PHP_EOL;
-        $full_time = ($endtime - $start_time) / 1000000000;
+        $full_time = ($endtime - $start_time) / 1_000_000_000;
         echo 'Solved in ', $full_time, ' secounds', PHP_EOL;
         if (SLEEP_TIME) {
             $sleep_time = SLEEP_TIME * $steps;
@@ -57,11 +57,11 @@ if ($argc < 2) {
             echo ' + Working ', ($full_time - $sleep_time), ' secounds, (', 100 - 100 * $sleep_time / $full_time, '%)', PHP_EOL;
         }
         /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-        $daySecouns = 3600 * 24;
+        $daySecouns = 3_600 * 24;
         if ($full_time > $daySecouns) {
             echo ' = ', $full_time / $daySecouns, ' days', PHP_EOL;
-        } elseif ($full_time > 3600) {
-            echo ' = ', $full_time / 3600, ' hours', PHP_EOL;
+        } elseif ($full_time > 3_600) {
+            echo ' = ', $full_time / 3_600, ' hours', PHP_EOL;
         } elseif ($full_time > 60) {
             echo ' = ', $full_time / 60, ' minutes', PHP_EOL;
         }

@@ -11,7 +11,7 @@ class HexaHopMapMock extends HexaHopMap
 {
     /** @noinspection MagicMethodsValidityInspection */
     /** @noinspection PhpMissingParentConstructorInspection */
-    public function __construct($tiles, $path = null, $x = null, $y = null, $par = 9999)
+    public function __construct($tiles, $path = null, $x = null, $y = null, $par = 9_999)
     {
         $this->tiles = $tiles;
         $y_list = array_keys($tiles);

@@ -25,7 +25,7 @@ class TodoFolderStorage extends TodoStorage
      *
      * @throws \Exception
      */
-    public function __construct(string $folder, int $rows_per_file = 100000)
+    public function __construct(string $folder, int $rows_per_file = 100_000)
     {
         if (!is_dir($folder) && !mkdir($folder) && !is_dir($folder)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $folder));
@@ -80,7 +80,7 @@ class TodoFolderStorage extends TodoStorage
      */
     public function add(array $path): void
     {
-        if ($this->json_rows_added_in_cache >= 10000) {
+        if ($this->json_rows_added_in_cache >= 10_000) {
             $file_info = $this->json->read();
             if (!$file_info) {
                 throw new \RuntimeException('empty file');

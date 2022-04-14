@@ -124,7 +124,7 @@ class TodoFileStorage extends TodoStorage
             return;
         }
         $this->remove_count += $removed;
-        if (!$force && $this->remove_count <= 10000) {
+        if (!$force && $this->remove_count <= 10_000) {
             return;
         }
 
