@@ -1022,6 +1022,10 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                 if ($neighbor_tile === self::TILE_TRAMPOLINE) {
                                     $rotating_trampoline = true;
                                 }
+                                if ($neighbor_tile === self::TILE_BOAT) {
+                                    // TODO $reachable_boats
+                                    return false;
+                                }
                             }
                             // If at least one neighbor then all neighbor can be reached
                             if ($neighbor_count > 0) {
