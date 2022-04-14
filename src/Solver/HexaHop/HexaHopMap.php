@@ -543,13 +543,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
                         $this->move_into($goal_point, $direction, $old_tile);
                     }
 
-                    if($distance < 2) {
-                        break;
-                    }
-
-                    $goal_point = $this->next_point($point, $direction, $distance - 1);
-                    $this->move_into($goal_point, $direction, $old_tile);
-
                     return;
                 }
                 break;
