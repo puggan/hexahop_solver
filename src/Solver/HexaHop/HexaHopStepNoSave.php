@@ -6,9 +6,9 @@ namespace Puggan\Solver\HexaHop;
 use Puggan\Solver\IniHashStorage;
 use Puggan\Solver\SolverNoSave;
 
-define('DOT_STEPS', 1_000);
-define('DISPLAY_STEPS', 100_000);
-define('SLEEP_TIME', 0);
+define('DOT_STEPS', $_ENV['DOT_STEPS'] ?? 1_000);
+define('DISPLAY_STEPS', $_ENV['DISPLAY_STEPS'] ?? 100_000);
+define('SLEEP_TIME', $_ENV['SLEEP_TIME'] ?? 0);
 
 if ($argc < 2) {
     die('$level_number missing');
