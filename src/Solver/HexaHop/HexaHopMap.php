@@ -75,10 +75,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
      */
     public function __construct($level_number, ?array $path = null)
     {
-        $this->map_info = self::read_map_info($level_number);
-        if (!$this->map_info) {
-            throw new \RuntimeException('invalid level_number. ' . $level_number);
-        }
+        $this->map_info = self::read_map_info($level_number) ?? throw new \RuntimeException('invalid level_number. ' . $level_number);
 
         $this->points = 0;
         $this->par = $this->map_info->par;

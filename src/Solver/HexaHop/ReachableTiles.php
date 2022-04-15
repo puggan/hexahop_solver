@@ -138,7 +138,7 @@ class ReachableTiles
 
             $startPoint = array_pop($todo);
             $startKey = (string)$startPoint;
-            if (isset($tested[$startKey])) {
+            if (!$startPoint || isset($tested[$startKey])) {
                 continue;
             }
 

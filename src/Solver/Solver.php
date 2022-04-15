@@ -66,7 +66,7 @@ class Solver
 
             $hash = $state->hash();
             $duplicate_path = $this->hashes->get($hash);
-            if ($duplicate_path !== false) {
+            if ($duplicate_path !== null) {
                 $duplicate_state = $this->loadState($duplicate_path);
                 if (!$state->better($duplicate_state)) {
                     //$this->alias->add($dir_path, $duplicate_path);

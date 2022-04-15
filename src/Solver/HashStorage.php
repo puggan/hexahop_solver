@@ -30,6 +30,9 @@ abstract class HashStorage implements \ArrayAccess
 
     public function offsetSet($offset, $value): void
     {
+        if (!is_string($offset)) {
+            throw new \RuntimeException('bad key');
+        }
         $this->save($offset, $value);
     }
 
