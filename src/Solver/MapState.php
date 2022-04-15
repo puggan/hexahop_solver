@@ -4,7 +4,7 @@ namespace Puggan\Solver;
 
 abstract class MapState
 {
-    abstract public function __construct($data, ?string $path = null);
+    abstract public function __construct($data, ?array $path = null);
 
     /**
      * Player have won?

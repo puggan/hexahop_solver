@@ -21,7 +21,7 @@ class Solver
     /** @var TodoStorage $todos */
     private TodoStorage $todos;
 
-    /** @var string[] $lastPath */
+    /** @var array<int, int> $lastPath */
     public array $lastPath;
 
     public function __construct(

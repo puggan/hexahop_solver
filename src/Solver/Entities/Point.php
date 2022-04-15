@@ -26,7 +26,7 @@ class Point
     /**
      * @template P of Point
      * @param P[] $points
-     * @return array<string, P>
+     * @return array<int, P>
      */
     public static function unique(array $points): array {
         $uniquePoints = [];

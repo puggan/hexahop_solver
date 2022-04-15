@@ -71,8 +71,9 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     /**
      * @param int $level_number
+     * @param ?int[] $path
      */
-    public function __construct($level_number, ?string $path = null)
+    public function __construct($level_number, ?array $path = null)
     {
         $this->map_info = self::read_map_info($level_number);
         if (!$this->map_info) {
@@ -400,7 +401,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                 $projectiles = [];
                 /** @var Projectile[] $todos */
                 $todos = [];
-                /** @var Point $damage */
+                /** @var Point[] $damage */
                 $damage = [];
                 if ($direction === Projectile::DIR_J) {
                     $todos = [
