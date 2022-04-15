@@ -6,6 +6,7 @@ use Puggan\Solver\Entities\JSON\TodoFolderStorageJson;
 
 class TodoFolderStorage extends TodoStorage
 {
+    public const MAX_LINE_LENGTH = 1_000_000;
     private string $folder;
     private HashStorage|IniHashStorage $reserved;
     private JsonLockedFile $json;
@@ -123,7 +124,7 @@ class TodoFolderStorage extends TodoStorage
                 fseek($f, $this->removed_position[$file]);
             }
             while (!feof($f)) {
-                $line = fgets($f, 1e6);
+                $line = fgets($f, self::MAX_LINE_LENGTH);
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
                         $this->removed_position[$file] = ftell($f);
@@ -182,7 +183,7 @@ class TodoFolderStorage extends TodoStorage
             }
             while (!feof($f)) {
                 $position_before = ftell($f);
-                $line = fgets($f, 1e6);
+                $line = fgets($f, self::MAX_LINE_LENGTH);
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
                         $this->removed_position[$file] = ftell($f);
@@ -261,7 +262,7 @@ class TodoFolderStorage extends TodoStorage
             }
             while (!feof($f)) {
                 $position_before = ftell($f);
-                $line = fgets($f, 1e6);
+                $line = fgets($f, self::MAX_LINE_LENGTH);
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
                         $this->removed_position[$file] = ftell($f);

@@ -24,7 +24,7 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
     /** @noinspection NonSecureHtmlentitiesUsageInspection */
     $map_info = (object)array_map('htmlentities', (array)$maps[$id]);
-    $map = new HexaHopMap($id);
+    $map = new HexaHopMap((int) $id);
 
     $alive = true;
     if ($map->impossible()) {

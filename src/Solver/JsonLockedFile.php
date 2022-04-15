@@ -25,7 +25,7 @@ class JsonLockedFile
         if (!is_file($this->filename)) {
             $this->f = fopen($this->filename, 'wb');
             if (!$this->f) {
-                throw new \RuntimeException('Failed to open file: ', $this->filename);
+                throw new \RuntimeException('Failed to open file: ' . $this->filename);
             }
             return null;
         }

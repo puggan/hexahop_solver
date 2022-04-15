@@ -4,6 +4,7 @@ namespace Puggan\Solver;
 
 class IniFolderHashStorage extends HashStorage
 {
+    public const MAX_LINE_LENGTH = 1_000_000;
     /** @var string $folder */
     protected mixed $folder;
     /** @var int $prefix_length */
@@ -35,7 +36,7 @@ class IniFolderHashStorage extends HashStorage
         $hash_suffix = substr($hash, $this->prefix_length);
         $f = fopen($filename, 'rb');
         while (!feof($f)) {
-            $line = fgets($f, 1e6);
+            $line = fgets($f, self::MAX_LINE_LENGTH);
             if (str_starts_with($line, $hash_suffix)) {
                 fclose($f);
                 $path_string = substr($line, 1 + strlen($hash_suffix));
@@ -80,11 +81,11 @@ class IniFolderHashStorage extends HashStorage
         $f = fopen($filename, 'rb+');
         while (!feof($f)) {
             $before = ftell($f);
-            $line = fgets($f, 1e6);
+            $line = fgets($f, self::MAX_LINE_LENGTH);
             if ($new_path !== false && !trim($line)) {
                 do {
                     $empty = ftell($f);
-                    $line = fgets($f, 1e6);
+                    $line = fgets($f, self::MAX_LINE_LENGTH);
                 } while (!trim($line) && !feof($f));
                 $length = $empty - $before;
                 if ($length >= $new_length) {
@@ -103,7 +104,7 @@ class IniFolderHashStorage extends HashStorage
             if (str_starts_with($line, $hash_suffix)) {
                 /** @var int $length */
                 $length = ftell($f) - $before;
-                while (!trim(fgets($f, 1e6))) {
+                while (!trim(fgets($f, self::MAX_LINE_LENGTH))) {
                     $length = ftell($f) - $before;
                 }
                 fseek($f, $before);

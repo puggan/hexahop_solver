@@ -4,6 +4,7 @@ namespace Puggan\Solver;
 
 class TodoFileStorage extends TodoStorage
 {
+    public const MAX_LINE_LENGTH = 1_000_000;
     private string $filename;
     private HashStorage|IniHashStorage $reserved;
     private int $remove_count;
@@ -50,7 +51,7 @@ class TodoFileStorage extends TodoStorage
         fseek($f, $this->removed_position);
         $first_found = false;
         while (!feof($f)) {
-            $line = fgets($f, 1e6);
+            $line = fgets($f, self::MAX_LINE_LENGTH);
             if (!str_starts_with($line, '0:')) {
                 if (!$first_found) {
                     $this->removed_position = ftell($f);
@@ -91,7 +92,7 @@ class TodoFileStorage extends TodoStorage
         $first_found = false;
         while (!feof($f)) {
             $position_before = ftell($f);
-            $line = fgets($f, 1e6);
+            $line = fgets($f, self::MAX_LINE_LENGTH);
             if (!str_starts_with($line, '0:')) {
                 if (!$first_found) {
                     $this->removed_position = ftell($f);
@@ -126,7 +127,7 @@ class TodoFileStorage extends TodoStorage
         $f_copy = fopen($filename_copy, 'rb');
         $f_new = fopen($this->filename, 'wb');
         while (!feof($f_copy)) {
-            $line = fgets($f_copy, 1e6);
+            $line = fgets($f_copy, self::MAX_LINE_LENGTH);
             if (!str_starts_with($line, '0:')) {
                 continue;
             }
@@ -155,7 +156,7 @@ class TodoFileStorage extends TodoStorage
         }
         while (!feof($f)) {
             $position_before = ftell($f);
-            $line = fgets($f, 1e6);
+            $line = fgets($f, self::MAX_LINE_LENGTH);
             if (!str_starts_with($line, '0:')) {
                 continue;
             }
