@@ -99,7 +99,7 @@ class ReachableTiles
 
         // If discount is larger than number of greens, count how may jump item we need to use.
         if ($laserJumpDiscount > $greenCost) {
-            return $basePoints + ceil($greenCost / 6);
+            return $basePoints + (int) ceil($greenCost / 6);
         }
 
         return $basePoints + $greenCost - $laserJumpDiscount;
@@ -338,7 +338,7 @@ class ReachableTiles
                     case HexaHopMap::TILE_LASER:
                         $this->reachable[0][$point->y][$point->x] = true;
 
-                        if ($this->totalItems[HexaHopMap::ITEM_JUMP]) {
+                        if (!empty($this->totalItems[HexaHopMap::ITEM_JUMP])) {
                             $jump_point = clone $point;
                             $jump_point->dir = Projectile::DIR_J;
                             $this->reachableLasers[(string)$jump_point] = $jump_point;
