@@ -51,12 +51,7 @@ class HexaHopMapMock extends HexaHopMap
         }
     }
 
-    /**
-     * @param int $move
-     *
-     * @return HexaHopMapMock
-     */
-    public function move(int $move): MapState
+    public function move(int $move): HexaHopMapMock
     {
         return parent::move($move);
     }

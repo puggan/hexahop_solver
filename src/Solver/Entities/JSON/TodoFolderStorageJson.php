@@ -5,8 +5,8 @@ namespace Puggan\Solver\Entities\JSON;
 /**
  * Class TodoFolderStorageJson
  * @package PHPDoc
- * @property int row_count
- * @property string[] files
+ * @property int $row_count
+ * @property string[] $files
  */
 class TodoFolderStorageJson extends Template
 {

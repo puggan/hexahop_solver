@@ -4,11 +4,6 @@ namespace Puggan\Solver\Entities;
 
 use JetBrains\PhpStorm\Pure;
 
-/**
- * Class Projectile
- * @package PHPDoc
- * @property int dir
- */
 class Projectile extends Point
 {
     public const DIR_SW = 4;
@@ -18,22 +13,12 @@ class Projectile extends Point
     public const DIR_S = 3;
     public const DIR_NW = 5;
     public const DIR_NE = 1;
-    /** @var int */
-    public int $dir;
 
-    /** @var int */
+    public int $dir;
     public int $length;
 
-    /**
-     * Projectile constructor.
-     *
-     * @param int $x
-     * @param int $y
-     * @param int $z
-     * @param int $dir
-     * @param int $length
-     */
-    #[Pure] public function __construct(int $x, int $y, int $z, int $dir, int $length = 1)
+    #[Pure]
+    public function __construct(int $x, int $y, int $z, int $dir, int $length = 1)
     {
         $this->dir = $dir;
         $this->length = $length;
@@ -41,16 +26,12 @@ class Projectile extends Point
     }
 
     /**
-     * @param Point base
-     * @param Point target
-     * @param bool|int $override_distance
-     *
      * @return false|Projectile
      */
     #[Pure]
     public static function BetweenPoints(
-        $base,
-        $target,
+        Point $base,
+        Point $target,
         bool|int $override_distance = false
     ): bool|Projectile
     {
@@ -80,13 +61,6 @@ class Projectile extends Point
         return self::PointDir($base, self::DIR_NE, $override_distance ?: $delta_x);
     }
 
-    /**
-     * @param Point $point
-     * @param int $dir
-     * @param int $length
-     *
-     * @return Projectile
-     */
     #[Pure]
     public static function PointDir(
         Point $point,
@@ -98,8 +72,6 @@ class Projectile extends Point
     }
 
     /**
-     * @param Point $point
-     *
      * @return false|int
      */
     public function dirDistance(Point $point): bool|int
@@ -155,5 +127,4 @@ class Projectile extends Point
     {
         return $this->x . ':' . $this->y . ':' . $this->z . ':' . $this->dir . ($this->length !== 1 ? ':' . $this->length : '');
     }
-
 }

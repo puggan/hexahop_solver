@@ -2,13 +2,7 @@
 
 namespace Puggan\Solver\Entities;
 
-/**
- * Class Player
- * @package PHPDoc
- * @property bool alive
- */
 class Player extends Point
 {
-    /** @var bool */
     public bool $alive = true;
 }

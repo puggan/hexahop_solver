@@ -55,7 +55,6 @@ class IniFolderHashStorage extends HashStorage
     }
 
     /**
-     * @param string $hash
      * @param int[] $path
      */
     public function save(string $hash, array $path): void
@@ -64,7 +63,6 @@ class IniFolderHashStorage extends HashStorage
     }
 
     /**
-     * @param string $hash
      * @param bool|int[] $path
      */
     public function replace(string $hash, array|bool $path = false): void
@@ -128,9 +126,6 @@ class IniFolderHashStorage extends HashStorage
         fclose($f);
     }
 
-    /**
-     * @param string $hash
-     */
     public function remove(string $hash): void
     {
         $this->replace($hash);

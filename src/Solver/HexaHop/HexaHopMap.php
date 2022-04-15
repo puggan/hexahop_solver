@@ -70,12 +70,9 @@ class HexaHopMap extends MapState implements \JsonSerializable
     protected int $par;
 
     /**
-     * HexaHopMap constructor.
-     * @param $level_number
-     * @param null $path
-     * @throws \JsonException
+     * @param int $level_number
      */
-    public function __construct($level_number, $path = null)
+    public function __construct($level_number, ?string $path = null)
     {
         $this->map_info = self::read_map_info($level_number);
         if (!$this->map_info) {
@@ -103,14 +100,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     //<editor-fold desc="Implement MapState">
 
-    /**
-     * @param $level_number
-     *
-     * @return MapInfo
-     * @throws \JsonException
-     * @throws \JsonException
-     */
-    private static function read_map_info($level_number): MapInfo
+    private static function read_map_info(int $level_number): MapInfo
     {
         static $json;
         if (!$json) {
@@ -122,15 +112,19 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     /**
      * @return MapInfo[]
-     * @throws \JsonException
-     * @throws \JsonException
      */
     public static function list_maps(): array
     {
         $extra_index = 101;
         $maps = [];
-        /** @var MapInfo $map_info */
-        foreach (json_decode(self::getResource('hexahopmaps.json'), false, 512, JSON_THROW_ON_ERROR) as $map_info) {
+        $rawMaps = self::getResource('hexahopmaps.json');
+        try {
+            /** @var array<int, MapInfo> $jsonMaps */
+            $jsonMaps = json_decode($rawMaps, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \RuntimeException('json failed: ' . $e->getMessage() . ' on ' . $rawMaps);
+        }
+        foreach ($jsonMaps as $map_info) {
             if ($map_info->level_number < 0) {
                 $maps[$extra_index++] = $map_info;
             } else {
@@ -145,9 +139,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
     }
 
     /**
-     * @param string $filename
-     *
-     * @return string
      * @noinspection PhpSameParameterValueInspection
      */
     private static function getResource(string $filename): string
@@ -155,19 +146,11 @@ class HexaHopMap extends MapState implements \JsonSerializable
         return file_get_contents(self::getResourcePath($filename));
     }
 
-    /**
-     * @param string $filename
-     *
-     * @return string
-     */
     private static function getResourcePath(string $filename): string
     {
         return dirname(__DIR__, 3) . '/resources/' . $filename;
     }
 
-    /**
-     * @param MapStream $map_stream
-     */
     private function parse_map(MapStream $map_stream): void
     {
         // Version(1), newline(1), par(4), diff(4)
@@ -205,11 +188,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
         }
     }
 
-    /**
-     * @param Point $point
-     *
-     * @return bool
-     */
     public function high_tile(Point $point): bool
     {
         // out of bounds or water
@@ -263,13 +241,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
         $this->move_into($next_point, $direction, $old_tile);
     }
 
-    /**
-     * @param Point $current
-     * @param int $direction
-     * @param int $steps
-     *
-     * @return Projectile
-     */
     private function next_point(Point $current, int $direction, int $steps = 1): Projectile
     {
         $new_point = Projectile::PointDir($current, $direction, $steps);
@@ -312,11 +283,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
         throw new \RuntimeException('Bad direction: ' . $direction);
     }
 
-    /**
-     * @param Point $point
-     *
-     * @return int tile
-     */
     private function move_out_of(Point $point): int
     {
         $tile = $this->tiles[$point->y][$point->x];
@@ -344,11 +310,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
         return $tile;
     }
 
-    /**
-     * @param Point $point
-     * @param int $direction
-     * @param int $old_tile
-     */
     private function move_into(Point $point, int $direction, int $old_tile): void
     {
         $this->player->x = $point->x;
@@ -630,10 +591,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
         $this->wall_test($old_tile);
     }
 
-    /**
-     * @param $old_tile
-     */
-    private function wall_test($old_tile): void
+    private function wall_test(int $old_tile): void
     {
         switch ($old_tile & self::MASK_TILE_TYPE) {
             case self::TILE_LOW_BLUE:
@@ -684,13 +642,10 @@ class HexaHopMap extends MapState implements \JsonSerializable
     }
 
     /**
-     * @param $current
-     * @param int $steps
-     *
-     * @return Projectile[]
+     * @return array<int, Projectile>
      * @noinspection PhpSameParameterValueInspection
      */
-    private function next_points($current, int $steps = 1): array
+    private function next_points(Point $current, int $steps = 1): array
     {
         $points = [];
         foreach (range(0, 5) as $direction) {
@@ -730,7 +685,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     /**
      * Player have won
-     * @return bool
      */
     #[Pure]
     public function won(): bool
@@ -752,7 +706,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     /**
      * Player have lost
-     * @return bool
      */
     public function lost(): bool
     {
@@ -790,27 +743,18 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     /**
      * is the current state better that this other state?
-     *
-     * @param MapState $other
-     *
-     * @return bool
      */
     public function better(MapState $other): bool
     {
+        if (!$other instanceof self) {
+            throw new \RuntimeException('Invalid map state');
+        }
         return $this->points < $other->points;
     }
 
-    #[ArrayShape([
-        'items' => "int[]",
-        'map_info' => MapInfo::class,
-        'player' => Player::class,
-        'points' => "int",
-        'tiles' => "int[][]",
-        'x_max' => "int",
-        'x_min' => "int",
-        'y_max' => "int",
-        'y_min' => "int",
-    ])]
+    /**
+     * @return array{items: int[], map_info: MapInfo, player: Player, points: int, tiles: int[][], x_max: int, x_min: int, y_max: int, y_min: int}
+     */
     public function jsonSerialize(): array
     {
         return [
@@ -831,14 +775,13 @@ class HexaHopMap extends MapState implements \JsonSerializable
         $this->player = clone $this->player;
     }
 
-    /**
-     * @param $json_option
-     * @return bool|string
-     * @throws \JsonException
-     */
-    public function map_info($json_option): bool|string
+    public function map_info(int $json_option): bool|string
     {
-        return json_encode($this->map_info, JSON_THROW_ON_ERROR | $json_option);
+        try {
+            return json_encode($this->map_info, JSON_THROW_ON_ERROR | $json_option);
+        } catch (\JsonException $e) {
+            throw new \RuntimeException('json failed: ' . $e->getMessage(), previous: $e);
+        }
     }
 
     public function print_path(array $path): string
@@ -876,25 +819,16 @@ class HexaHopMap extends MapState implements \JsonSerializable
         return implode(', ', $dir);
     }
 
-    /**
-     * @return int
-     */
     public function points(): int
     {
         return $this->points;
     }
 
-    /**
-     * @return int
-     */
     public function par(): int
     {
         return $this->par;
     }
 
-    /**
-     * @param int $new_par
-     */
     public function overridePar(int $new_par): void
     {
         $this->par = $new_par;
@@ -956,12 +890,6 @@ class HexaHopMap extends MapState implements \JsonSerializable
         //</editor-fold>
 
         //<editor-fold desc="Reachable functions">
-        /**
-         * @param bool $green_wall_lowerable
-         * @param bool $blue_wall_lowerable
-         *
-         * @return bool
-         */
         $expand_reachable = function (bool $green_wall_lowerable, bool $blue_wall_lowerable) use (
             &$my_tiles,
             &
@@ -969,7 +897,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
             &$reachable_lasers,
             &$tile_types,
             &$total_items
-        ) {
+        ): bool {
             /** @var bool[] $trampolines prevent infinite loops of trampolines */
             $trampolines = [];
             /** @var Projectile[] $todo */
@@ -1063,7 +991,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     }
                                 }
                             }
-                            foreach($neighbors as $neighbor) {
+                            foreach ($neighbors as $neighbor) {
                                 $elevatedPoint = clone $neighbor;
                                 $elevatedPoint->z = 1 - $elevatedPoint->z;
                                 $neighbors[] = $elevatedPoint;
@@ -1080,7 +1008,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                     $tile_types[self::TILE_BUILDABLE_WATER]++;
                                 }
                             }
-                            foreach($neighbors as $neighbor) {
+                            foreach ($neighbors as $neighbor) {
                                 $elevatedPoint = clone $neighbor;
                                 $elevatedPoint->z = 1 - $elevatedPoint->z;
                                 $neighbors[] = $elevatedPoint;
@@ -1089,7 +1017,8 @@ class HexaHopMap extends MapState implements \JsonSerializable
                             break;
 
                         case self::TILE_LOW_ELEVATOR:
-                            $new_point = Point::copy($start_point);
+                            /** @var Projectile $new_point workaround, phpstan think new_point may be a Point instead */
+                            $new_point = clone $start_point;
                             $new_point->z = 1;
                             $todo[] = $new_point;
                             break;
@@ -1136,7 +1065,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                 }
                                 if ($green_wall_lowerable) {
                                     $reachable[0][$point->y][$point->x] = true;
-                                    $new_point = Point::copy($point);
+                                    $new_point = clone $point;
                                     $new_point->z = 0;
                                     $todo[] = $new_point;
                                 }
@@ -1149,7 +1078,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                 }
                                 if ($blue_wall_lowerable) {
                                     $reachable[0][$point->y][$point->x] = true;
-                                    $new_point = Point::copy($point);
+                                    $new_point = clone $point;
                                     $new_point->z = 0;
                                     $todo[] = $new_point;
                                 }
@@ -1159,7 +1088,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
                             case self::TILE_LOW_ELEVATOR:
                                 $reachable[0][$point->y][$point->x] = true;
                                 $reachable[1][$point->y][$point->x] = true;
-                                $new_point = Point::copy($point);
+                                $new_point = clone $point;
                                 $new_point->z = 1;
                                 $todo[] = $new_point;
                                 break;
@@ -1288,10 +1217,7 @@ class HexaHopMap extends MapState implements \JsonSerializable
             ];
         };
 
-        /**
-         * @return bool|null
-         */
-        $doLasers = static function () use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types) {
+        $doLasers = static function () use (&$my_tiles, &$reachable, &$reachable_lasers, &$tile_types): ?bool {
             if (!$reachable_lasers) {
                 return null;
             }
@@ -1572,17 +1498,11 @@ class HexaHopMap extends MapState implements \JsonSerializable
         return $c;
     }
 
-    /**
-     * @return Player
-     */
     public function player(): Player
     {
         return clone $this->player;
     }
 
-    /**
-     * @return MapInfo
-     */
     public function info(): MapInfo
     {
         return clone $this->map_info;

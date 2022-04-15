@@ -5,20 +5,17 @@ namespace Puggan\Solver;
 class IniHashStorage extends HashStorage
 {
     /** @var string[] $ini */
-    private array|false $ini;
-    /** @var string $filename */
+    private array $ini;
     private string $filename;
 
     /**
      * Load list from file
-     *
-     * @param $filename
      */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
         if (file_exists($filename)) {
-            $this->ini = parse_ini_file($filename, false);
+            $this->ini = parse_ini_file($filename, false) ?: [];
         } else {
             $this->ini = [];
         }
@@ -38,7 +35,6 @@ class IniHashStorage extends HashStorage
     }
 
     /**
-     * @param string $hash
      * @param int[] $path
      */
     public function save(string $hash, array $path): void

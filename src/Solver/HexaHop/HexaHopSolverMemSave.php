@@ -19,6 +19,9 @@ class HexaHopSolverMemSave extends SolverNoSave
 
     public function hash_test(string $hash, MapState $state): bool
     {
+        if (!$state instanceof HexaHopMap) {
+            throw new \RuntimeException('Invalid map-state');
+        }
         if (parent::hash_test($hash, $state)) {
             return true;
         }

@@ -12,8 +12,6 @@ abstract class TodoStorage
 
     /**
      * Reserve a todo, that's not already reserved
-     * @param int $pid
-     *
      * @return false|int[]
      */
     abstract public function reserve(int $pid): array|bool;

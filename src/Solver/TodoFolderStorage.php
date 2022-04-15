@@ -17,14 +17,6 @@ class TodoFolderStorage extends TodoStorage
     /** @var int[] $removed_position */
     private array $removed_position = [];
 
-    /**
-     * TodoFileStorage constructor.
-     *
-     * @param string $folder
-     * @param int $rows_per_file
-     *
-     * @throws \Exception
-     */
     public function __construct(string $folder, int $rows_per_file = 100_000)
     {
         if (!is_dir($folder) && !mkdir($folder) && !is_dir($folder)) {
@@ -107,11 +99,7 @@ class TodoFolderStorage extends TodoStorage
     /**
      * Reserve a todo, that's not already reserved
      *
-     * @param int $pid
-     *
      * @return false|int[]
-     * @throws \JsonException
-     * @throws \JsonException
      */
     public function reserve(int $pid): array|bool
     {
@@ -166,8 +154,6 @@ class TodoFolderStorage extends TodoStorage
 
     /**
      * @param int[] $path
-     * @throws \JsonException
-     * @throws \JsonException
      */
     public function remove(array $path): void
     {

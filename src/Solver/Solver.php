@@ -24,15 +24,6 @@ class Solver
     /** @var string[] $lastPath */
     public array $lastPath;
 
-    /**
-     * Solver constructor.
-     *
-     * @param MapState $startState
-     * @param HashStorage $solved
-     * @-param AliasStorage $alias
-     * @param HashStorage $hashes
-     * @param TodoStorage $todos
-     */
     public function __construct(
         MapState $startState,
         HashStorage $solved, /*$alias,*/ HashStorage $hashes,
@@ -46,11 +37,6 @@ class Solver
         $this->todos = $todos;
     }
 
-    /**
-     * @param int $pid
-     *
-     * @return bool
-     */
     public function step(int $pid): bool
     {
         $path = $this->todos->reserve($pid);
@@ -113,8 +99,6 @@ class Solver
 
     /**
      * @param int[] $path
-     *
-     * @return MapState
      */
     public function loadState(array $path): MapState
     {

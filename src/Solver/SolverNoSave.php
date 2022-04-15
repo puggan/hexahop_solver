@@ -27,9 +27,6 @@ class SolverNoSave
 
     /**
      * SolverNoSave constructor.
-     *
-     * @param MapState $startState
-     * @param HashStorage $solved
      */
     public function __construct(MapState $startState, HashStorage $solved)
     {
@@ -41,9 +38,6 @@ class SolverNoSave
         shuffle($this->path_todos[0]);
     }
 
-    /**
-     * @return bool
-     */
     public function step(): bool
     {
         while ($this->depth > 0 && empty($this->path_todos[$this->depth])) {

@@ -33,7 +33,6 @@ abstract class HashStorage implements \ArrayAccess
     /**
      * Add/Replace a hash
      *
-     * @param string $hash
      * @param int[] $path
      */
     abstract public function save(string $hash, array $path): void;
@@ -44,9 +43,7 @@ abstract class HashStorage implements \ArrayAccess
     }
 
     /**
-     * Remove an hash
-     *
-     * @param string $hash
+     * Remove a hash
      */
     abstract public function remove(string $hash): void;
     //</editor-fold>

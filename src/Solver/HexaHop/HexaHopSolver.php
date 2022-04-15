@@ -11,18 +11,11 @@ use Puggan\Solver\TodoFolderStorage;
 /**
  * Class HexaHopSolver
  * @package Puggan\Solver\HexaHop
- * @property-read HexaHopMap startState
+ * @property-read HexaHopMap $startState
  */
 class HexaHopSolver extends Solver
 {
-    /**
-     * HexaHopSolver constructor.
-     *
-     * @param int $level_number
-     *
-     * @throws \Exception
-     */
-    public function __construct($level_number)
+    public function __construct(int $level_number)
     {
         $path = self::data_dir($level_number);
         $new_map = !is_dir($path . '/todo');
@@ -38,12 +31,7 @@ class HexaHopSolver extends Solver
         parent::__construct($startState, $solved, /*$alias,*/ $hashes, $todos);
     }
 
-    /**
-     * @param $level_number
-     *
-     * @return string
-     */
-    public static function data_dir($level_number): string
+    public static function data_dir(int $level_number): string
     {
         $path = dirname(__DIR__, 3) . '/data/' . $level_number . '/';
         if (!is_dir($path) && !mkdir($path) && !is_dir($path)) {
@@ -53,11 +41,9 @@ class HexaHopSolver extends Solver
     }
 
     /**
-     * @param $json_option
-     * @return bool|string
      * @throws \JsonException
      */
-    public function map_info($json_option): bool|string
+    public function map_info(int $json_option): bool|string
     {
         return $this->startState->map_info($json_option);
     }

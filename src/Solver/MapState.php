@@ -4,11 +4,10 @@ namespace Puggan\Solver;
 
 abstract class MapState
 {
-    abstract public function __construct($data, $path = null);
+    abstract public function __construct($data, ?string $path = null);
 
     /**
-     * Player have won
-     * @return bool
+     * Player have won?
      */
     abstract public function won(): bool;
 
@@ -38,7 +37,7 @@ abstract class MapState
      *
      * @param int $move move/direction to travel
      *
-     * @return MapState Pure function, no side-effect allowed, so not $this
+     * @return static Pure function, no side-effect allowed, so not $this
      */
     public function move(int $move): self
     {
@@ -61,8 +60,6 @@ abstract class MapState
 
     /**
      * @param int[] $path
-     *
-     * @return MapState
      */
     public function path(array $path): self
     {
@@ -80,29 +77,19 @@ abstract class MapState
 
     /**
      * Player have lost
-     * @return bool
      */
     abstract public function lost(): bool;
 
     /**
      * @param int[] $path
-     *
-     * @return string
      */
     abstract public function print_path(array $path): string;
 
     /**
      * is the current state better that this other state?
-     *
-     * @param MapState $other
-     *
-     * @return bool
      */
     abstract public function better(MapState $other): bool;
 
-    /**
-     * @return bool
-     */
     public function impossible(): bool
     {
         return false;

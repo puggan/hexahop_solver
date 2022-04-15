@@ -9,11 +9,6 @@ class TodoFileStorage extends TodoStorage
     private int $remove_count;
     private int $removed_position = 0;
 
-    /**
-     * TodoFileStorage constructor.
-     *
-     * @param string $filename
-     */
     public function __construct(string $filename)
     {
         $this->filename = $filename;
@@ -40,8 +35,6 @@ class TodoFileStorage extends TodoStorage
 
     /**
      * Reserve a todo, that's not already reserved
-     *
-     * @param int $pid
      *
      * @return false|int[]
      */
