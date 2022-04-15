@@ -57,16 +57,22 @@ if ($argc < 2) {
             echo ' - Sleeping ', $sleep_time, ' secounds, (', 100 * $sleep_time / $full_time, '%)', PHP_EOL;
             echo ' + Working ', ($full_time - $sleep_time), ' secounds, (', 100 - 100 * $sleep_time / $full_time, '%)', PHP_EOL;
         }
-        /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-        $daySecouns = 3_600 * 24;
-        if ($full_time > $daySecouns) {
-            echo ' = ', $full_time / $daySecouns, ' days', PHP_EOL;
+
+        /**
+         * @noinspection SummerTimeUnsafeTimeManipulationInspection
+         * @noinspection RedundantSuppression
+         */
+        $daySeconds = 3_600 * 24;
+        if ($full_time > $daySeconds) {
+            echo ' = ', $full_time / $daySeconds, ' days', PHP_EOL;
         } elseif ($full_time > 3_600) {
             echo ' = ', $full_time / 3_600, ' hours', PHP_EOL;
         } elseif ($full_time > 60) {
             echo ' = ', $full_time / 60, ' minutes', PHP_EOL;
+        } else {
+            echo ' = ', $full_time, ' seconds', PHP_EOL;
         }
-        echo ' => ', $steps / $full_time, ' steps per secound', PHP_EOL;
+        echo ' => ', $steps / $full_time, ' steps per seconds', PHP_EOL;
 
         $stat_filename = dirname(__DIR__, 3) . '/data/stats.json';
         if (is_file($stat_filename)) {
