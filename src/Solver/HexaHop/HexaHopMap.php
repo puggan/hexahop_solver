@@ -101,14 +101,14 @@ class HexaHopMap extends MapState implements \JsonSerializable
 
     //<editor-fold desc="Implement MapState">
 
-    private static function read_map_info(int $level_number): MapInfo
+    private static function read_map_info(int $level_number): ?MapInfo
     {
         static $json;
         if (!$json) {
             $json = self::list_maps();
         }
 
-        return $json[$level_number];
+        return $json[$level_number] ?? null;
     }
 
     /**
@@ -586,6 +586,8 @@ class HexaHopMap extends MapState implements \JsonSerializable
             self::TILE_HIGH_GREEN,
             self::TILE_HIGH_LAND,
             self::TILE_LOW_ELEVATOR => 1,
+
+            default => throw new \RuntimeException('Unknown tile: ' . $tile)
         };
         //</editor-fold>
 
@@ -950,6 +952,9 @@ class HexaHopMap extends MapState implements \JsonSerializable
                                 }
                                 if ($neighbor_tile === self::TILE_TRAMPOLINE) {
                                     $rotating_trampoline = true;
+                                }
+                                if ($neighbor_tile === self::TILE_BUILD) {
+                                    $rotating_builder = true;
                                 }
                                 if ($neighbor_tile === self::TILE_BOAT) {
                                     // TODO $reachable_boats

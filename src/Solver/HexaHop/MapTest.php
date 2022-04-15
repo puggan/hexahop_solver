@@ -26,11 +26,6 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
     $map_info = (object)array_map('htmlentities', (array)$maps[$id]);
     $map = new HexaHopMap($id);
 
-    if (!$map) {
-        echo 'Bad map', PHP_EOL;
-        die(1);
-    }
-
     $alive = true;
     if ($map->impossible()) {
         echo 'Impossible (at start)', PHP_EOL;
@@ -42,7 +37,7 @@ require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
         $path = array_map('intval', explode(',', $path_str));
     }
 
-    if ($alive && $path) {
+    if ($path) {
         $directions = ['North', 'North-East', 'South-East', 'South', ' South-West', 'North-West', 'Jump'];
         foreach (array_values($path) as $index => $dir) {
             if (empty($directions[$dir])) {
