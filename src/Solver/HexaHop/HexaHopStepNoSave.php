@@ -3,6 +3,7 @@
 
 namespace Puggan\Solver\HexaHop;
 
+use Puggan\Solver\Entities\JSON\StatRow;
 use Puggan\Solver\IniHashStorage;
 use Puggan\Solver\SolverNoSave;
 
@@ -80,6 +81,7 @@ if ($argc < 2) {
             if ($raw === false) {
                 throw new \RuntimeException('Failed to read file');
             }
+            /** @var array<int, \stdClass|StatRow> $stats */
             $stats = (array)json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
             if ($stats[$level_number]->steps > 0) {
                 if ($stats[$level_number]->steps < $steps) {

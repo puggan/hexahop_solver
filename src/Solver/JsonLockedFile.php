@@ -41,10 +41,14 @@ class JsonLockedFile
             throw new \RuntimeException('Failed to read file content');
         }
         try {
-            return json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
+            $json = json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new \RuntimeException('json parse failed: ' . $e->getMessage() . ' on ' . $raw, previous: $e);
         }
+        if (!is_object($json) || ! $json instanceof \stdClass) {
+            throw new \RuntimeException('json not parsed into object');
+        }
+        return $json;
     }
 
     public function write(\stdClass $data): void

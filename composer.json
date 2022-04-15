@@ -20,12 +20,12 @@
     },
     "scripts": {
         "lint": "vendor/bin/phplint --warning --quiet . --exclude=vendor",
-        "phps": "vendor/bin/phpstan analyse  --level 8 src/",
+        "phps": "vendor/bin/phpstan analyse  --level 9 src/",
         "unit": "vendor/bin/phpunit test/",
         "test": [
             "vendor/bin/phplint --warning --quiet . --exclude=vendor",
             "vendor/bin/phpunit test/",
-            "vendor/bin/phpstan analyse --level 8 src/"
+            "vendor/bin/phpstan analyse --level 9 src/"
         ]
     },
     "require-dev": {
