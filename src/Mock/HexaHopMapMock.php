@@ -9,9 +9,13 @@ use Puggan\Solver\MapState;
 
 class HexaHopMapMock extends HexaHopMap
 {
-    /** @noinspection MagicMethodsValidityInspection */
-    /** @noinspection PhpMissingParentConstructorInspection */
-    public function __construct($tiles, $path = null, $x = null, $y = null, $par = 9_999)
+    /**
+     * @param int[][] $tiles
+     * @param ?int[] $path
+     * @noinspection MagicMethodsValidityInspection
+     * @noinspection PhpMissingParentConstructorInspection
+     */
+    public function __construct($tiles, $path = null, ?int $x = null, ?int $y = null, int $par = 9_999)
     {
         $this->tiles = $tiles;
         $y_list = array_keys($tiles);

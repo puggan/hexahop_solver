@@ -20,11 +20,15 @@ namespace Puggan\Solver\HexaHop;
  */
 class MapStream
 {
+    /** @var resource  */
     private $f;
 
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->f = fopen($filename, 'rb');
+        if ($this->f === false) {
+            throw new \RuntimeException('failed to open file');
+        }
     }
 
     public function __destruct()

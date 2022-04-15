@@ -2,6 +2,9 @@
 
 namespace Puggan\Solver;
 
+/**
+ * @implements \ArrayAccess<string, int[]>
+ */
 abstract class HashStorage implements \ArrayAccess
 {
     public function offsetExists($offset): bool

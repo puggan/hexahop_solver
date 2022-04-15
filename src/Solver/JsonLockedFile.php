@@ -11,7 +11,7 @@ class JsonLockedFile
     /** @var resource $f */
     private $f;
 
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }

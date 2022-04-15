@@ -4,7 +4,10 @@ namespace Puggan\Solver\Entities\JSON;
 
 abstract class Template
 {
-    public function __construct($data)
+    /**
+     * @param \stdClass|self $data
+     */
+    public function __construct(Template|\stdClass $data)
     {
         foreach (get_object_vars($data) as $key => $value) {
             $this->$key = $value;

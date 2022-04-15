@@ -4,6 +4,10 @@ namespace Puggan\Solver;
 
 abstract class MapState
 {
+    /**
+     * @param mixed $data
+     * @param ?array<int, string|int> $path
+     */
     abstract public function __construct($data, ?array $path = null);
 
     /**

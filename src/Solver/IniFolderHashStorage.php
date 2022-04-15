@@ -10,7 +10,7 @@ class IniFolderHashStorage extends HashStorage
     /** @var int $prefix_length */
     protected mixed $prefix_length;
 
-    public function __construct($folder, $prefix_length = 3)
+    public function __construct(string $folder, int $prefix_length = 3)
     {
         if (!is_dir($folder) && !mkdir($folder) && !is_dir($folder)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $folder));
@@ -50,7 +50,7 @@ class IniFolderHashStorage extends HashStorage
         return false;
     }
 
-    private function filename($hash): string
+    private function filename(string $hash): string
     {
         return $this->folder . substr($hash, 0, $this->prefix_length) . '.ini';
     }

@@ -66,7 +66,7 @@ class ReachableTiles
         }
     }
 
-    public function minPoints($lowerBlueWalls = false): int
+    public function minPoints(bool $lowerBlueWalls = false): int
     {
         $basePoints = $this->map->points();
         $greenCost = $this->tileTypes[HexaHopMap::TILE_LOW_GREEN] + $this->tileTypes[HexaHopMap::TILE_HIGH_GREEN];

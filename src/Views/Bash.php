@@ -39,6 +39,9 @@ class Bash extends View
         return "=== #{$info->level_number}: {$info->title} [{$parPrefix} {$info->par}] ===\n";
     }
 
+    /**
+     * @param ?bool[][][] $reached
+     */
     public function map(HexaHopMap $map, ?array $reached = null): string
     {
         $stringMap = [];

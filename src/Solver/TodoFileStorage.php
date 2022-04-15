@@ -112,7 +112,7 @@ class TodoFileStorage extends TodoStorage
         fclose($f);
     }
 
-    public function auto_clean($removed = 0, $force = false): void
+    public function auto_clean(int $removed = 0, bool $force = false): void
     {
         if (!is_file($this->filename)) {
             return;

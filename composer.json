@@ -25,7 +25,7 @@
         "test": [
             "vendor/bin/phplint --warning --quiet . --exclude=vendor",
             "vendor/bin/phpunit test/",
-            "vendor/bin/phpstan analyse --level 5 src/"
+            "vendor/bin/phpstan analyse --level 6 src/"
         ]
     },
     "require-dev": {
