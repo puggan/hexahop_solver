@@ -19,9 +19,11 @@
         "ext-json": "*"
     },
     "scripts": {
+        "lint": "vendor/bin/phplint --warning --quiet . --exclude=vendor",
         "test": "./vendor/bin/phpunit test/"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "overtrue/phplint": "^5.0"
     }
 }
