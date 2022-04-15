@@ -25,18 +25,24 @@ class IniFolderHashStorage extends HashStorage
     /**
      * @param string $hash primary key
      *
-     * @return false|int[]
+     * @return ?int[]
      */
-    public function get(string $hash): array|bool
+    public function get(string $hash): ?array
     {
         $filename = $this->filename($hash);
         if (!is_file($filename)) {
-            return false;
+            return null;
         }
         $hash_suffix = substr($hash, $this->prefix_length);
         $f = fopen($filename, 'rb');
+        if ($f === false) {
+            throw new \RuntimeException('failed to open file');
+        }
         while (!feof($f)) {
             $line = fgets($f, self::MAX_LINE_LENGTH);
+            if ($line === false) {
+                throw new \RuntimeException('failed to read line');
+            }
             if (str_starts_with($line, $hash_suffix)) {
                 fclose($f);
                 $path_string = substr($line, 1 + strlen($hash_suffix));
@@ -47,7 +53,7 @@ class IniFolderHashStorage extends HashStorage
             }
         }
         fclose($f);
-        return false;
+        return null;
     }
 
     private function filename(string $hash): string
@@ -64,35 +70,53 @@ class IniFolderHashStorage extends HashStorage
     }
 
     /**
-     * @param bool|int[] $path
+     * @param ?int[] $path
      */
-    public function replace(string $hash, array|bool $path = false): void
+    public function replace(string $hash, ?array $path = null): void
     {
         $filename = $this->filename($hash);
         $hash_suffix = substr($hash, $this->prefix_length);
-        $new_path = $path === false ? false : $hash_suffix . '=' . implode(',', $path) . PHP_EOL;
-        $new_length = $new_path === false ? 0 : strlen($new_path);
+        $new_path = $path === null ? null : $hash_suffix . '=' . implode(',', $path) . PHP_EOL;
+        $new_length = $new_path === null ? 0 : strlen($new_path);
         if (!is_file($filename)) {
-            if ($new_path !== false) {
+            if ($new_path !== null) {
                 file_put_contents($filename, $new_path);
             }
             return;
         }
         $f = fopen($filename, 'rb+');
+        if ($f === false) {
+            throw new \RuntimeException('failed to open file');
+        }
         while (!feof($f)) {
             $before = ftell($f);
+            if ($before === false) {
+                throw new \RuntimeException('failed to get current position of file');
+            }
             $line = fgets($f, self::MAX_LINE_LENGTH);
-            if ($new_path !== false && !trim($line)) {
+            if ($line === false) {
+                throw new \RuntimeException('failed to read line');
+            }
+            if ($new_path !== null && !trim($line)) {
                 do {
                     $empty = ftell($f);
+                    if ($empty === false) {
+                        throw new \RuntimeException('failed to get current position of file');
+                    }
                     $line = fgets($f, self::MAX_LINE_LENGTH);
+                    if ($line === false) {
+                        throw new \RuntimeException('failed to read line');
+                    }
                 } while (!trim($line) && !feof($f));
                 $length = $empty - $before;
                 if ($length >= $new_length) {
                     $after = ftell($f);
+                    if ($after === false) {
+                        throw new \RuntimeException('failed to get current position of file');
+                    }
                     fseek($f, $before);
                     fwrite($f, $new_path);
-                    $new_path = false;
+                    $new_path = null;
                     $length -= $new_length;
                     $new_length = 0;
                     if ($length) {
@@ -102,17 +126,26 @@ class IniFolderHashStorage extends HashStorage
                 }
             }
             if (str_starts_with($line, $hash_suffix)) {
-                /** @var int $length */
-                $length = ftell($f) - $before;
-                while (!trim(fgets($f, self::MAX_LINE_LENGTH))) {
-                    $length = ftell($f) - $before;
+                while (true) {
+                    $position = ftell($f);
+                    if ($position === false) {
+                        throw new \RuntimeException('failed to get current position of file');
+                    }
+                    $length = $position - $before;
+                    $line = fgets($f, self::MAX_LINE_LENGTH);
+                    if ($line === false) {
+                        throw new \RuntimeException('failed to read line');
+                    }
+                    if (trim($line)) {
+                        break;
+                    }
                 }
                 fseek($f, $before);
-                if ($new_path === false || $new_length > $length) {
+                if ($new_path === null || $new_length > $length) {
                     fwrite($f, str_repeat(' ', $length - 1) . "\n");
                 } else {
                     fwrite($f, $new_path);
-                    $new_path = false;
+                    $new_path = null;
                     $length -= $new_length;
                     $new_length = 0;
                     if ($length) {
@@ -121,7 +154,7 @@ class IniFolderHashStorage extends HashStorage
                 }
             }
         }
-        if ($new_path !== false) {
+        if ($new_path !== null) {
             fwrite($f, $new_path);
         }
         fclose($f);

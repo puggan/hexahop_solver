@@ -76,7 +76,11 @@ if ($argc < 2) {
 
         $stat_filename = dirname(__DIR__, 3) . '/data/stats.json';
         if (is_file($stat_filename)) {
-            $stats = (array)json_decode(file_get_contents($stat_filename), false, 512, JSON_THROW_ON_ERROR);
+            $raw = file_get_contents($stat_filename);
+            if ($raw === false) {
+                throw new \RuntimeException('Failed to read file');
+            }
+            $stats = (array)json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
             if ($stats[$level_number]->steps > 0) {
                 if ($stats[$level_number]->steps < $steps) {
                     echo 'Step count worse than last time, then: ', $stats[$level_number]->steps, ', now: ', $steps, PHP_EOL;
@@ -101,5 +105,5 @@ if ($argc < 2) {
         die(1);
     }
 })(
-    +$argv[1]
+    (int)$argv[1]
 );

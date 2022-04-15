@@ -9,7 +9,7 @@ abstract class HashStorage implements \ArrayAccess
 {
     public function offsetExists($offset): bool
     {
-        return $this->get($offset) !== false;
+        return $this->get($offset) !== null;
     }
 
     /**
@@ -17,9 +17,9 @@ abstract class HashStorage implements \ArrayAccess
      *
      * @param string $hash primary key
      *
-     * @return false|int[]
+     * @return ?int[]
      */
-    abstract public function get(string $hash): array|bool;
+    abstract public function get(string $hash): ?array;
 
     public function offsetGet($offset)
     {

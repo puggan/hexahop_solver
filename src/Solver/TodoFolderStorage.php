@@ -91,6 +91,9 @@ class TodoFolderStorage extends TodoStorage
 
         $row = '0:' . implode(',', $path) . PHP_EOL;
         $f = fopen($this->folder . $file, 'ab');
+        if (!$f) {
+            throw new \RuntimeException('failed to open file');
+        }
         fwrite($f, $row);
         fclose($f);
         $this->json_cache->row_count++;
@@ -125,9 +128,16 @@ class TodoFolderStorage extends TodoStorage
             }
             while (!feof($f)) {
                 $line = fgets($f, self::MAX_LINE_LENGTH);
+                if ($line === false) {
+                    throw new \RuntimeException('failed to read line');
+                }
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
-                        $this->removed_position[$file] = ftell($f);
+                        $position = ftell($f);
+                        if ($position === false) {
+                            throw new \RuntimeException('failed to find current position in file');
+                        }
+                        $this->removed_position[$file] = $position;
                     }
                     continue;
                 }
@@ -183,10 +193,20 @@ class TodoFolderStorage extends TodoStorage
             }
             while (!feof($f)) {
                 $position_before = ftell($f);
+                if ($position_before === false) {
+                    throw new \RuntimeException('failed to find current position in file');
+                }
                 $line = fgets($f, self::MAX_LINE_LENGTH);
+                if ($line === false) {
+                    throw new \RuntimeException('failed to read line');
+                }
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
-                        $this->removed_position[$file] = ftell($f);
+                        $position = ftell($f);
+                        if ($position === false) {
+                            throw new \RuntimeException('failed to find current position in file');
+                        }
+                        $this->removed_position[$file] = $position;
                     }
                     continue;
                 }
@@ -194,6 +214,9 @@ class TodoFolderStorage extends TodoStorage
                 $row_path = trim(substr($line, 2));
                 if ($row_path === $path_string) {
                     $position_after = ftell($f);
+                    if ($position_after === false) {
+                        throw new \RuntimeException('failed to find current position in file');
+                    }
                     fseek($f, $position_before);
                     fwrite($f, 'X');
                     fseek($f, $position_after);
@@ -262,10 +285,20 @@ class TodoFolderStorage extends TodoStorage
             }
             while (!feof($f)) {
                 $position_before = ftell($f);
+                if ($position_before === false) {
+                    throw new \RuntimeException('failed to find current position in file');
+                }
                 $line = fgets($f, self::MAX_LINE_LENGTH);
+                if ($line === false) {
+                    throw new \RuntimeException('failed to read line');
+                }
                 if ($line === '' || $line === PHP_EOL || !str_starts_with($line, '0:')) {
                     if ($left === 0) {
-                        $this->removed_position[$file] = ftell($f);
+                        $position = ftell($f);
+                        if ($position === false) {
+                            throw new \RuntimeException('failed to find current position in file');
+                        }
+                        $this->removed_position[$file] = $position;
                     }
                     continue;
                 }
@@ -273,6 +306,9 @@ class TodoFolderStorage extends TodoStorage
                 $row_path = trim(substr($line, 2));
                 if ($row_path === $path_string || str_starts_with($row_path, $path_string2)) {
                     $position_after = ftell($f);
+                    if ($position_after === false) {
+                        throw new \RuntimeException('failed to find current position in file');
+                    }
                     fseek($f, $position_before);
                     fwrite($f, 'X');
                     fseek($f, $position_after);

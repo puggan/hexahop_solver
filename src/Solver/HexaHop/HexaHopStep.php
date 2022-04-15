@@ -15,6 +15,9 @@ if ($argc < 2) {
     require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
     $pid = getmypid();
+    if ($pid === false) {
+        throw new \RuntimeException('failed to read pid');
+    }
 
     $solver = new HexaHopSolver($level_number);
     echo $solver->map_info(JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), PHP_EOL;
@@ -32,5 +35,5 @@ if ($argc < 2) {
     echo PHP_EOL, 'Done!', PHP_EOL;
     echo file_get_contents(dirname(__DIR__, 3) . '/data/' . $level_number . '/solved.ini'), PHP_EOL;
 })(
-    +$argv[1]
+    (int)$argv[1]
 );

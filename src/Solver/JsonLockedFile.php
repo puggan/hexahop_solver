@@ -23,18 +23,23 @@ class JsonLockedFile
         }
         $this->locked = true;
         if (!is_file($this->filename)) {
-            $this->f = fopen($this->filename, 'wb');
-            if (!$this->f) {
+            $f = fopen($this->filename, 'wb');
+            if ($f === false) {
                 throw new \RuntimeException('Failed to open file: ' . $this->filename);
             }
+            $this->f = $f;
             return null;
         }
-        $this->f = fopen($this->filename, 'rb+');
-        flock($this->f, LOCK_EX);
-        if (!$this->f) {
+        $f = fopen($this->filename, 'rb+');
+        if (!$f) {
             throw new \RuntimeException('Failed to open file: ' . $this->filename);
         }
+        $this->f = $f;
+        flock($this->f, LOCK_EX);
         $raw = stream_get_contents($this->f);
+        if ($raw === false) {
+            throw new \RuntimeException('Failed to read file content');
+        }
         try {
             return json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {

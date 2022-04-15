@@ -24,12 +24,12 @@ class IniHashStorage extends HashStorage
     /**
      * @param string $hash primary key
      *
-     * @return false|int[]
+     * @return ?int[]
      */
-    public function get(string $hash): array|bool
+    public function get(string $hash): ?array
     {
         if (!isset($this->ini[$hash])) {
-            return false;
+            return null;
         }
         return array_map('intval', explode(',', $this->ini[$hash]));
     }
@@ -49,6 +49,9 @@ class IniHashStorage extends HashStorage
     private function _save(): void
     {
         $f = fopen($this->filename, 'wb');
+        if ($f === false) {
+            throw new \RuntimeException('failed to open file');
+        }
         foreach ($this->ini as $key => $value) {
             fwrite($f, $key . '="' . str_replace('"', '\\"', $value) . '"' . PHP_EOL);
         }

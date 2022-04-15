@@ -32,7 +32,7 @@ class Projectile extends Point
     public static function BetweenPoints(
         Point $base,
         Point $target,
-        bool|int $override_distance = false
+        ?int $override_distance = null
     ): bool|Projectile
     {
         $delta_x = $target->x - $base->x;

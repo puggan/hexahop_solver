@@ -144,7 +144,11 @@ class HexaHopMap extends MapState implements \JsonSerializable
      */
     private static function getResource(string $filename): string
     {
-        return file_get_contents(self::getResourcePath($filename));
+        $content = file_get_contents(self::getResourcePath($filename));
+        if ($content === false) {
+            throw new \RuntimeException('Failed to read file content');
+        }
+        return $content;
     }
 
     private static function getResourcePath(string $filename): string
@@ -870,8 +874,10 @@ class HexaHopMap extends MapState implements \JsonSerializable
     {
         $c = array_fill(0, 17, 0);
         foreach ($this->tiles as $row) {
-            foreach ($row as $tile) {
-                $c[$tile & self::MASK_TILE_TYPE]++;
+            foreach ($row as $tileWithItem) {
+                /** @var int<0, 0x1F> $tile */
+                $tile = $tileWithItem & self::MASK_TILE_TYPE;
+                $c[$tile]++;
             }
         }
         return $c;
@@ -883,12 +889,20 @@ class HexaHopMap extends MapState implements \JsonSerializable
      */
     public function item_count(): array
     {
+        /** @var array<int<1, 2>, int<1, max>> $c */
         $c = $this->items;
         foreach ($this->tiles as $row) {
             foreach ($row as $tile) {
+                /** @var int<0, 224> $item_shifted mask 0b11100000 = 0xE0 = 224 */
                 $item_shifted = $tile & self::MASK_ITEM_TYPE;
                 if ($item_shifted) {
-                    $c[$item_shifted >> self::SHIFT_TILE_ITEM]++;
+                    /** @var int<0, 7> $item $item_shifted 0b111>>(00000) */
+                    $item = $item_shifted >> self::SHIFT_TILE_ITEM;
+                    if (!in_array($item, [self::ITEM_ANTI_ICE, self::ITEM_JUMP])) {
+                        throw new \RuntimeException('unknown item');
+                    }
+                    /** @var int<1, 2> $item */
+                    $c[$item]++;
                 }
             }
         }

@@ -8,7 +8,7 @@ use Puggan\Solver\Entities\Projectile;
 
 class ReachableTiles
 {
-    /** @var int[][] keys: y, x */
+    /** @var int<0, 16>[][] keys: y, x */
     public array $myTiles = [];
 
     /** @var bool[][][] keys: z, y, x */
@@ -61,7 +61,11 @@ class ReachableTiles
             foreach ($row as $x => $tileWi) {
                 $this->reachable[0][$y][$x] = false;
                 $this->reachable[1][$y][$x] = false;
-                $this->myTiles[$y][$x] = $tileWi & HexaHopMap::MASK_TILE_TYPE;
+                $tile = $tileWi & HexaHopMap::MASK_TILE_TYPE;
+                if ($tile < 0 || $tile > 16) {
+                    throw new \RuntimeException('Unknown tile');
+                }
+                $this->myTiles[$y][$x] = $tile;
             }
         }
     }
@@ -188,7 +192,9 @@ class ReachableTiles
                             $neighbor_tile = $this->myTiles[$neighbor->y][$neighbor->x] ?? 0;
                             // As it can be either low or high, treat it as an elevator
                             if ($neighbor_tile !== HexaHopMap::TILE_BUILDABLE_WATER) {
-                                $this->tileTypes[$neighbor_tile]--;
+                                if ($this->tileTypes[$neighbor_tile]) {
+                                    $this->tileTypes[$neighbor_tile]--;
+                                }
                                 $this->myTiles[$neighbor->y][$neighbor->x] = HexaHopMap::TILE_BUILDABLE_WATER;
                                 $this->tileTypes[HexaHopMap::TILE_BUILDABLE_WATER]++;
                             }
@@ -213,7 +219,9 @@ class ReachableTiles
                             foreach(Projectile::neighbours($neighbor) as $buildLocation) {
                                 $buildTile = $this->myTiles[$buildLocation->y][$buildLocation->x];
                                 if (in_array($buildTile, [HexaHopMap::TILE_WATER, HexaHopMap::TILE_LOW_GREEN], true)) {
-                                    $this->tileTypes[$buildTile]--;
+                                    if ($this->tileTypes[$buildTile]) {
+                                        $this->tileTypes[$buildTile]--;
+                                    }
                                     $this->myTiles[$neighbor->y][$neighbor->x] = HexaHopMap::TILE_BUILDABLE_WATER;
                                     $this->tileTypes[HexaHopMap::TILE_BUILDABLE_WATER]++;
                                 }
@@ -232,7 +240,9 @@ class ReachableTiles
                     foreach ($neighbors as $neighbor) {
                         $neighbor_tile = $this->myTiles[$neighbor->y][$neighbor->x] ?? 0;
                         if (in_array($neighbor_tile, [HexaHopMap::TILE_WATER, HexaHopMap::TILE_LOW_GREEN], true)) {
-                            $this->tileTypes[$neighbor_tile]--;
+                            if ($this->tileTypes[$neighbor_tile]) {
+                                $this->tileTypes[$neighbor_tile]--;
+                            }
                             $this->myTiles[$neighbor->y][$neighbor->x] = HexaHopMap::TILE_BUILDABLE_WATER;
                             $this->tileTypes[HexaHopMap::TILE_BUILDABLE_WATER]++;
                         }
@@ -579,7 +589,9 @@ class ReachableTiles
                 }
 
                 $destroyedCount++;
-                $this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]--;
+                if ($this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]) {
+                    $this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]--;
+                }
                 $this->tileTypes[HexaHopMap::TILE_LOW_ELEVATOR]++;
                 $this->myTiles[$green_point->y][$green_point->x] = HexaHopMap::TILE_LOW_ELEVATOR;
                 unset($missingGreens[$green_point_index]);
@@ -611,7 +623,9 @@ class ReachableTiles
                 $distance = Projectile::BetweenPoints($laser_point, $green_point);
                 if ($distance && $distance->length === 1) {
                     $destroyedCount++;
-                    $this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]--;
+                    if ($this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]) {
+                        $this->tileTypes[$this->myTiles[$green_point->y][$green_point->x]]--;
+                    }
                     $this->tileTypes[HexaHopMap::TILE_LOW_ELEVATOR]++;
                     $this->myTiles[$green_point->y][$green_point->x] = HexaHopMap::TILE_LOW_ELEVATOR;
                     unset($missingGreens[$green_point_index]);

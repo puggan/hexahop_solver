@@ -25,10 +25,11 @@ class MapStream
 
     public function __construct(string $filename)
     {
-        $this->f = fopen($filename, 'rb');
-        if ($this->f === false) {
+        $f = fopen($filename, 'rb');
+        if ($f === false) {
             throw new \RuntimeException('failed to open file');
         }
+        $this->f = $f;
     }
 
     public function __destruct()
@@ -46,23 +47,54 @@ class MapStream
         fseek($this->f, $offset, SEEK_CUR);
     }
 
+    /**
+     * @param int<0, max> $length
+     */
     public function read(int $length): string
     {
-        return fread($this->f, $length);
+        $content = fread($this->f, $length);
+        if ($content === false) {
+            throw new \RuntimeException('Failed to read file content');
+        }
+        return $content;
     }
 
     public function uint8(): int
     {
-        return unpack('C', fread($this->f, 1))[1];
+        $content = fread($this->f, 1);
+        if ($content === false) {
+            throw new \RuntimeException('Failed to read file uint32');
+        }
+        $data = unpack('C', $content);
+        if ($data === false) {
+            throw new \RuntimeException('Failed to read file uint8');
+        }
+        return $data[1];
     }
 
     public function uint16(): int
     {
-        return unpack('v', fread($this->f, 2))[1];
+        $content = fread($this->f, 2);
+        if ($content === false) {
+            throw new \RuntimeException('Failed to read file uint32');
+        }
+        $data = unpack('v', $content);
+        if ($data === false) {
+            throw new \RuntimeException('Failed to read file uint16');
+        }
+        return $data[1];
     }
 
     public function uint32(): int
     {
-        return unpack('V', fread($this->f, 4))[1];
+        $content = fread($this->f, 4);
+        if ($content === false) {
+            throw new \RuntimeException('Failed to read file uint32');
+        }
+        $data = unpack('V', $content);
+        if ($data === false) {
+            throw new \RuntimeException('Failed to read file uint32');
+        }
+        return $data[1];
     }
 }
