@@ -72,6 +72,39 @@ class Projectile extends Point
     }
 
     /**
+     * @return Projectile[]
+     */
+    public static function neighbours(Point $point, int $distance = 1): array
+    {
+        /** @var self[] $n */
+        $n = [];
+        $base = self::PointDir($point, 0, $distance);
+        foreach (range(0,5) as $dir) {
+            $base->dir = $dir;
+            $n[] = $base->endPoint();
+        }
+        return $n;
+    }
+
+    public function endPoint(): Projectile
+    {
+        $deltaX = match ($this->dir) {
+            self::DIR_NE, self::DIR_SE => 1,
+            self::DIR_SW, self::DIR_NW => -1,
+            default => 0,
+        };
+        $deltaY = match($this->dir) {
+            self::DIR_SW, self::DIR_S => 1,
+            self::DIR_N, self::DIR_NE => -1,
+            default => 0,
+        };
+        $point = clone $this;
+        $point->x += $deltaX * $this->length;
+        $point->y += $deltaY * $this->length;
+        return $point;
+    }
+
+    /**
      * @return false|int
      */
     public function dirDistance(Point $point): bool|int

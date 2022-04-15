@@ -39,14 +39,13 @@ class Bash extends View
         return "=== #{$info->level_number}: {$info->title} [{$parPrefix} {$info->par}] ===\n";
     }
 
-    public function map(HexaHopMap $map): string
+    public function map(HexaHopMap $map, ?array $reached = null): string
     {
         $stringMap = [];
         $player = $map->player();
         // TODO adjust
         $playerCol = $player->x;
         $playerRow = $player->y * 2 - 1 + $player->x;
-        $stringMap[$playerRow][$playerCol] = $player->z ? 'PL' : 'pl';
         $maxCol = $playerCol;
         $maxRow = $playerRow;
         $minCol = $playerCol;
@@ -79,16 +78,27 @@ class Bash extends View
 
                 $stringMap[$row][$col] = self::$fieldSymbols[$tileType] ?? '??';
 
-                if (!$item) {
-                    continue;
+                if ($reached && !empty($reached[0][$yPos][$xPos])) {
+                    $stringMap[$row][$col] = "\e[0;30;42m" . $stringMap[$row][$col] . "\e[0m";
                 }
 
-                if ($minRow >= $row) {
-                    $minRow = $row - 1;
+
+                if ($item) {
+                    if ($minRow >= $row) {
+                        $minRow = $row - 1;
+                    }
+                    $stringMap[$row - 1][$col] = self::$fieldSymbols[$item] ?? 'i?';
                 }
-                $stringMap[$row - 1][$col] = self::$fieldSymbols[$item] ?? 'i?';
+
+                if ($reached && !empty($reached[1][$yPos][$xPos])) {
+                    if ($minRow >= $row) {
+                        $minRow = $row - 1;
+                    }
+                    $stringMap[$row - 1][$col] = "\e[0;30;42m" . ($stringMap[$row - 1][$col] ?? self::$fieldSymbols[0]) . "\e[0m";
+                }
             }
         }
+        $stringMap[$playerRow][$playerCol] = "\e[0;0;44m" . ($player->z ? 'PL' : 'pl') . "\e[0m";
 
         $mapString = '╔══' . str_repeat('═══', $maxCol - $minCol) . '══╗' . PHP_EOL;
         foreach (range($minRow, $maxRow) as $row) {

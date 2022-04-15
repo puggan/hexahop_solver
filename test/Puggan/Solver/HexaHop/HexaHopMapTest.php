@@ -257,23 +257,31 @@ class HexaHopMapTest extends TestCase
                 HexaHopMap::TILE_LOW_LAND,
             ],
         ];
+
+        //<editor-fold desc="Win">
         $m0 = new HexaHopMapMock($mock_tiles, null, 0, 1, 4);
         $this->assertFalse($m0->impossible(), 'Possible from start');
 
         // Move to 1:0 Green
         $m1 = $m0->move(Projectile::DIR_NE);
+        $this->assertFalse($m1->impossible(), 'Winning 1 of 4');
+
         // Move to 1:1 Green
         $m2 = $m1->move(Projectile::DIR_S);
+        $this->assertFalse($m2->impossible(), 'Winning 2 of 4');
+
         // Move to 2:1 Green
         $m3 = $m2->move(Projectile::DIR_SE);
+        $this->assertFalse($m3->impossible(), 'Winning 3 of 4');
+
         // Move to 2:2 Plain
         $m4 = $m3->move(Projectile::DIR_S);
-        $this->assertFalse($m1->impossible(), 'Winning 1 of 4');
-        $this->assertFalse($m2->impossible(), 'Winning 2 of 4');
-        $this->assertFalse($m3->impossible(), 'Winning 3 of 4');
         $this->assertFalse($m4->impossible(), 'Map 1 Winable');
-        unset($m1, $mw, $m3, $m4);
 
+        unset($m1, $mw, $m3, $m4);
+        //</editor-fold>
+
+        //<editor-fold desc="Fail">
         // Move to 0:0 Water, and die
         $f0 = $m0->move(Projectile::DIR_N);
         $this->assertTrue($f0->impossible(), 'Lost');
@@ -286,6 +294,7 @@ class HexaHopMapTest extends TestCase
         $f2 = $m0->move(Projectile::DIR_SE)->move(Projectile::DIR_SE);
         $this->assertTrue($f2->impossible(), 'Split');
         unset($m0, $f0, $f1, $f2);
+        //</editor-fold>
 
         /* Layout:
          * W
