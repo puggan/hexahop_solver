@@ -1,10 +1,17 @@
 use serde::Deserialize;
 use std::env;
 use std::fs;
+use std::io::Cursor;
+use std::io::{Read, Seek, SeekFrom};
 use validator::Validate;
 
+const MAX_TILES: usize = 375;
 const JSON_PATH: &str = "resources/hexahopmaps.json";
-//const LEVEL_PATH: &str = "resources/levels/";
+const LEVEL_PATH: &str = "resources/levels/";
+
+pub const MASK_TILE_TYPE: u8 = 0x1F;
+pub const MASK_ITEM_TYPE: u8 = 0xE0;
+pub const SHIFT_TILE_ITEM: u8 = 5;
 
 #[derive(Deserialize, Debug, Clone, Validate)]
 pub struct MapInfo {
@@ -47,21 +54,132 @@ pub fn get(map_nr: usize) -> Result<MapInfo, String> {
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct MapState {
-    pub tiles: [u8; 375],
-    pub player_x: u8,
-    pub player_y: u8,
+    pub tiles: [u8; MAX_TILES],
+    pub player_x: i8,
+    pub player_y: i8,
     pub anti_ice: u8,
     pub jumps: u8,
 }
 
+pub fn describe_tile(tile_byte: u8) -> String {
+    let t_type = tile_byte & MASK_TILE_TYPE;
+    let item = (tile_byte & MASK_ITEM_TYPE) >> SHIFT_TILE_ITEM;
+
+    let type_name = match t_type {
+        0 => "Water",
+        1 => "Low Land",
+        2 => "Low Green",
+        3 => "High Green",
+        4 => "Trampoline",
+        5 => "Rotator",
+        6 => "High Land",
+        7 => "Low Blue",
+        8 => "High Blue",
+        9 => "Laser",
+        10 => "Ice",
+        11 => "Anti-Ice Tile",
+        12 => "Build",
+        13 => "Buildable Water",
+        14 => "Boat",
+        15 => "Low Elevator",
+        16 => "High Elevator",
+        _ => "Unknown",
+    };
+
+    let item_name = match item {
+        0 => "",
+        1 => " + [Anti-Ice Item]",
+        2 => " + [Jump Item]",
+        _ => " + [Unknown Item]",
+    };
+
+    format!("{}{}", type_name, item_name)
+}
+
 impl MapState {
-    pub fn load_from_info(info: MapInfo) -> Result<Self, String> {
+    pub fn load_lev(info: &MapInfo) -> Result<Self, String> {
+        let project_root = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".into());
+        let full_path = std::path::Path::new(&project_root)
+            .join(LEVEL_PATH)
+            .join(&info.file);
+
+        let bytes = std::fs::read(&full_path)
+            .map_err(|e| format!("Failed to read lev: {}", e))?;
+
+        let mut reader = Cursor::new(bytes);
+
+        // 1. Skip header: 10 bytes [version, newline, 4:par, 4:diff]
+        reader.seek(SeekFrom::Start(10)).map_err(|e| e.to_string())?;
+
+        // 2. Read 4 u8 as x-min, x-max, y-min, y-max
+        let mut bounds = [0u8; 4];
+        reader.read_exact(&mut bounds).map_err(|e| e.to_string())?;
+        let (x_min, x_max, y_min, y_max) = (bounds[0], bounds[1], bounds[2], bounds[3]);
+
+        // Calculate ACTUAL dimensions from file
+        let actual_width = (x_max as i16 - x_min as i16 + 1) as u8;
+        let actual_height = (y_max as i16 - y_min as i16 + 1) as u8;
+
+        // VERIFY: Does the file match the JSON metadata?
+        if actual_width != info.width || actual_height != info.height {
+            return Err(format!(
+                "ID {}: {} -> File is {}x{} at offset {},{}",
+                info.level_number, info.title, actual_width, actual_height, x_min, y_min
+            ));
+            /*
+            return Err(format!(
+                "Dimension mismatch for {}: JSON says {}x{}, but LEV file says {}x{}",
+                info.title, info.width, info.height, actual_width, actual_height
+            ));
+            */
+        }
+
+        let total_cells = actual_width as usize * actual_height as usize;
+        if total_cells > MAX_TILES {
+            return Err(format!("Map {} exceeds buffer ({} tiles)", info.title, total_cells));
+        }
+
+        // 3. Read 2 u32 player-x, player-y (as Little Endian)
+        let mut player_coords = [0u8; 8];
+        reader.read_exact(&mut player_coords).map_err(|e| e.to_string())?;
+
+        // Convert raw bytes to u32
+        let p_x = u32::from_le_bytes(player_coords[0..4].try_into().unwrap());
+        let p_y = u32::from_le_bytes(player_coords[4..8].try_into().unwrap());
+
+        // 4. Read the raw tile block exactly as it exists in the file
+        // PHP: foreach(x) { foreach(y) { ... } }
+        // This means the file is 1D: [X0Y0, X0Y1, X0Y2, X1Y0, X1Y1...]
+        let mut tiles = [0u8; MAX_TILES];
+        reader.read_exact(&mut tiles[..total_cells]).map_err(|e| e.to_string())?;
+
         Ok(MapState {
-            tiles: [0; 375],
-            player_x: info.start_x,
-            player_y: info.start_y,
+            tiles,
+            player_x: (p_x as i8 - x_min as i8),
+            player_y: (p_y as i8 - y_min as i8),
             anti_ice: 0,
             jumps: 0,
         })
+    }
+
+    pub fn get_tile(&self, x: i8, y: i8, info: &MapInfo) -> u8 {
+        // 1. Boundary check using the trusted info
+        if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
+            return 0; // Water
+        }
+
+        // 2. Calculate index (Column-Major as we agreed)
+        let index = (x as usize * info.height as usize) + y as usize;
+
+        // 3. Safety check against the buffer
+        if index >= MAX_TILES {
+            return 0;
+        }
+
+        self.tiles[index]
+    }
+
+    pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
+        describe_tile(self.get_tile(x, y, info))
     }
 }
