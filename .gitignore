@@ -6,3 +6,4 @@
 /vendor/
 /playScripts/hex-a-hop-*.xdo.sh
 /playScripts/hex-a-hop-*.ahk
+/target/
