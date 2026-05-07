@@ -19,6 +19,8 @@ pub fn run_debug(map_nr: usize, _path: Option<String>) -> Result<(), String> {
     println!("\n--- Tile Details ---");
     println!("Standing on: ({}, {}): {}", state.player_x, state.player_y, state.describe_tile(state.player_x, state.player_y, &info));
 
+    print_map(&state, &info);
+    /*
     // If you want to list all non-water tiles:
     println!("\n--- Tile Details ---");
     for y in 0..info.height as i8 {
@@ -29,6 +31,7 @@ pub fn run_debug(map_nr: usize, _path: Option<String>) -> Result<(), String> {
             }
         }
     }
+    */
     Ok(())
 }
 
@@ -120,4 +123,56 @@ pub fn generate_corrected_json() {
         }
     }
     println!("]");
+}
+
+pub fn print_map(state: &MapState, info: &map::MapInfo) {
+    let total_rows = (info.height as usize * 2) + info.width as usize;
+
+    for row in 0..total_rows {
+        let mut line = String::new();
+
+        for x in 0..info.width as i8 {
+            // 1. Check if this row is a "Content" row (Player/Items)
+            // Solve: row = 2y + x - 1  => 2y = row - x + 1
+            let target_content = row as i16 - x as i16 + 1;
+
+            // 2. Check if this row is a "Base" row (Tile Type)
+            // Solve: row = 2y + x      => 2y = row - x
+            let target_base = row as i16 - x as i16;
+
+            let mut display_text = "  ".to_string();
+
+            if target_content >= 0 && target_content % 2 == 0 {
+                let y = (target_content / 2) as i8;
+                if y < info.height as i8 {
+                    // Check for Player or Item here
+                    if x == state.player_x && y == state.player_y {
+                        display_text = "PL".to_string();
+                    } else {
+                        let byte = state.get_tile(x, y, info);
+                        let item = map::item_code(byte);
+                        display_text = item.to_string();
+                    }
+                }
+            } else if target_base >= 0 && target_base % 2 == 0 {
+                let y = (target_base / 2) as i8;
+                if y < info.height as i8 {
+                    let byte = state.get_tile(x, y, info);
+                    display_text = map::tile_code(byte).to_string();
+                }
+            }
+
+            // Alignment: Pad and push
+            let spaces = (x as usize * 4); // Increased to 4 for breathing room
+            if line.len() < spaces {
+                line.push_str(&" ".repeat(spaces - line.len()));
+            }
+
+            line.push_str(&display_text);
+        }
+
+        if !line.trim().is_empty() {
+            println!("{}", line);
+        }
+    }
 }
