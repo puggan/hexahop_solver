@@ -58,6 +58,13 @@ pub struct MapState {
     pub jumps: u8,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum MapStatus {
+    Won,
+    Dead,
+    Ongoing,
+}
+
 impl MapState {
     pub fn load_lev(info: &MapInfo) -> Result<Self, String> {
         let project_root = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".into());
@@ -143,5 +150,28 @@ impl MapState {
 
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
         describe_tile_byte(self.get_tile(x, y, info))
+    }
+
+    pub fn state(&self, info: &MapInfo, current_cost: u16, max_cost: Option<u16>) -> MapStatus {
+        if current_cost > max_cost.unwrap_or(info.par) {
+            return MapStatus::Dead;
+        }
+
+        let current_tile = self.get_tile(self.player_x, self.player_y, info) & MASK_TILE_TYPE;
+        if current_tile == TileType::Water as u8 {
+            return MapStatus::Dead;
+        }
+
+        // 3. Check for Win Condition (Are all target tiles gone?)
+        // Target tiles: Low Green (2), High Green (3), Low Blue (7), High Blue (8)
+        let targets_remaining = self.tiles.iter().any(|&t| {
+            let t_type = t & MASK_TILE_TYPE;
+            t_type == TileType::LowGreen as u8 || t_type == TileType::HighGreen as u8
+        });
+
+        match targets_remaining {
+            true => MapStatus::Ongoing,
+            false => MapStatus::Won,
+        }
     }
 }
