@@ -4,14 +4,11 @@ use std::fs;
 use std::io::Cursor;
 use std::io::{Read, Seek, SeekFrom};
 use validator::Validate;
+use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
 
 const MAX_TILES: usize = 375;
 const JSON_PATH: &str = "resources/hexahopmaps.json";
 const LEVEL_PATH: &str = "resources/levels/";
-
-pub const MASK_TILE_TYPE: u8 = 0x1F;
-pub const MASK_ITEM_TYPE: u8 = 0xE0;
-pub const SHIFT_TILE_ITEM: u8 = 5;
 
 #[derive(Deserialize, Debug, Clone, Validate)]
 pub struct MapInfo {
@@ -59,41 +56,6 @@ pub struct MapState {
     pub player_y: i8,
     pub anti_ice: u8,
     pub jumps: u8,
-}
-
-pub fn describe_tile(tile_byte: u8) -> String {
-    let t_type = tile_byte & MASK_TILE_TYPE;
-    let item = (tile_byte & MASK_ITEM_TYPE) >> SHIFT_TILE_ITEM;
-
-    let type_name = match t_type {
-        0 => "Water",
-        1 => "Low Land",
-        2 => "Low Green",
-        3 => "High Green",
-        4 => "Trampoline",
-        5 => "Rotator",
-        6 => "High Land",
-        7 => "Low Blue",
-        8 => "High Blue",
-        9 => "Laser",
-        10 => "Ice",
-        11 => "Anti-Ice Tile",
-        12 => "Build",
-        13 => "Buildable Water",
-        14 => "Boat",
-        15 => "Low Elevator",
-        16 => "High Elevator",
-        _ => "Unknown",
-    };
-
-    let item_name = match item {
-        0 => "",
-        1 => " + [Anti-Ice Item]",
-        2 => " + [Jump Item]",
-        _ => " + [Unknown Item]",
-    };
-
-    format!("{}{}", type_name, item_name)
 }
 
 impl MapState {
@@ -180,6 +142,6 @@ impl MapState {
     }
 
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
-        describe_tile(self.get_tile(x, y, info))
+        describe_tile_byte(self.get_tile(x, y, info))
     }
 }
