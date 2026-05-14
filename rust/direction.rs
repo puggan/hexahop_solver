@@ -1,8 +1,9 @@
 use regex::Regex;
 use std::fmt;
 use std::str::FromStr;
+use strum_macros::FromRepr;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, FromRepr)]
 #[repr(u8)]
 pub enum Direction {
     None = 0,

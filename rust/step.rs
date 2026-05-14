@@ -5,7 +5,7 @@ use crate::map::MapState;
 use crate::map::MapStatus;
 use crate::tile::TileType;
 
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Debug)]
 pub struct GameState {
     pub state: MapState,
     pub path: Vec<Direction>,
@@ -19,6 +19,10 @@ impl GameState {
             path: Vec::new(),
             cost: 0,
         }
+    }
+
+    pub fn ghost(&self) -> GameStateGhost {
+        GameStateGhost::convert(self)
     }
 
     pub fn status(&self, map_info: &MapInfo, max_cost: &Option<u16>) -> MapStatus {
@@ -137,19 +141,60 @@ impl GameState {
     }
 }
 
-impl Ord for GameState {
+#[derive(Eq)]
+pub struct GameStateGhost {
+    pub cost: u16,
+    pub compressed_path: [u128; 3]
+}
+
+impl GameStateGhost {
+    pub fn compress_path(path: &Vec<Direction>) -> [u128; 3] {
+        let mut compressed: [u128; 3] = [0, 0, 0];
+        for (i, &dir) in path.iter().enumerate().rev() {
+            let int_index = i / 42;
+            compressed[int_index] = (compressed[int_index] << 3) | (dir as u128);
+        }
+        compressed
+    }
+
+    pub fn convert(game: &GameState) -> GameStateGhost {
+        GameStateGhost {
+            cost: game.cost,
+            compressed_path: GameStateGhost::compress_path(&game.path),
+        }
+    }
+    pub fn path(&self) -> Vec<Direction> {
+        let mut path = Vec::new();
+        for mut combined in self.compressed_path {
+            for _index in 0..41 {
+                let dir_value = (combined & 0x7) as u8;
+                if dir_value == 0 {
+                    return path;
+                }
+                path.push(Direction::from_repr(dir_value).unwrap());
+                combined >>= 3;
+            }
+        }
+        path
+    }
+
+    pub fn reproduce(&self, start_state: GameState, info: &MapInfo) -> GameState {
+        self.path().iter().fold(start_state, |current_state, dir| current_state.step_if_alive(dir, &info, &None))
+    }
+}
+
+impl Ord for GameStateGhost {
     fn cmp(&self, other: &Self) -> Ordering {
-        // We reverse the comparison here to turn the Max-Heap into a Min-Heap
         other.cost.cmp(&self.cost)
     }
 }
-impl PartialOrd for GameState {
+impl PartialOrd for GameStateGhost {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl PartialEq<Self> for GameState {
+impl PartialEq<Self> for GameStateGhost {
     fn eq(&self, other: &Self) -> bool {
         self.cost == other.cost
     }
