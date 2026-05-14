@@ -163,7 +163,7 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
             }
 
             // Alignment: Pad and push
-            let spaces = (x as usize * 4); // Increased to 4 for breathing room
+            let spaces = x as usize * 4 ; // Increased to 4 for breathing room
             if line.len() < spaces {
                 line.push_str(&" ".repeat(spaces - line.len()));
             }

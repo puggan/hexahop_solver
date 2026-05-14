@@ -48,7 +48,7 @@ impl GameState {
         for &dir in &self.path {
             hash = (hash << 3) | (dir as u64);
             part_count += 1;
-            if (part_count >= 20) {
+            if part_count >= 20  {
                 hashes.push(hash);
                 hash = 0;
                 part_count = 0;
