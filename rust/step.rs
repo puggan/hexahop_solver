@@ -1,25 +1,7 @@
-use crate::map::{MapInfo, MapState, MapStatus};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[repr(u8)]
-pub enum Direction {
-    None = 0,
-    N    = 1,
-    NE   = 2,
-    SE   = 3,
-    S    = 4,
-    SW   = 5,
-    NW   = 6,
-    Jump = 7,
-}
-impl Direction {
-    pub fn all() -> [Direction; 7] {
-        [Direction::N, Direction::NE, Direction::SE, Direction::S, Direction::SW, Direction::NW, Direction::Jump]
-    }
-    pub fn flat() -> [Direction; 6] {
-        [Direction::N, Direction::NE, Direction::SE, Direction::S, Direction::SW, Direction::NW]
-    }
-}
+use crate::direction::Direction;
+use crate::map::MapInfo;
+use crate::map::MapState;
+use crate::map::MapStatus;
 
 #[derive(Clone, Debug)]
 pub struct GameState {
