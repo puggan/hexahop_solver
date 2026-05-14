@@ -99,6 +99,14 @@ pub fn describe_item(item_type: ItemType) -> &'static str {
         ItemType::Jump => " + [Jump Item]",
     }
 }
+pub fn item_code_high_byte(tile_byte: u8) -> &'static str {
+    item_code_low_byte(tile_byte >> SHIFT_TILE_ITEM)
+}
+
+pub fn item_code_low_byte(tile_byte: u8) -> &'static str {
+    ItemType::from_repr(tile_byte).map(item_code).unwrap_or("??")
+}
+
 pub fn item_code(item_type: ItemType) -> &'static str {
     match item_type {
         ItemType::None => "",
