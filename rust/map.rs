@@ -132,9 +132,13 @@ impl MapState {
     }
 
     pub fn get_tile(&self, x: i8, y: i8, info: &MapInfo) -> u8 {
+        self.get_real_tile(x, y, info).unwrap_or(0)
+    }
+
+    pub fn get_real_tile(&self, x: i8, y: i8, info: &MapInfo) -> Option<u8> {
         // 1. Boundary check using the trusted info
         if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
-            return 0; // Water
+            return None;
         }
 
         // 2. Calculate index (Column-Major as we agreed)
@@ -142,10 +146,10 @@ impl MapState {
 
         // 3. Safety check against the buffer
         if index >= MAX_TILES {
-            return 0;
+            return None;
         }
 
-        self.tiles[index]
+        Some(self.tiles[index])
     }
 
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
