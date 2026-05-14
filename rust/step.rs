@@ -19,8 +19,8 @@ impl GameState {
         }
     }
 
-    pub fn state(&self, map_info: MapInfo, current_cost: u16, max_cost: Option<u16>) -> MapStatus {
-        self.state.state(&map_info, current_cost, max_cost)
+    pub fn status(&self, map_info: MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
+        self.state.status(&map_info, current_cost, max_cost)
     }
 
     pub fn get_path_hash(&self) -> Vec<u64> {

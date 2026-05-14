@@ -3,6 +3,7 @@ use std::env;
 use std::fs;
 use std::io::Cursor;
 use std::io::{Read, Seek, SeekFrom};
+use strum_macros::Display;
 use validator::Validate;
 use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
 
@@ -58,7 +59,7 @@ pub struct MapState {
     pub jumps: u8,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Display, PartialEq, Eq)]
 pub enum MapStatus {
     Won,
     Dead,
@@ -156,7 +157,7 @@ impl MapState {
         describe_tile_byte(self.get_tile(x, y, info))
     }
 
-    pub fn state(&self, info: &MapInfo, current_cost: u16, max_cost: Option<u16>) -> MapStatus {
+    pub fn status(&self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
         if current_cost > max_cost.unwrap_or(info.par) {
             return MapStatus::Dead;
         }
@@ -173,9 +174,6 @@ impl MapState {
             t_type == TileType::LowGreen as u8 || t_type == TileType::HighGreen as u8
         });
 
-        match targets_remaining {
-            true => MapStatus::Ongoing,
-            false => MapStatus::Won,
-        }
+        if targets_remaining { MapStatus::Ongoing } else { MapStatus::Won }
     }
 }
