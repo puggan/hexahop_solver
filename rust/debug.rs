@@ -1,6 +1,7 @@
 use crate::map;
 use crate::map::list;
 use crate::map::MapState;
+use crate::tile;
 
 pub fn run_debug(map_nr: usize, _path: Option<String>) -> Result<(), String> {
     if map_nr == 0 {
@@ -150,7 +151,7 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
                         display_text = "PL".to_string();
                     } else {
                         let byte = state.get_tile(x, y, info);
-                        let item = map::item_code(byte);
+                        let item = tile::item_code_high_byte(byte);
                         display_text = item.to_string();
                     }
                 }
@@ -158,7 +159,7 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
                 let y = (target_base / 2) as i8;
                 if y < info.height as i8 {
                     let byte = state.get_tile(x, y, info);
-                    display_text = map::tile_code(byte).to_string();
+                    display_text = tile::tile_code_byte(byte).to_string();
                 }
             }
 
