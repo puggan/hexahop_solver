@@ -1,3 +1,4 @@
+use std::time::Instant;
 use crate::debug::print_map;
 use crate::direction::Direction;
 use crate::map;
@@ -24,6 +25,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     let mut solve_states = vec![SolverState {direction: Direction::None, game: start_state}];
     let mut best_win = None;
     let mut tries = 0 as u128;
+    let mut last_print_time = Instant::now();
 
     dlog!("Starting deepth: {}", solve_states.len());
 
@@ -40,8 +42,10 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         dlog!("Next dir {} on deepth: {}", &updated_solve_state.direction, solve_states.len());
         let next_game_state = updated_solve_state.game.step(&updated_solve_state.direction, &info);
         tries += 1;
-        if tries % 100000 == 0 {
-            println!("Try {}, score: {}, path: {}", tries, next_game_state.cost, Direction::list2string(&next_game_state.path));
+        if tries % (1e6 as u128) == 0 {
+            let now = Instant::now();
+            println!("Try {}, score: {}, speed: {}, path: {}", tries, next_game_state.cost, 1e6 / now.duration_since(last_print_time).as_secs_f64(), Direction::list2string(&next_game_state.path));
+            last_print_time = now;
         }
         solve_states.push(updated_solve_state);
 
