@@ -23,6 +23,19 @@ impl Direction {
         [Direction::N, Direction::NE, Direction::SE, Direction::S, Direction::SW, Direction::NW]
     }
 
+    pub fn next(&self) -> Option<Direction> {
+        match self {
+            Direction::None => Some(Direction::N),
+            Direction::N => Some(Direction::NE),
+            Direction::NE => Some(Direction::SE),
+            Direction::SE => Some(Direction::S),
+            Direction::S => Some(Direction::SW),
+            Direction::SW => Some(Direction::NW),
+            Direction::NW => Some(Direction::Jump),
+            Direction::Jump => None,
+        }
+    }
+
     pub fn dx(&self) -> i8 {
         match self {
             Direction::NE | Direction::SE => 1,
