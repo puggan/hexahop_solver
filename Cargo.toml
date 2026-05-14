@@ -7,6 +7,11 @@ edition = "2021"
 name = "hexahop_solver"
 path = "rust/lib.rs"
 
+[features]
+default = ["dfs"]
+bfs = []
+dfs = []
+
 [[bin]]
 name = "hexahop"
 path = "rust/main.rs"

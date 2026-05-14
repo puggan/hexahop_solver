@@ -1,7 +1,12 @@
 use clap::Parser;
 use clap::Subcommand;
 use hexahop_solver::debug;
-use hexahop_solver::solver;
+
+#[cfg(feature = "bfs")]
+use hexahop_solver::solver_bfs as solver;
+
+#[cfg(feature = "dfs")]
+use hexahop_solver::solver_dfs as solver;
 
 #[derive(Parser)]
 #[command(name = "hexahop")]
