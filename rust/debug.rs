@@ -128,6 +128,7 @@ pub fn generate_corrected_json() {
 
 pub fn print_map(state: &MapState, info: &map::MapInfo) {
     let total_rows = (info.height as usize * 2) + info.width as usize;
+    let mut all_lines: Vec<String> = Vec::new();
 
     for row in 0..total_rows {
         let mut line = String::new();
@@ -172,8 +173,18 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
             line.push_str(&display_text);
         }
 
-        if !line.trim().is_empty() {
-            println!("{}", line);
+        all_lines.push(line);
+    }
+
+    let mut empty_line_count = -(total_rows as i32);
+
+    for row in 0..total_rows {
+        let line = &all_lines[row];
+        if line.trim().is_empty() {
+            empty_line_count += 1;
+            continue;
         }
+        println!("{}{}", "\n".repeat(empty_line_count.max(0) as usize), line);
+        empty_line_count = 0;
     }
 }
