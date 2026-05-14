@@ -17,17 +17,21 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     let mut todo = BinaryHeap::new();
     let mut won = Vec::new();
     let mut done = HashSet::new();
-
-    todo.push(GameState::new(MapState::load_lev(&info)?));
+    let start_state = GameState::new(MapState::load_lev(&info)?);
+    todo.push(start_state.ghost());
 
     while todo.len() > 0 {
-        let game = todo.pop().unwrap();
+        let game = todo.pop().unwrap().reproduce(start_state.clone(), &info);
         dlog!("Testing game, score: {}, path: {}", game.cost, Direction::list2string(&game.path));
         if done.contains(&game.state) {
             dlog!("Duplicate");
             continue;
         }
         done.insert(game.state.clone());
+
+        if done.len() % 10000 == 0 {
+            println!("won: {}, queued: {}, done: {}, cost: {}", won.len(), todo.len(), done.len(), game.cost);
+        }
 
         let directions: &[Direction] = if game.state.jumps > 0 {
             &Direction::all()
@@ -40,7 +44,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
                 MapStatus::Won => {
                     dlog!("dir {} Won!", dir);
                     done.insert(next_state.state.clone());
-                    won.push(next_state);
+                    won.push(next_state.ghost());
                 }
                 MapStatus::Dead => {
                     dlog!("dir {} Dead!", dir);
@@ -48,14 +52,14 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
                 MapStatus::Ongoing => {
                     dlog!("dir {} queued", dir);
                     if !done.contains(&next_state.state) {
-                        todo.push(next_state);
+                        todo.push(next_state.ghost());
                     }
                 }
             }
         }
     }
 
-    let best = won.into_iter().max().ok_or_else(|| "No solution found".to_string())?;
+    let best = won.into_iter().max().ok_or_else(|| "No solution found".to_string())?.reproduce(start_state.clone(), &info);
     println!("Best game, score: {}, path: {}", best.cost, Direction::list2string(&best.path));
     Ok(best.clone())
 }
