@@ -12,6 +12,8 @@ macro_rules! dlog {
         }
     };
 }
+
+// Breadth-First Search (BFS)
 pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, String> {
     let info = map::get(map_nr)?;
     let mut todo = BinaryHeap::new();
