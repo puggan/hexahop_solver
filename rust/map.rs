@@ -184,13 +184,23 @@ impl MapState {
             return MapStatus::Dead;
         }
 
-        // 3. Check for Win Condition (Are all target tiles gone?)
-        // Target tiles: Low Green (2), High Green (3), Low Blue (7), High Blue (8)
-        let targets_remaining = self.tiles.iter().any(|&t| {
-            let t_type = t & MASK_TILE_TYPE;
-            t_type == TileType::LowGreen as u8 || t_type == TileType::HighGreen as u8
-        });
+        let targets_remaining = self.tiles
+            .iter()
+            .filter(
+                |&&t| {
+                    let t_type = t & MASK_TILE_TYPE;
+                    t_type == TileType::LowGreen as u8 || t_type == TileType::HighGreen as u8
+                }
+            ).count() as u16;
 
-        if targets_remaining { MapStatus::Ongoing } else { MapStatus::Won }
+        if targets_remaining == 0 {
+            return MapStatus::Won;
+        }
+
+        if current_cost + targets_remaining > max_cost.unwrap_or(info.par) {
+            return MapStatus::Dead;
+        }
+
+        MapStatus::Ongoing
     }
 }
