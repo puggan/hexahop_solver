@@ -23,11 +23,12 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     while todo.len() > 0 {
         let game = todo.pop().unwrap().reproduce(start_state.clone(), &info);
         dlog!("Testing game, score: {}, path: {}", game.cost, Direction::list2string(&game.path));
-        if done.contains(&game.state) {
+        let hash = fxhash::hash64(&game.state);
+        if done.contains(&hash) {
             dlog!("Duplicate");
             continue;
         }
-        done.insert(game.state.clone());
+        done.insert(hash);
 
         if done.len() % 10000 == 0 {
             println!("won: {}, queued: {}, done: {}, cost: {}", won.len(), todo.len(), done.len(), game.cost);
@@ -43,7 +44,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
             match next_state.status(&info, max_cost) {
                 MapStatus::Won => {
                     dlog!("dir {} Won!", dir);
-                    done.insert(next_state.state.clone());
+                    done.insert(fxhash::hash64(&next_state.state));
                     won.push(next_state.ghost());
                 }
                 MapStatus::Dead => {
@@ -51,7 +52,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
                 }
                 MapStatus::Ongoing => {
                     dlog!("dir {} queued", dir);
-                    if !done.contains(&next_state.state) {
+                    if !done.contains(&fxhash::hash64(&next_state.state)) {
                         todo.push(next_state.ghost());
                     }
                 }
