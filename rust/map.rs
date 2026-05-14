@@ -153,6 +153,23 @@ impl MapState {
         Some(self.tiles[index])
     }
 
+    pub fn get_tile_index(&self, x: i8, y: i8, info: &MapInfo) -> Option<usize> {
+        // 1. Boundary check using the trusted info
+        if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
+            return None;
+        }
+
+        // 2. Calculate index (Column-Major as we agreed)
+        let index = (x as usize * info.height as usize) + y as usize;
+
+        // 3. Safety check against the buffer
+        if index >= MAX_TILES {
+            return None;
+        }
+
+        Some(index)
+    }
+
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
         describe_tile_byte(self.get_tile(x, y, info))
     }
