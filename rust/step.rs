@@ -1,10 +1,11 @@
+use std::cmp::Ordering;
 use crate::direction::Direction;
 use crate::map::MapInfo;
 use crate::map::MapState;
 use crate::map::MapStatus;
 use crate::tile::TileType;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq)]
 pub struct GameState {
     pub state: MapState,
     pub path: Vec<Direction>,
@@ -20,8 +21,8 @@ impl GameState {
         }
     }
 
-    pub fn status(&self, map_info: MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
-        self.state.status(&map_info, current_cost, max_cost)
+    pub fn status(&self, map_info: &MapInfo, max_cost: &Option<u16>) -> MapStatus {
+        self.state.status(&map_info, self.cost, max_cost)
     }
 
     pub fn get_path_hash(&self) -> Vec<u64> {
@@ -41,7 +42,7 @@ impl GameState {
     }
 
     pub fn step_if_alive(&self, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
-        match self.state.status(map_info, self.cost, max_cost) {
+        match self.status(map_info, max_cost) {
             MapStatus::Ongoing => self.step(dir, map_info),
             _ => self.clone()
         }
@@ -133,5 +134,23 @@ impl GameState {
             path: new_path,
             cost: self.cost
         }
+    }
+}
+
+impl Ord for GameState {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // We reverse the comparison here to turn the Max-Heap into a Min-Heap
+        other.cost.cmp(&self.cost)
+    }
+}
+impl PartialOrd for GameState {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq<Self> for GameState {
+    fn eq(&self, other: &Self) -> bool {
+        self.cost == other.cost
     }
 }

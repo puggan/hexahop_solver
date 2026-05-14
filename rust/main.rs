@@ -1,5 +1,7 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
+use clap::Subcommand;
 use hexahop_solver::debug;
+use hexahop_solver::solver;
 
 #[derive(Parser)]
 #[command(name = "hexahop")]
@@ -21,8 +23,7 @@ enum Commands {
     Solve {
         map_nr: usize,
         /// Max cost limit (optional)
-        #[arg(short, long, default_value_t = 100)]
-        max_cost: u32,
+        max_cost: Option<u16>,
     },
 }
 
@@ -35,9 +36,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             debug::run_debug(*map_nr, path.clone())?;
         }
         Commands::Solve { map_nr, max_cost } => {
-            println!("Solving Map {} with max cost limit: {}", map_nr, max_cost);
-            // Call your solver logic from lib.rs
-            return Err("The solver engine is not yet implemented.".into());
+            if max_cost.is_some() {
+                println!("Solving Map {} with max cost limit: {}", map_nr, max_cost.unwrap());
+            } else {
+                println!("Solving Map {} with default max cost", map_nr);
+            }
+            solver::run_solver(*map_nr, max_cost)?;
         }
     }
 
