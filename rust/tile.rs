@@ -34,83 +34,87 @@ pub enum ItemType {
     Jump = 2,
 }
 
+impl TileType {
+    pub fn code(&self) -> &'static str {
+        match self {
+            TileType::Water => "  ",
+            TileType::LowLand => "la",
+            TileType::LowGreen => "gr",
+            TileType::HighGreen => "GR",
+            TileType::Trampoline => "tr",
+            TileType::Rotator => "ro",
+            TileType::HighLand => "LA",
+            TileType::LowBlue => "bl",
+            TileType::HighBlue => "BL",
+            TileType::Laser => "la",
+            TileType::Ice => "ic",
+            TileType::AntiIce => "ai",
+            TileType::Build => "bu",
+            TileType::BuildableWater => "bw",
+            TileType::Boat => "bo",
+            TileType::LowElevator => "el",
+            TileType::HighElevator => "EL",
+        }
+    }
+
+    pub fn describe(&self) -> &'static str {
+        match self {
+            TileType::Water => "Water",
+            TileType::LowLand => "Low Land",
+            TileType::LowGreen => "Low Green",
+            TileType::HighGreen => "High Green",
+            TileType::Trampoline => "Trampoline",
+            TileType::Rotator => "Rotator",
+            TileType::HighLand => "High Land",
+            TileType::LowBlue => "Low Blue",
+            TileType::HighBlue => "High Blue",
+            TileType::Laser => "Laser",
+            TileType::Ice => "Ice",
+            TileType::AntiIce => "Anti-Ice Tile",
+            TileType::Build => "Build",
+            TileType::BuildableWater => "Buildable Water",
+            TileType::Boat => "Boat",
+            TileType::LowElevator => "Low Elevator",
+            TileType::HighElevator => "High Elevator",
+        }
+    }
+}
+impl ItemType {
+    pub fn code(&self) -> &'static str {
+        match self {
+            ItemType::None => "",
+            ItemType::AntiIce => "AI",
+            ItemType::Jump => "JU",
+        }
+    }
+
+    pub fn describe(&self) -> &'static str {
+        match self {
+            ItemType::None => "",
+            ItemType::AntiIce => " + [Anti-Ice Item]",
+            ItemType::Jump => " + [Jump Item]",
+        }
+    }
+}
+
 pub fn describe_tile_byte(tile_byte: u8) -> String {
     let tile_type_int = tile_byte & MASK_TILE_TYPE;
     let item_int = (tile_byte & MASK_ITEM_TYPE) >> SHIFT_TILE_ITEM;
 
-    let type_name = TileType::from_repr(tile_type_int).map(describe_tile).unwrap_or("??");
-    let item_name = ItemType::from_repr(item_int).map(describe_item).unwrap_or("??");
+    let type_name = TileType::from_repr(tile_type_int).as_ref().map(TileType::describe).unwrap_or("??");
+    let item_name = ItemType::from_repr(item_int).as_ref().map(ItemType::describe).unwrap_or("??");
 
     format!("{}{}", type_name, item_name)
 }
 
-pub fn describe_tile(tile_type: TileType) -> &'static str {
-    match tile_type {
-        TileType::Water => "Water",
-        TileType::LowLand => "Low Land",
-        TileType::LowGreen => "Low Green",
-        TileType::HighGreen => "High Green",
-        TileType::Trampoline => "Trampoline",
-        TileType::Rotator => "Rotator",
-        TileType::HighLand => "High Land",
-        TileType::LowBlue => "Low Blue",
-        TileType::HighBlue => "High Blue",
-        TileType::Laser => "Laser",
-        TileType::Ice => "Ice",
-        TileType::AntiIce => "Anti-Ice Tile",
-        TileType::Build => "Build",
-        TileType::BuildableWater => "Buildable Water",
-        TileType::Boat => "Boat",
-        TileType::LowElevator => "Low Elevator",
-        TileType::HighElevator => "High Elevator",
-    }
-}
-
 pub fn tile_code_byte(tile_byte: u8) -> &'static str {
-    TileType::from_repr(tile_byte & MASK_TILE_TYPE).map(tile_code).unwrap_or("??")
+    TileType::from_repr(tile_byte & MASK_TILE_TYPE).as_ref().map(TileType::code).unwrap_or("??")
 }
 
-pub fn tile_code(tile_type: TileType) -> &'static str {
-    match tile_type {
-        TileType::Water => "  ",
-        TileType::LowLand => "la",
-        TileType::LowGreen => "gr",
-        TileType::HighGreen => "GR",
-        TileType::Trampoline => "tr",
-        TileType::Rotator => "ro",
-        TileType::HighLand => "LA",
-        TileType::LowBlue => "bl",
-        TileType::HighBlue => "BL",
-        TileType::Laser => "la",
-        TileType::Ice => "ic",
-        TileType::AntiIce => "ai",
-        TileType::Build => "bu",
-        TileType::BuildableWater => "bw",
-        TileType::Boat => "bo",
-        TileType::LowElevator => "el",
-        TileType::HighElevator => "EL",
-    }
-}
-
-pub fn describe_item(item_type: ItemType) -> &'static str {
-    match item_type {
-        ItemType::None => "",
-        ItemType::AntiIce => " + [Anti-Ice Item]",
-        ItemType::Jump => " + [Jump Item]",
-    }
-}
 pub fn item_code_high_byte(tile_byte: u8) -> &'static str {
     item_code_low_byte(tile_byte >> SHIFT_TILE_ITEM)
 }
 
 pub fn item_code_low_byte(tile_byte: u8) -> &'static str {
-    ItemType::from_repr(tile_byte).map(item_code).unwrap_or("??")
-}
-
-pub fn item_code(item_type: ItemType) -> &'static str {
-    match item_type {
-        ItemType::None => "",
-        ItemType::AntiIce => "AI",
-        ItemType::Jump => "JU",
-    }
+    ItemType::from_repr(tile_byte).as_ref().map(ItemType::code).unwrap_or("??")
 }
