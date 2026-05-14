@@ -1,9 +1,11 @@
+use crate::direction::Direction;
 use crate::map;
 use crate::map::list;
 use crate::map::MapState;
+use crate::step::GameState;
 use crate::tile;
 
-pub fn run_debug(map_nr: usize, _path: Option<String>) -> Result<(), String> {
+pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
     if map_nr == 0 {
         if verify_all_maps() == false {
             generate_corrected_json();
@@ -19,20 +21,20 @@ pub fn run_debug(map_nr: usize, _path: Option<String>) -> Result<(), String> {
 
     println!("\n--- Tile Details ---");
     println!("Standing on: ({}, {}): {}", state.player_x, state.player_y, state.describe_tile(state.player_x, state.player_y, &info));
-
     print_map(&state, &info);
-    /*
-    // If you want to list all non-water tiles:
-    println!("\n--- Tile Details ---");
-    for y in 0..info.height as i8 {
-        for x in 0..info.width as i8 {
-            let byte = state.get_tile(x, y, &info);
-            if byte > 0 {
-                println!("({}, {}): {}", x, y, map::describe_tile(byte));
-            }
-        }
+
+    if path.is_some() {
+        let path_list = Direction::make_list(path.unwrap().as_str())?;
+        println!("\n--- Apply Path ---");
+        println!("\nPath {} steps: {}", path_list.len(), Direction::list2string(&path_list));
+
+        let final_state = path_list.iter().fold(GameState::new(state), |current_state, path| current_state.step_if_alive(path, &info, &None));
+        println!("\nStanding on: ({}, {}): {}", final_state.state.player_x, final_state.state.player_y, final_state.state.describe_tile(final_state.state.player_x, final_state.state.player_y, &info));
+        println!("\nStatus: {}", final_state.state.status(&info, final_state.cost, &None));
+        println!("\nCost: {}", final_state.cost);
+        print_map(&final_state.state, &info);
     }
-    */
+
     Ok(())
 }
 
