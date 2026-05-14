@@ -35,6 +35,16 @@ pub enum ItemType {
 }
 
 impl TileType {
+    pub fn high(&self) -> bool {
+        match self {
+            TileType::HighGreen => true,
+            TileType::HighLand => true,
+            TileType::HighBlue => true,
+            TileType::HighElevator => true,
+            _ => false,
+        }
+    }
+
     pub fn code(&self) -> &'static str {
         match self {
             TileType::Water => "  ",
