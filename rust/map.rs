@@ -184,23 +184,26 @@ impl MapState {
             return MapStatus::Dead;
         }
 
-        let targets_remaining = self.tiles
-            .iter()
-            .filter(
-                |&&t| {
-                    let t_type = t & MASK_TILE_TYPE;
-                    t_type == TileType::LowGreen as u8 || t_type == TileType::HighGreen as u8
-                }
-            ).count() as u16;
+        let tile_count = self.tile_count();
+
+        let targets_remaining = tile_count[TileType::LowGreen as usize] + tile_count[TileType::HighGreen as usize];
 
         if targets_remaining == 0 {
             return MapStatus::Won;
         }
 
-        if current_cost + targets_remaining > max_cost.unwrap_or(info.par) {
+        if current_cost + targets_remaining as u16 > max_cost.unwrap_or(info.par) {
             return MapStatus::Dead;
         }
 
         MapStatus::Ongoing
+    }
+
+    pub fn tile_count(&self) -> [usize; 17] {
+        let mut tile_counts = [0; 17];
+        for &tile in self.tiles.iter() {
+            tile_counts[tile as usize] += 1;
+        }
+        tile_counts
     }
 }
