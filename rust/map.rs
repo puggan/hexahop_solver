@@ -192,6 +192,22 @@ impl MapState {
             return MapStatus::Won;
         }
 
+        if tile_count[TileType::HighGreen as usize] > 0 && tile_count[TileType::LowGreen as usize] == 0 {
+            for tile in self.tiles.iter_mut() {
+                if *tile == TileType::HighGreen as u8 {
+                    *tile = TileType::LowGreen as u8;
+                }
+            }
+        }
+
+        if tile_count[TileType::HighBlue as usize] > 0 && tile_count[TileType::LowBlue as usize] == 0 {
+            for tile in self.tiles.iter_mut() {
+                if *tile == TileType::HighBlue as u8 {
+                    *tile = TileType::LowBlue as u8;
+                }
+            }
+        }
+
         if current_cost + targets_remaining as u16 > max_cost.unwrap_or(info.par) {
             return MapStatus::Dead;
         }
