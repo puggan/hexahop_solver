@@ -149,7 +149,7 @@ impl MapState {
         })
     }
 
-    pub fn get_title(&self, maybe_index: Option<usize>) -> Option<u8> {
+    pub fn get_tile(&self, maybe_index: Option<usize>) -> Option<u8> {
         if let Some(index) = maybe_index {
             Some(self.tiles[index])
         } else {
@@ -157,29 +157,8 @@ impl MapState {
         }
     }
 
-    pub fn get_tile_by_pos(&self, x: i8, y: i8, info: &MapInfo) -> u8 {
-        self.get_real_tile(x, y, info).unwrap_or(0)
-    }
-
-    pub fn get_real_tile(&self, x: i8, y: i8, info: &MapInfo) -> Option<u8> {
-        // 1. Boundary check using the trusted info
-        if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
-            return None;
-        }
-
-        // 2. Calculate index (Column-Major as we agreed)
-        let index = (x as usize * info.height as usize) + y as usize;
-
-        // 3. Safety check against the buffer
-        if index >= MAX_TILES {
-            return None;
-        }
-
-        Some(self.tiles[index])
-    }
-
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
-        describe_tile_byte(self.get_tile_by_pos(x, y, info))
+        describe_tile_byte(self.get_tile(info.tile_index(x, y)).unwrap_or(TileType::Water as u8))
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
@@ -187,7 +166,8 @@ impl MapState {
             return MapStatus::Dead;
         }
 
-        let current_tile = self.get_tile_by_pos(self.player_x, self.player_y, info) & MASK_TILE_TYPE;
+        let current_index = info.tile_index(self.player_x, self.player_y);
+        let current_tile = self.get_tile(current_index).unwrap_or(0) & MASK_TILE_TYPE;
         if current_tile == TileType::Water as u8 {
             return MapStatus::Dead;
         }

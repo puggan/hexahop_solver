@@ -51,9 +51,7 @@ impl GameState {
     }
 
     pub fn step(&self, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
-        let old_tile = TileType::from_repr(
-            self.state.get_tile_by_pos(self.state.player_x, self.state.player_y, map_info)
-        );
+        let old_tile = TileType::from_option(self.state.get_tile(map_info.tile_index(self.state.player_x, self.state.player_y)));
         self
             .step_out_of(map_info, max_cost)
             .step_into(
@@ -126,7 +124,7 @@ impl GameState {
         };
 
         let tile_index = map_info.tile_index(x, y);
-        let landed_on_tile = TileType::from_repr(self.state.get_title(tile_index).unwrap_or(0)).unwrap_or(TileType::Water);
+        let landed_on_tile = TileType::from_repr(self.state.get_tile(tile_index).unwrap_or(0)).unwrap_or(TileType::Water);
 
         match landed_on_tile {
             TileType::Water => {
@@ -156,7 +154,7 @@ impl GameState {
                 loop {
                     let old_tile_index = map_info.tile_index(new_x, new_y);
                     let next_tile_index = map_info.tile_index(new_x + dx, new_y + dy);
-                    let next_tile = self.state.get_title(next_tile_index);
+                    let next_tile = self.state.get_tile(next_tile_index);
                     if next_tile.is_none() {
                         dead = true;
                         break;

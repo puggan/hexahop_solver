@@ -88,6 +88,10 @@ impl TileType {
             TileType::HighElevator => "High Elevator",
         }
     }
+
+    pub fn from_option(opt: Option<u8>) -> Option<TileType> {
+        TileType::from_repr(opt?)
+    }
 }
 impl ItemType {
     pub fn code(&self) -> &'static str {
