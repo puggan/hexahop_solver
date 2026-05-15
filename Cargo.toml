@@ -8,9 +8,10 @@ name = "hexahop_solver"
 path = "rust/lib.rs"
 
 [features]
-default = ["dfs"]
+default = ["bfs"]
 bfs = []
 dfs = []
+h128 = []
 
 [[bin]]
 name = "hexahop"
@@ -24,3 +25,4 @@ validator = { version = "0.16", features = ["derive"] }
 strum_macros = "0.28.0"
 regex = "1.12.3"
 fxhash = "0.2.1"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
