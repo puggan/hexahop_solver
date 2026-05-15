@@ -40,7 +40,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
             game: current_solve_state.game,
         };
         dlog!("Next dir {} on deepth: {}", &updated_solve_state.direction, solve_states.len());
-        let next_game_state = updated_solve_state.game.step(&updated_solve_state.direction, &info);
+        let next_game_state = updated_solve_state.game.step(&updated_solve_state.direction, &info, max_cost);
         tries += 1;
         if tries % (1e6 as u128) == 0 {
             let now = Instant::now();
@@ -49,7 +49,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         }
         solve_states.push(updated_solve_state);
 
-        match next_game_state.status(&info, &max_cost) {
+        match next_game_state.status {
             MapStatus::Dead => {
                 dlog!("Died");
             },

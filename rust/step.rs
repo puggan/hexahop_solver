@@ -10,6 +10,7 @@ pub struct GameState {
     pub state: MapState,
     pub path: Vec<Direction>,
     pub cost: u16,
+    pub status: MapStatus,
 }
 
 impl GameState {
@@ -18,15 +19,12 @@ impl GameState {
             state,
             path: Vec::new(),
             cost: 0,
+            status: MapStatus::Ongoing,
         }
     }
 
     pub fn ghost(&self) -> GameStateGhost {
         GameStateGhost::convert(self)
-    }
-
-    pub fn status(&self, map_info: &MapInfo, max_cost: &Option<u16>) -> MapStatus {
-        self.state.status(&map_info, self.cost, max_cost)
     }
 
     pub fn get_path_hash(&self) -> Vec<u64> {
@@ -46,28 +44,29 @@ impl GameState {
     }
 
     pub fn step_if_alive(&self, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
-        match self.status(map_info, max_cost) {
-            MapStatus::Ongoing => self.step(dir, map_info),
+        match self.status {
+            MapStatus::Ongoing => self.step(dir, map_info, max_cost),
             _ => self.clone()
         }
     }
 
-    pub fn step(&self, dir: &Direction, map_info: &MapInfo) -> GameState {
+    pub fn step(&self, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let old_tile = TileType::from_repr(
             self.state.get_tile(self.state.player_x, self.state.player_y, map_info)
         );
         self
-            .step_out_of(map_info)
+            .step_out_of(map_info, max_cost)
             .step_into(
                 old_tile.unwrap_or(TileType::Water).high(),
                 self.state.player_x + dir.dx(),
                 self.state.player_y + dir.dy(),
                 dir,
-                map_info
+                map_info,
+                max_cost
             )
     }
 
-    pub fn step_out_of(&self, map_info: &MapInfo) -> GameState {
+    pub fn step_out_of(&self, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let mut new_tiles = self.state.tiles;
         let mut extra_cost = 1;
         let tile_index = MapState::get_tile_index(self.state.player_x, self.state.player_y, map_info);
@@ -90,28 +89,32 @@ impl GameState {
             };
         };
 
+        let mut map_state = MapState {
+            tiles: new_tiles,
+            player_x: self.state.player_x,
+            player_y: self.state.player_y,
+            anti_ice: self.state.anti_ice,
+            jumps: self.state.jumps,
+        };
+        let status = map_state.status(&map_info, self.cost, max_cost);
+
         GameState {
-            state: MapState {
-                tiles: new_tiles,
-                player_x: self.state.player_x,
-                player_y: self.state.player_y,
-                anti_ice: self.state.anti_ice,
-                jumps: self.state.jumps,
-            },
+            state: map_state,
             path: self.path.clone(),
-            cost: self.cost + extra_cost
+            cost: self.cost + extra_cost,
+            status
         }
     }
 
-    pub fn step_into(&self, high: bool, x: i8, y: i8, dir: &Direction, map_info: &MapInfo) -> GameState {
+    pub fn step_into(&self, high: bool, x: i8, y: i8, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let mut new_path = self.path.clone();
         new_path.push(*dir);
         let /*mut*/ new_tiles = self.state.tiles;
-        let mut extra_cost = 0;
+        let mut dead = false;
         let jump_used = match dir {
             Direction::Jump => {
                 if self.state.jumps == 0 {
-                    extra_cost += 1<<14;
+                    dead = true;
                     0
                 } else {
                     1
@@ -131,16 +134,19 @@ impl GameState {
             }
         }
 
+        let mut map_state = MapState {
+            tiles: new_tiles,
+            player_x: x,
+            player_y: y,
+            anti_ice: self.state.anti_ice,
+            jumps: self.state.jumps - jump_used,
+        };
+        let status = match dead { true => MapStatus::Dead, false => map_state.status(&map_info, self.cost, max_cost) };
         GameState {
-            state: MapState {
-                tiles: new_tiles,
-                player_x: x,
-                player_y: y,
-                anti_ice: self.state.anti_ice,
-                jumps: self.state.jumps - jump_used,
-            },
+            state: map_state,
             path: new_path,
-            cost: self.cost + extra_cost
+            cost: self.cost,
+            status
         }
     }
 }

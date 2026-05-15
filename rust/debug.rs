@@ -30,7 +30,7 @@ pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
 
         let final_state = path_list.iter().fold(GameState::new(state), |current_state, path| current_state.step_if_alive(path, &info, &None));
         println!("\nStanding on: ({}, {}): {}", final_state.state.player_x, final_state.state.player_y, final_state.state.describe_tile(final_state.state.player_x, final_state.state.player_y, &info));
-        println!("\nStatus: {}", final_state.state.status(&info, final_state.cost, &None));
+        println!("\nStatus: {}", &final_state.status);
         println!("\nCost: {}", final_state.cost);
         print_map(&final_state.state, &info);
     }

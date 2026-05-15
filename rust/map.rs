@@ -59,7 +59,7 @@ pub struct MapState {
     pub jumps: u8,
 }
 
-#[derive(Debug, Display, PartialEq, Eq)]
+#[derive(Clone, Debug, Display, PartialEq, Eq)]
 pub enum MapStatus {
     Won,
     Dead,
@@ -174,7 +174,7 @@ impl MapState {
         describe_tile_byte(self.get_tile(x, y, info))
     }
 
-    pub fn status(&self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
+    pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
         if current_cost > max_cost.unwrap_or(info.par) {
             return MapStatus::Dead;
         }

@@ -59,8 +59,8 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
             &Direction::flat()
         };
         for dir in directions {
-            let next_state = game.step(dir, &info);
-            match next_state.status(&info, max_cost) {
+            let next_state = game.step(dir, &info, max_cost);
+            match next_state.status {
                 MapStatus::Won => {
                     dlog!("dir {} Won!", dir);
                     #[cfg(not(feature = "h128"))]
