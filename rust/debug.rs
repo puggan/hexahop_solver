@@ -153,7 +153,7 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
                     if x == state.player_x && y == state.player_y {
                         display_text = "PL".to_string();
                     } else {
-                        let byte = state.get_tile(x, y, info);
+                        let byte = state.get_tile_by_pos(x, y, info);
                         let item = tile::item_code_high_byte(byte);
                         display_text = item.to_string();
                     }
@@ -161,7 +161,7 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
             } else if target_base >= 0 && target_base % 2 == 0 {
                 let y = (target_base / 2) as i8;
                 if y < info.height as i8 {
-                    let byte = state.get_tile(x, y, info);
+                    let byte = state.get_tile_by_pos(x, y, info);
                     display_text = tile::tile_code_byte(byte).to_string();
                 }
             }

@@ -149,7 +149,15 @@ impl MapState {
         })
     }
 
-    pub fn get_tile(&self, x: i8, y: i8, info: &MapInfo) -> u8 {
+    pub fn get_title(&self, maybe_index: Option<usize>) -> Option<u8> {
+        if let Some(index) = maybe_index {
+            Some(self.tiles[index])
+        } else {
+            None
+        }
+    }
+
+    pub fn get_tile_by_pos(&self, x: i8, y: i8, info: &MapInfo) -> u8 {
         self.get_real_tile(x, y, info).unwrap_or(0)
     }
 
@@ -171,7 +179,7 @@ impl MapState {
     }
 
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
-        describe_tile_byte(self.get_tile(x, y, info))
+        describe_tile_byte(self.get_tile_by_pos(x, y, info))
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
@@ -179,7 +187,7 @@ impl MapState {
             return MapStatus::Dead;
         }
 
-        let current_tile = self.get_tile(self.player_x, self.player_y, info) & MASK_TILE_TYPE;
+        let current_tile = self.get_tile_by_pos(self.player_x, self.player_y, info) & MASK_TILE_TYPE;
         if current_tile == TileType::Water as u8 {
             return MapStatus::Dead;
         }
