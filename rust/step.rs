@@ -170,7 +170,7 @@ impl GameStateGhost {
     pub fn path(&self) -> Vec<Direction> {
         let mut path = Vec::new();
         for mut combined in self.compressed_path {
-            for _index in 0..41 {
+            for _index in 0..=41 {
                 let dir_value = (combined & 0x7) as u8;
                 if dir_value == 0 {
                     return path;
