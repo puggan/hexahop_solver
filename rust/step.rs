@@ -129,6 +129,22 @@ impl GameState {
             TileType::Water => {},
             TileType::LowGreen => {},
             TileType::LowLand => {},
+            TileType::LowBlue => {},
+            TileType::HighLand => {
+                if !high {
+                    dead = true;
+                }
+            },
+            TileType::HighGreen => {
+                if !high {
+                    dead = true;
+                }
+            },
+            TileType::HighBlue => {
+                if !high {
+                    dead = true;
+                }
+            },
             _ => {
                 unimplemented!("TODO step")
             }
