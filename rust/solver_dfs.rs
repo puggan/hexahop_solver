@@ -63,12 +63,19 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
             },
             MapStatus::Ongoing => {
                 dlog!("Ongoing");
-                solve_states.push(
-                    SolverState {
-                        game: next_game_state,
-                        direction: Direction::None,
+
+                if !solve_states.iter().any(
+                    |earlier_state| {
+                        earlier_state.game.state.eq(&next_game_state.state)
                     }
-                );
+                ) {
+                    solve_states.push(
+                        SolverState {
+                            game: next_game_state,
+                            direction: Direction::None,
+                        }
+                    );
+                }
             },
         }
     }
