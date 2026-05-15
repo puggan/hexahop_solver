@@ -153,7 +153,7 @@ impl MapState {
         Some(self.tiles[index])
     }
 
-    pub fn get_tile_index(&self, x: i8, y: i8, info: &MapInfo) -> Option<usize> {
+    pub fn get_tile_index(x: i8, y: i8, info: &MapInfo) -> Option<usize> {
         // 1. Boundary check using the trusted info
         if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
             return None;

@@ -72,7 +72,7 @@ impl GameState {
         let mut anti_ice_used = 0;
         let mut jumps_used = 0;
         let mut extra_cost = 1;
-        let tile_index = self.state.get_tile_index(self.state.player_x, self.state.player_y, map_info);
+        let tile_index = MapState::get_tile_index(self.state.player_x, self.state.player_y, map_info);
         if tile_index.is_some() {
             let tile_value = self.state.tiles[tile_index.unwrap()];
             let tile = TileType::from_repr(tile_value).unwrap_or(TileType::Water);
