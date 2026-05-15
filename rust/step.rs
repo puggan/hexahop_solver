@@ -69,8 +69,6 @@ impl GameState {
 
     pub fn step_out_of(&self, map_info: &MapInfo) -> GameState {
         let mut new_tiles = self.state.tiles;
-        let mut anti_ice_used = 0;
-        let mut jumps_used = 0;
         let mut extra_cost = 1;
         let tile_index = MapState::get_tile_index(self.state.player_x, self.state.player_y, map_info);
         if tile_index.is_some() {
@@ -78,33 +76,27 @@ impl GameState {
             let tile = TileType::from_repr(tile_value).unwrap_or(TileType::Water);
             new_tiles[tile_index.unwrap()] = match tile {
                 TileType::AntiIce => TileType::LowBlue as u8,
-                TileType::LowBlue => TileType::LowGreen as u8,
+                TileType::LowBlue => {
+                    extra_cost += 10;
+                    TileType::LowGreen as u8
+                },
                 TileType::LowGreen => TileType::Water as u8,
-                TileType::HighBlue => TileType::HighGreen as u8,
+                TileType::HighBlue => {
+                    extra_cost += 10;
+                    TileType::HighGreen as u8
+                },
                 TileType::HighGreen => TileType::Water as u8,
                 _ => tile_value
             };
-            extra_cost = match tile {
-                TileType::LowBlue => 11,
-                TileType::HighBlue => 11,
-                _ => 1
-            }
         };
-        if self.state.anti_ice < anti_ice_used {
-            anti_ice_used = 0;
-            extra_cost += 1<<14;
-        }
-        if self.state.jumps < jumps_used {
-            jumps_used = 0;
-            extra_cost += 1<<14;
-        }
+
         GameState {
             state: MapState {
                 tiles: new_tiles,
                 player_x: self.state.player_x,
                 player_y: self.state.player_y,
-                anti_ice: self.state.anti_ice - anti_ice_used,
-                jumps: self.state.jumps - jumps_used,
+                anti_ice: self.state.anti_ice,
+                jumps: self.state.jumps,
             },
             path: self.path.clone(),
             cost: self.cost + extra_cost
@@ -115,6 +107,18 @@ impl GameState {
         let mut new_path = self.path.clone();
         new_path.push(*dir);
         let /*mut*/ new_tiles = self.state.tiles;
+        let mut extra_cost = 0;
+        let jump_used = match dir {
+            Direction::Jump => {
+                if self.state.jumps == 0 {
+                    extra_cost += 1<<14;
+                    0
+                } else {
+                    1
+                }
+            },
+            _ => 0
+        };
 
         let landed_on_tile = TileType::from_repr(self.state.get_tile(x, y, map_info)).unwrap_or(TileType::Water);
 
@@ -133,10 +137,10 @@ impl GameState {
                 player_x: x,
                 player_y: y,
                 anti_ice: self.state.anti_ice,
-                jumps: self.state.jumps,
+                jumps: self.state.jumps - jump_used,
             },
             path: new_path,
-            cost: self.cost
+            cost: self.cost + extra_cost
         }
     }
 }
