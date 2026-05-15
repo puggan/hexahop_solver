@@ -125,7 +125,7 @@ impl GameState {
             _ => 0
         };
 
-        let tile_index = map_info.tile_index(self.state.player_x, self.state.player_y);
+        let tile_index = map_info.tile_index(x, y);
         let landed_on_tile = TileType::from_repr(self.state.get_title(tile_index).unwrap_or(0)).unwrap_or(TileType::Water);
 
         match landed_on_tile {
