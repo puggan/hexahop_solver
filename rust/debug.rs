@@ -1,6 +1,7 @@
 use crate::direction::Direction;
 use crate::map;
 use crate::map::list;
+use crate::map::MapStatus;
 use crate::map::MapState;
 use crate::step::GameState;
 use crate::tile;
@@ -26,12 +27,37 @@ pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
     if path.is_some() {
         let path_list = Direction::make_list(path.unwrap().as_str())?;
         println!("\n--- Apply Path ---");
-        println!("\nPath {} steps: {}", path_list.len(), Direction::list2string(&path_list));
+        println!("Path {} steps: {}", path_list.len(), Direction::list2string(&path_list));
 
-        let final_state = path_list.iter().fold(GameState::new(state), |current_state, path| current_state.step_if_alive(path, &info, &None));
-        println!("\nStanding on: ({}, {}): {}", final_state.state.player_x, final_state.state.player_y, final_state.state.describe_tile(final_state.state.player_x, final_state.state.player_y, &info));
+        let final_state = path_list.iter().fold(
+            GameState::new(state),
+            |current_state, dir| {
+                if current_state.status != MapStatus::Ongoing {
+                    return current_state;
+                }
+                /*
+                let path_bin = GameStateGhost::compress_path(&current_state.path);
+                println!(
+                    "Dir {} cost: {}, status: {}, path-hex: {:x}-{:x}-{:x}",
+                    dir,
+                    &current_state.cost,
+                    &current_state.status,
+                    path_bin[0],
+                    path_bin[1],
+                    path_bin[2]
+                );
+                let unpacked_path = GameStateGhost::path(&GameStateGhost {cost: current_state.cost, compressed_path: path_bin});
+                if !unpacked_path.eq(&current_state.path) {
+                    println!("input  path: {}", Direction::list2string(&current_state.path));
+                    println!("output path: {}", Direction::list2string(&unpacked_path));
+                }
+                */
+                current_state.step(dir, &info, &None)
+            }
+        );
+        println!("Standing on: ({}, {}): {}", final_state.state.player_x, final_state.state.player_y, final_state.state.describe_tile(final_state.state.player_x, final_state.state.player_y, &info));
         println!("\nStatus: {}", &final_state.status);
-        println!("\nCost: {}", final_state.cost);
+        println!("Cost: {}", final_state.cost);
         print_map(&final_state.state, &info);
     }
 

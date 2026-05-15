@@ -183,6 +183,7 @@ impl GameState {
             jumps: self.state.jumps - jump_used,
         };
         let status = match dead { true => MapStatus::Dead, false => map_state.status(&map_info, self.cost, max_cost) };
+        //println!("Dead: {}, Status: {}, tile: {}", dead, status, landed_on_tile.describe());
         GameState {
             state: map_state,
             path: new_path,
