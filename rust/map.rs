@@ -31,6 +31,23 @@ pub struct MapInfo {
     pub start_y: u8,
 }
 
+impl MapInfo {
+    pub fn tile_index(&self, x: i8, y: i8) -> Option<usize> {
+        if x < 0 || y < 0 || x >= self.width as i8 || y >= self.height as i8 {
+            return None;
+        }
+
+        let index = (x as usize * self.height as usize) + y as usize;
+
+        if index >= MAX_TILES {
+            return None;
+        }
+
+        Some(index)
+    }
+
+}
+
 pub fn list() -> Result<Vec<MapInfo>, String> {
     let project_root = env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".into());
     let data = fs::read_to_string(std::path::Path::new(&project_root).join(JSON_PATH))
@@ -151,23 +168,6 @@ impl MapState {
         }
 
         Some(self.tiles[index])
-    }
-
-    pub fn get_tile_index(x: i8, y: i8, info: &MapInfo) -> Option<usize> {
-        // 1. Boundary check using the trusted info
-        if x < 0 || y < 0 || x >= info.width as i8 || y >= info.height as i8 {
-            return None;
-        }
-
-        // 2. Calculate index (Column-Major as we agreed)
-        let index = (x as usize * info.height as usize) + y as usize;
-
-        // 3. Safety check against the buffer
-        if index >= MAX_TILES {
-            return None;
-        }
-
-        Some(index)
     }
 
     pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
