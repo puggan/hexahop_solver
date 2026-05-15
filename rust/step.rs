@@ -157,7 +157,7 @@ impl GameState {
                     let old_tile_index = map_info.tile_index(new_x, new_y);
                     let next_tile_index = map_info.tile_index(new_x + dx, new_y + dy);
                     let next_tile = self.state.get_title(next_tile_index);
-                    if next_tile.is_some() {
+                    if next_tile.is_none() {
                         dead = true;
                         break;
                     } else if next_tile.unwrap() == TileType::Water as u8 {
