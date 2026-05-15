@@ -208,7 +208,9 @@ impl MapState {
             }
         }
 
-        if current_cost + targets_remaining as u16 > max_cost.unwrap_or(info.par) {
+        let laser_offset = if tile_count[TileType::Laser as usize] > 0 { 1 } else { 0 };
+
+        if current_cost + targets_remaining as u16 - laser_offset > max_cost.unwrap_or(info.par) {
             return MapStatus::Dead;
         }
 
