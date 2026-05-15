@@ -56,7 +56,7 @@ impl TileType {
             TileType::HighLand => "LA",
             TileType::LowBlue => "bl",
             TileType::HighBlue => "BL",
-            TileType::Laser => "la",
+            TileType::Laser => "LS",
             TileType::Ice => "ic",
             TileType::AntiIce => "ai",
             TileType::Build => "bu",
