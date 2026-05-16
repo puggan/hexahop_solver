@@ -53,8 +53,8 @@ impl Direction {
     }
 
     pub fn make_list(path: &str) -> Result<Vec<Direction>, &'static str> {
-        let validate_full = Regex::new(r"^(([NnSs][EeWw]|[1-7NnSsJj]),?\s*)+$").unwrap();
-        let find_parts = Regex::new(r"[NnSs][EeWw]|[1-7NnSsJj]").unwrap();
+        let validate_full = Regex::new(r"^(([NnSs][EeWw]|[NnSsJj]),?\s*)+$").unwrap();
+        let find_parts = Regex::new(r"[NnSs][EeWw]|[NnSsJj]").unwrap();
 
         if !validate_full.is_match(path) {
             return Err("Invalid path string");
@@ -80,13 +80,13 @@ impl FromStr for Direction {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "1" | "N" | "n" => Ok(Direction::N),
-            "2" | "NE" | "Ne" | "ne" => Ok(Direction::NE),
-            "3" | "SE" | "Se" | "se" => Ok(Direction::SE),
-            "4" | "S" | "s" => Ok(Direction::S),
-            "5" | "SW" | "Sw" | "sw" => Ok(Direction::SW),
-            "6" | "NW" | "Nw" | "nw" => Ok(Direction::NW),
-            "7" | "J" | "j" => Ok(Direction::Jump),
+            "N" | "n" => Ok(Direction::N),
+            "NE" | "Ne" | "ne" => Ok(Direction::NE),
+            "SE" | "Se" | "se" => Ok(Direction::SE),
+            "S" | "s" => Ok(Direction::S),
+            "SW" | "Sw" | "sw" => Ok(Direction::SW),
+            "NW" | "Nw" | "nw" => Ok(Direction::NW),
+            "J" | "j" => Ok(Direction::Jump),
             _ => Err(()),
         }
     }
