@@ -1,5 +1,6 @@
 use regex::Regex;
 use std::fmt;
+use std::iter::repeat_n;
 use std::str::FromStr;
 use strum_macros::FromRepr;
 
@@ -52,28 +53,49 @@ impl Direction {
         }
     }
 
-    pub fn make_list(path: &str) -> Result<Vec<Direction>, &'static str> {
-        let validate_full = Regex::new(r"^(([NnSs][EeWw]|[NnSsJj]),?\s*)+$").unwrap();
-        let find_parts = Regex::new(r"[NnSs][EeWw]|[NnSsJj]").unwrap();
+    pub fn make_list(path_text: &str) -> Result<Vec<Direction>, &'static str> {
+        let validate_full = Regex::new(r"^(([1-9][0-9]?)?([NnSs][EeWw]|[NnSsJj]),?\s*)+$").unwrap();
+        let find_parts = Regex::new(r"([1-9][0-9]?)?([NnSs][EeWw]|[NnSsJj])").unwrap();
 
-        if !validate_full.is_match(path) {
+        if !validate_full.is_match(path_text) {
             return Err("Invalid path string");
         }
 
-        find_parts
-            .find_iter(path)
-            .map(
-                |mat| mat
-                    .as_str()
-                    .parse::<Direction>()
-                    .map_err(|_| "Invalid direction"),
-            )
-            .collect()
+        let mut path = Vec::new();
+        for part in find_parts.captures_iter(path_text) {
+            let dir = part.get(2).ok_or("parse failed")?.as_str().parse::<Direction>().map_err(|_| "parse failed")?;
+            let count = if let Some(count_match) = part.get(1) {
+                count_match.as_str().parse::<usize>().map_err(|_| "Invalid number format")?
+            } else {
+                1
+            };
+            path.extend(repeat_n(dir, count));
+        }
+        Ok(path)
     }
 
-    pub fn list2string(path: &[Direction]) -> String
+    pub fn list2string_plain(path: &[Direction]) -> String
     {
         path.iter().map(|d| d.to_string()).collect::<Vec<String>>().join(",")
+    }
+    pub fn list2string(path: &[Direction]) -> String {
+        let mut result = String::new();
+        let mut chunks = path.iter().peekable();
+
+        while let Some(dir) = chunks.next() {
+            let mut count = 1;
+            while chunks.peek() == Some(&dir) {
+                count += 1;
+                chunks.next();
+            }
+            // Add the number if > 1, then the direction
+            if count > 1 {
+                result.push_str(&count.to_string());
+            }
+            result.push_str(&dir.to_string());
+            result.push(',');
+        }
+        result
     }
 }
 impl FromStr for Direction {
