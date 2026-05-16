@@ -7,6 +7,7 @@ use crate::map::MapStatus;
 use crate::step::GameState;
 #[cfg(feature = "h128")]
 use std::hash::Hash;
+use std::time::Instant;
 #[cfg(feature = "h128")]
 use xxhash_rust::xxh3::Xxh3;
 
@@ -31,6 +32,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     let mut todo = BinaryHeap::new();
     let mut won = Vec::new();
     let mut done = HashSet::new();
+    let mut last_print_time = Instant::now();
     let start_state = GameState::new(MapState::load_lev(&info)?);
     todo.push(start_state.ghost());
     #[cfg(feature = "h128")]
@@ -50,7 +52,9 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         done.insert(hash);
 
         if done.len() % 10000 == 0 {
-            println!("won: {}, queued: {}, done: {}, cost: {}", won.len(), todo.len(), done.len(), game.cost);
+            let now = Instant::now();
+            println!("won: {}, queued: {}, done: {}, cost: {}, speed: {}", won.len(), todo.len(), done.len(), game.cost, 1e4 / now.duration_since(last_print_time).as_secs_f64());
+            last_print_time = now;
         }
 
         let directions: &[Direction] = if game.state.jumps > 0 {
