@@ -156,6 +156,43 @@ impl GameState {
                     dead = true;
                 }
             },
+            TileType::Ice => {
+                if map_state.anti_ice > 0 {
+                    map_state.anti_ice -= 1;
+                    map_state.tiles[tile_index.unwrap()] = TileType::AntiIce as u8;
+                } else {
+                    let mut glide = 0;
+                    loop {
+                        let next1_tile = TileType::from_option(map_state.get_tile(map_info.tile_index(x + dx * glide, y + dy * glide))).unwrap_or(TileType::Water);
+                        if next1_tile.high() {
+                            break;
+                        }
+
+                        if next1_tile == TileType::Water {
+                            dead = true;
+                            map_state.player_x = x + dx * glide;
+                            map_state.player_y = y + dy * glide;
+                            break;
+                        } else if next1_tile == TileType::Ice {
+                            glide += 1;
+                        } else {
+                            return GameState {
+                                state: map_state,
+                                path: self.path.clone(),
+                                cost: self.cost,
+                                status: MapStatus::Ongoing,
+                            }.step_into(
+                                high,
+                                x + dx * glide,
+                                y + dy * glide,
+                                dir,
+                                map_info,
+                                max_cost,
+                            )
+                        }
+                    }
+                }
+            }
             TileType::Trampoline => {
                 map_state.status(&map_info, self.cost, max_cost);
                 let next1_tile = map_state.get_tile(map_info.tile_index(x + dx, y + dy));
