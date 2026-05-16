@@ -110,7 +110,7 @@ impl GameState {
     pub fn step_into(&self, high: bool, x: i8, y: i8, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let mut new_path = self.path.clone();
         new_path.push(*dir);
-        let mut dead = false;
+        let mut dead = new_path.len() > 100;
         let jump_used = match dir {
             Direction::Jump => {
                 if self.state.jumps == 0 {
@@ -142,9 +142,11 @@ impl GameState {
             ItemType::None => {}
             ItemType::AntiIce => {
                 map_state.anti_ice += 1;
+                map_state.tiles[tile_index.unwrap()] = landed_on_tile as u8;
             }
             ItemType::Jump => {
                 map_state.jumps += 1;
+                map_state.tiles[tile_index.unwrap()] = landed_on_tile as u8;
             }
         }
 
