@@ -208,7 +208,7 @@ impl MapState {
     pub fn tile_count(&self) -> [usize; 17] {
         let mut tile_counts = [0; 17];
         for &tile in self.tiles.iter() {
-            tile_counts[tile as usize] += 1;
+            tile_counts[(tile & MASK_TILE_TYPE) as usize] += 1;
         }
         tile_counts
     }
