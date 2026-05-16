@@ -3,6 +3,9 @@ use crate::direction::Direction;
 use crate::map::MapInfo;
 use crate::map::MapState;
 use crate::map::MapStatus;
+use crate::tile::ItemType;
+use crate::tile::MASK_TILE_TYPE;
+use crate::tile::SHIFT_TILE_ITEM;
 use crate::tile::TileType;
 
 #[derive(Clone, Debug)]
@@ -121,7 +124,8 @@ impl GameState {
         };
 
         let tile_index = map_info.tile_index(x, y);
-        let landed_on_tile = TileType::from_repr(self.state.get_tile(tile_index).unwrap_or(0)).unwrap_or(TileType::Water);
+        let tile_value = self.state.get_tile(tile_index).unwrap_or(0);
+        let landed_on_tile = TileType::from_repr(tile_value & MASK_TILE_TYPE).unwrap_or(TileType::Water);
 
         let dx = dir.dx();
         let dy = dir.dy();
@@ -133,6 +137,16 @@ impl GameState {
             jumps: self.state.jumps - jump_used,
         };
         map_state.status(&map_info, self.cost, max_cost);
+
+        match ItemType::from_repr(tile_value >> SHIFT_TILE_ITEM).unwrap_or(ItemType::None) {
+            ItemType::None => {}
+            ItemType::AntiIce => {
+                map_state.anti_ice += 1;
+            }
+            ItemType::Jump => {
+                map_state.jumps += 1;
+            }
+        }
 
         match landed_on_tile {
             TileType::Water => {
