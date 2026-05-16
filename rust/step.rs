@@ -148,6 +148,46 @@ impl GameState {
                     dead = true;
                 }
             },
+            TileType::Trampoline => {
+                let dx = dir.dx();
+                let dy = dir.dy();
+                let next1_tile = self.state.get_tile(map_info.tile_index(new_x + dx, new_y + dy));
+                let next2_tile = self.state.get_tile(map_info.tile_index(new_x + dx * 2, new_y + dy * 2));
+                if high {
+                    new_x = new_x + dx * 2;
+                    new_y = new_y + dy * 2;
+                    if next2_tile.unwrap_or(TileType::Water as u8) == TileType::Water as u8 {
+                        dead = true;
+                    }
+                } else if !TileType::from_repr(next1_tile.unwrap_or(TileType::Water as u8)).unwrap_or(TileType::Water).high() {
+                    if TileType::from_repr(next2_tile.unwrap_or(TileType::Water as u8)).unwrap_or(TileType::Water).high() {
+                        new_x = new_x + dx;
+                        new_y = new_y + dy;
+                    } else {
+                        new_x = new_x + dx * 2;
+                        new_y = new_y + dy * 2;
+                    }
+                    return GameState {
+                        state: MapState {
+                            tiles: new_tiles,
+                            player_x: new_x,
+                            player_y: new_y,
+                            anti_ice: self.state.anti_ice,
+                            jumps: self.state.jumps - jump_used,
+                        },
+                        path: self.path.clone(),
+                        cost: self.cost,
+                        status: MapStatus::Ongoing,
+                    }.step_into(
+                        high,
+                        new_x,
+                        new_y,
+                        dir,
+                        map_info,
+                        max_cost,
+                    )
+                }
+            }
             TileType::Boat => {
                 let dx = dir.dx();
                 let dy = dir.dy();
