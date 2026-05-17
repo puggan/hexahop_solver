@@ -60,6 +60,68 @@ impl Solver {
             won: Vec::new(),
         }
     }
+
+    fn print_status(&mut self, cost: u16, chunk_size: usize) {
+        self.sys.refresh_processes(ProcessesToUpdate::Some(&[self.pid]), true);
+        let now = Instant::now();
+        let done_len = self.done.len();
+        let won = self.won.len().to_string().color(if self.won.is_empty() { Color::Blue } else { Color::Green });
+        let max_cost = format!("/ {}", self.max_cost_or_par).bright_black();
+        let memory = self.sys.process(self.pid).map(|p| p.memory() as f64).unwrap_or(f64::NAN) / (1 << 30) as f64;
+        if chunk_size > 0 {
+            let todo_len = self.todo.len();
+            let duration_float = now.duration_since(self.last_print_time).as_secs_f64();
+            let todo_delta = if todo_len < self.last_todo_len {
+                format!("-{}", (self.last_todo_len - todo_len).to_formatted_string(&Locale::sv)).cyan()
+            } else if todo_len - self.last_todo_len > chunk_size {
+                format!("+{}", (todo_len - self.last_todo_len).to_formatted_string(&Locale::sv)).red()
+            } else {
+                format!("+{}", (todo_len - self.last_todo_len).to_formatted_string(&Locale::sv)).green()
+            };
+            println!(
+                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
+                "Won".yellow(),
+                won,
+                "Queued".yellow(),
+                todo_len.to_formatted_string(&Locale::sv),
+                todo_delta,
+                "Done".yellow(),
+                done_len.to_formatted_string(&Locale::sv),
+                "Cost".yellow(),
+                cost,
+                max_cost,
+                "Speed".yellow(),
+                ((chunk_size as f64 / duration_float) as u128).to_formatted_string(&Locale::sv),
+                ((100 * chunk_size) as f64 / duration_float) as u128 % 100,
+                "Memory".yellow(),
+                memory
+            );
+            self.last_todo_len = todo_len;
+            self.last_print_time = now;
+        } else {
+            let duration = now.duration_since(self.start_time);
+            let duration_full_sec = duration.as_secs();
+            let duration_float = duration.as_secs_f64();
+            println!(
+                "{}: {:>2} | {}: {:>8} {:>13} | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
+                "Won".yellow(),
+                won,
+                "Time".yellow(),
+                duration_full_sec.to_formatted_string(&Locale::sv),
+                format!("[{}h {:>2}m {:>2}s]", duration_full_sec / 3600, (duration_full_sec % 3600) / 60, duration_full_sec % 60).bright_black(),
+                "Done".yellow(),
+                done_len.to_formatted_string(&Locale::sv),
+                "Cost".yellow(),
+                cost,
+                max_cost,
+                "Speed".yellow(),
+                ((done_len as f64 / duration_float) as u128).to_formatted_string(&Locale::sv),
+                ((100 * done_len) as f64 / duration_float) as u128 % 100,
+                "Memory".yellow(),
+                memory
+            );
+        }
+    }
 }
 
 // Breadth-First Search (BFS)
@@ -88,36 +150,7 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         solver.done.insert(hash);
 
         if solver.done.len() % 10000 == 0 {
-            solver.sys.refresh_processes(ProcessesToUpdate::Some(&[solver.pid]), true);
-            let now = Instant::now();
-            let todo_len = solver.todo.len();
-            let duration_float = now.duration_since(solver.last_print_time).as_secs_f64();
-            println!(
-                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
-                "Won".yellow(),
-                solver.won.len().to_string().color( if solver.won.is_empty() { Color::Blue } else { Color::Green } ),
-                "Queued".yellow(),
-                todo_len.to_formatted_string(&Locale::sv),
-                if todo_len < solver.last_todo_len {
-                    format!("-{}", (solver.last_todo_len - todo_len).to_formatted_string(&Locale::sv)).cyan()
-                } else if todo_len - solver.last_todo_len > 10_000 {
-                    format!("+{}", (todo_len - solver.last_todo_len).to_formatted_string(&Locale::sv)).red()
-                } else {
-                    format!("+{}", (todo_len - solver.last_todo_len).to_formatted_string(&Locale::sv)).green()
-                },
-                "Done".yellow(),
-                solver.done.len().to_formatted_string(&Locale::sv),
-                "Cost".yellow(),
-                game.cost,
-                format!("/ {}", solver.max_cost_or_par).bright_black(),
-                "Speed".yellow(),
-                ((1e4 / duration_float) as u128).to_formatted_string(&Locale::sv),
-                (1e6 / duration_float) as u128 % 100,
-                "Memory".yellow(),
-                solver.sys.process(solver.pid).map(|p| p.memory() as f64).unwrap_or(f64::NAN) / (1 << 30) as f64
-            );
-            solver.last_todo_len = todo_len;
-            solver.last_print_time = now;
+            solver.print_status(game.cost, 10000);
         }
 
         let directions: &[Direction] = if game.state.jumps > 0 {
@@ -154,8 +187,13 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         }
     }
 
-    println!("won: {}, queued: {}, done: {}", solver.won.len(), solver.todo.len(), solver.done.len());
-    let best = solver.won.into_iter().max().ok_or_else(|| "No solution found".to_string())?.reproduce(start_state.clone(), &info);
-    println!("Best game, score: {}, path: {}", best.cost, Direction::list2string(&best.path));
-    Ok(best.clone())
+    if let Some(best_ghost) = solver.won.iter().max() {
+        let best = best_ghost.reproduce(start_state, &info);
+        solver.print_status(best.cost, 0);
+        println!("Best game, score: {}, path: {}", best.cost, Direction::list2string(&best.path));
+        Ok(best)
+    } else {
+        solver.print_status(0, 0);
+        Err("No solution found".to_string())
+    }
 }
