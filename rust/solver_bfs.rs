@@ -1,13 +1,17 @@
 use std::collections::BinaryHeap;
 use std::collections::HashSet;
+use std::time::Instant;
+use colored::Color;
+use colored::Colorize;
+use num_format::Locale;
+use num_format::ToFormattedString;
 use crate::direction::Direction;
-use crate::map;
 use crate::map::MapState;
 use crate::map::MapStatus;
+use crate::map;
 use crate::step::GameState;
 #[cfg(feature = "h128")]
 use std::hash::Hash;
-use std::time::Instant;
 #[cfg(feature = "h128")]
 use xxhash_rust::xxh3::Xxh3;
 
@@ -32,7 +36,9 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     let mut todo = BinaryHeap::new();
     let mut won = Vec::new();
     let mut done = HashSet::new();
+    let max_cost_or_par = max_cost.unwrap_or(info.par);
     let mut last_print_time = Instant::now();
+    let mut last_todo_len = 0;
     let start_state = GameState::new(MapState::load_lev(&info)?);
     todo.push(start_state.ghost());
     #[cfg(feature = "h128")]
@@ -53,7 +59,29 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
 
         if done.len() % 10000 == 0 {
             let now = Instant::now();
-            println!("won: {}, queued: {}, done: {}, cost: {}, speed: {}", won.len(), todo.len(), done.len(), game.cost, 1e4 / now.duration_since(last_print_time).as_secs_f64());
+            let todo_len = todo.len();
+            let duration_float = now.duration_since(last_print_time).as_secs_f64();
+            println!(
+                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02}",
+                "Won".yellow(),
+                won.len().to_string().color( if won.is_empty() { Color::Blue } else { Color::Green } ),
+                "Queued".yellow(),
+                todo_len.to_formatted_string(&Locale::sv),
+                if todo_len >= last_todo_len {
+                    format!("+{}", (todo_len - last_todo_len).to_formatted_string(&Locale::sv)).green()
+                } else {
+                    format!("-{}", (last_todo_len - todo_len).to_formatted_string(&Locale::sv)).red()
+                },
+                "Done".yellow(),
+                done.len().to_formatted_string(&Locale::sv),
+                "Cost".yellow(),
+                game.cost,
+                format!("/ {}", max_cost_or_par).bright_black(),
+                "Speed".yellow(),
+                ((1e4 / duration_float) as u128).to_formatted_string(&Locale::sv),
+                (1e6 / duration_float) as u128 % 100,
+            );
+            last_todo_len = todo_len;
             last_print_time = now;
         }
 

@@ -26,3 +26,5 @@ strum_macros = "0.28.0"
 regex = "1.12.3"
 fxhash = "0.2.1"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
+num-format = "0.4.4"
+colored = "3.1.1"
