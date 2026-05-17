@@ -72,10 +72,12 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
                 won.len().to_string().color( if won.is_empty() { Color::Blue } else { Color::Green } ),
                 "Queued".yellow(),
                 todo_len.to_formatted_string(&Locale::sv),
-                if todo_len >= last_todo_len {
-                    format!("+{}", (todo_len - last_todo_len).to_formatted_string(&Locale::sv)).green()
+                if todo_len < last_todo_len {
+                    format!("-{}", (last_todo_len - todo_len).to_formatted_string(&Locale::sv)).cyan()
+                } else if todo_len - last_todo_len > 10_000 {
+                    format!("+{}", (todo_len - last_todo_len).to_formatted_string(&Locale::sv)).red()
                 } else {
-                    format!("-{}", (last_todo_len - todo_len).to_formatted_string(&Locale::sv)).red()
+                    format!("+{}", (todo_len - last_todo_len).to_formatted_string(&Locale::sv)).green()
                 },
                 "Done".yellow(),
                 done.len().to_formatted_string(&Locale::sv),
