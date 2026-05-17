@@ -5,6 +5,8 @@ use colored::Color;
 use colored::Colorize;
 use num_format::Locale;
 use num_format::ToFormattedString;
+use sysinfo::ProcessesToUpdate;
+use sysinfo::System;
 use crate::direction::Direction;
 use crate::map::MapState;
 use crate::map::MapStatus;
@@ -37,6 +39,8 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
     let mut won = Vec::new();
     let mut done = HashSet::new();
     let max_cost_or_par = max_cost.unwrap_or(info.par);
+    let mut sys = System::new();
+    let pid = sysinfo::get_current_pid()?;
     let mut last_print_time = Instant::now();
     let mut last_todo_len = 0;
     let start_state = GameState::new(MapState::load_lev(&info)?);
@@ -58,11 +62,12 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
         done.insert(hash);
 
         if done.len() % 10000 == 0 {
+            sys.refresh_processes(ProcessesToUpdate::Some(&[pid]), true);
             let now = Instant::now();
             let todo_len = todo.len();
             let duration_float = now.duration_since(last_print_time).as_secs_f64();
             println!(
-                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02}",
+                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
                 "Won".yellow(),
                 won.len().to_string().color( if won.is_empty() { Color::Blue } else { Color::Green } ),
                 "Queued".yellow(),
@@ -80,6 +85,8 @@ pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, St
                 "Speed".yellow(),
                 ((1e4 / duration_float) as u128).to_formatted_string(&Locale::sv),
                 (1e6 / duration_float) as u128 % 100,
+                "Memory".yellow(),
+                sys.process(pid).map(|p| p.memory() as f64).unwrap_or(f64::NAN) / (1 << 30) as f64
             );
             last_todo_len = todo_len;
             last_print_time = now;
