@@ -35,9 +35,9 @@ fn hash_map_state(mut hasher: &mut Xxh3, state: &MapState) -> u128 {
 // Breadth-First Search (BFS)
 pub fn run_solver(map_nr: usize, max_cost: &Option<u16>) -> Result<GameState, String> {
     let info = map::get(map_nr)?;
-    let mut todo = BinaryHeap::new();
+    let mut todo = BinaryHeap::with_capacity(8_000_000);
     let mut won = Vec::new();
-    let mut done = HashSet::new();
+    let mut done = HashSet::with_capacity(8_000_000);
     let max_cost_or_par = max_cost.unwrap_or(info.par);
     let mut sys = System::new();
     let pid = sysinfo::get_current_pid()?;
