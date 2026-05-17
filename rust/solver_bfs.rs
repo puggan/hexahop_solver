@@ -78,8 +78,10 @@ impl Solver {
             } else {
                 format!("+{}", (todo_len - self.last_todo_len).to_formatted_string(&Locale::sv)).green()
             };
+            let speed = chunk_size as f64 / duration_float;
+            let min_eta = (todo_len as f64 / speed) as u64;
             println!(
-                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
+                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB | {} {:>3}h{:>3}m{:>3}s",
                 "Won".yellow(),
                 won,
                 "Queued".yellow(),
@@ -91,10 +93,14 @@ impl Solver {
                 cost,
                 max_cost,
                 "Speed".yellow(),
-                ((chunk_size as f64 / duration_float) as u128).to_formatted_string(&Locale::sv),
-                ((100 * chunk_size) as f64 / duration_float) as u128 % 100,
+                (speed as u128).to_formatted_string(&Locale::sv),
+                (100f64 * speed) as u128 % 100,
                 "Memory".yellow(),
-                memory
+                memory,
+                "ETA >=".yellow(),
+                min_eta / 3600,
+                (min_eta % 3600) / 60,
+                min_eta % 60,
             );
             self.last_todo_len = todo_len;
             self.last_print_time = now;
@@ -103,7 +109,7 @@ impl Solver {
             let duration_full_sec = duration.as_secs();
             let duration_float = duration.as_secs_f64();
             println!(
-                "{}: {:>2} | {}: {:>8} {:>13} | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
+                "{}: {:>2} | {}: {:>9} {:>13} | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
                 "Won".yellow(),
                 won,
                 "Time".yellow(),
