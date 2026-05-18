@@ -66,7 +66,7 @@ echo -n " 39: "; cargo run -- debug 39 SE,NE,SE,S,SE,2NE,2N,NW,2S,SW,2NW,2SW,2NW
 echo -n " 44: "; cargo run -- debug 44 SE,N,S,N,NE,SE,SW,N,SE,2NE,S,SW,S,SW,S,SE,N,NE,S,NE,NW,N,2SE, 2>&1 | grep Status
 #  45: # TODO "ROTATOR, LASER",
 #  46: # TODO "LASER, ICE",
-#  47:
+#  47: Won:  1 | Time:    16 161  [4h 29m 21s] | Done: 137 748 811 | Cost:  85 / 85 | Speed:     8 523.10 | Memory:  3.32 GiB
 echo -n " 47: "; cargo run -- debug 47 3S,2NE,SE,N,NE,3S,2SW,N,NE,NW,N,SE,N,2SW,SE,NW,NE,SE,NE,SW,2S,2N,NW,3SW,SE,2SW,NE,SW,4NW,SE 2>&1 | grep Status
 #  48: Won:  1 | Time:         0  [0h  0m  0s] | Done:       9 326 | Cost:  27 / 27 | Speed:    15 131.55 | Memory:  0.05 GiB
 echo -n " 48: "; cargo run -- debug 48 SE,2NE,SE,3NE,NW,SW,N,NW,SW,S,NW,3N,SE,NE,2NW,3SW,S,N,S 2>&1 | grep Status
