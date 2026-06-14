@@ -5,6 +5,7 @@ use std::io::Cursor;
 use std::io::{Read, Seek, SeekFrom};
 use strum_macros::Display;
 use validator::Validate;
+use crate::direction::Direction;
 use crate::point::Boundary;
 use crate::point::Point;
 use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
@@ -163,6 +164,21 @@ impl MapState {
 
     pub fn describe_tile(&self, point: Point, info: &MapInfo) -> String {
         describe_tile_byte(self.get_tile(info.tile_index(point)).unwrap_or(TileType::Water as u8))
+    }
+
+    pub fn raycast(&self, info: &MapInfo, start: Point, dir: Direction) -> Option<Point> {
+        let step = dir.offset(1);
+        let mut point = start;
+        loop {
+            point = point + step;
+            let tile = match self.get_tile(info.tile_index(point)) {
+                Some(tile) => tile,
+                None => return None, // ray left the map
+            };
+            if tile & MASK_TILE_TYPE != TileType::Water as u8 {
+                return Some(point);
+            }
+        }
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {

@@ -146,6 +146,7 @@ impl GameState {
             }
         }
 
+        let mut laser_cost: u16 = 0;
         match landed_on_tile {
             TileType::Water => {
                 dead = true;
@@ -257,17 +258,38 @@ impl GameState {
                     }
                 }
             }
+            TileType::Laser => {
+                if *dir == Direction::Jump {
+                    unimplemented!("laser: 6-way jump variant");
+                }
+                if let Some(hit) = map_state.raycast(map_info, point, *dir) {
+                    let hit_index = map_info.tile_index(hit).unwrap();
+                    let hit_tile = TileType::from_repr(map_state.tiles[hit_index] & MASK_TILE_TYPE).unwrap_or(TileType::Water);
+                    match hit_tile {
+                        TileType::Ice => unimplemented!("laser: ice reflection variant"),
+                        TileType::Laser => unimplemented!("laser: chain reaction variant"),
+                        tile => {
+                            map_state.tiles[hit_index] = TileType::Water as u8;
+                            // Water and green tiles give 0 points, all others give 10
+                            if tile != TileType::LowGreen && tile != TileType::HighGreen {
+                                laser_cost += 10;
+                            }
+                        }
+                    }
+                }
+            }
             _ => {
                 unimplemented!("TODO step")
             }
         }
 
-        let status = match dead { true => MapStatus::Dead, false => map_state.status(&map_info, self.cost, max_cost) };
+        let cost = self.cost + laser_cost;
+        let status = match dead { true => MapStatus::Dead, false => map_state.status(&map_info, cost, max_cost) };
         //println!("Dead: {}, Status: {}, tile: {}", dead, status, landed_on_tile.describe());
         GameState {
             state: map_state,
             path: new_path,
-            cost: self.cost,
+            cost,
             status
         }
     }
