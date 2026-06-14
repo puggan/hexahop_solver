@@ -258,6 +258,9 @@ impl GameState {
             TileType::Laser => {
                 laser_cost = map_state.fire_laser(map_info, projectile);
             }
+            TileType::Rotator => {
+                map_state.rotate(map_info, projectile.point);
+            }
             _ => {
                 unimplemented!("TODO step for tile: {}", landed_on_tile.describe())
             }

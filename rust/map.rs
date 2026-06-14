@@ -12,6 +12,7 @@ use crate::point::Point;
 use crate::point::Projectile;
 use crate::tile::describe_tile_byte;
 use crate::tile::ItemType;
+use crate::tile::MASK_ITEM_TYPE;
 use crate::tile::MASK_TILE_TYPE;
 use crate::tile::SHIFT_TILE_ITEM;
 use crate::tile::TileType;
@@ -238,6 +239,19 @@ impl MapState {
             }
         }
         points
+    }
+
+    pub fn rotate(&mut self, info: &MapInfo, point: Point) {
+        let neighbours = Projectile::all(point).map(|p| p.forward(1).point);
+        let mut carry = self.get_tile(info.tile_index(neighbours[5])).unwrap_or(0) & MASK_TILE_TYPE;
+        for neighbour in neighbours {
+            let index = info.tile_index(neighbour);
+            let old = self.get_tile(index).unwrap_or(0);
+            if let Some(i) = index {
+                self.tiles[i] = carry | (old & MASK_ITEM_TYPE);
+            }
+            carry = old & MASK_TILE_TYPE;
+        }
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
