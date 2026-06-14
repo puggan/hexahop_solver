@@ -51,19 +51,23 @@ echo -n " 27: "; cargo run -- debug 27 4SE,NE,3N,4NW,SW,N,SE,NW,SW,S,4SE,NE,N,NE
 #  29: # TODO "LASER",
 #  30: Won:  1 | Time:    2 732  [0h 45m 32s] | Done:  38 010 769 | Cost:  57 / 57 | Speed:    13 911.06 | Memory:  0.89 GiB
 echo -n " 30: "; cargo run -- debug 30 2NW,SE,2S,2NE,N,NW,2NE,2SE,2SW,SE,NE,SW,2S,NW,SW,SE,NW,2SW,N,2NW,SW,NE,SE,NE,S,SE,2N 2>&1 | grep Status
-#  31: # TODO "ROTATOR",
+#  31: Won:  1 | Time:         0  [0h  0m  0s] | Done:         942 | Cost:  29 / 29 | Speed:     7 776.38 | Memory:  0.02 GiB
+echo -n " 31: "; cargo run -- debug 31 S,SW,SE,NE,S,SW,3SE,N,S,2NE,NW,SE,2N,2NE,S,SE,2S,NE,SE,NW,2SW,S 2>&1 | grep Status
 #  32: Won:  1 | Time:         0  [0h  0m  0s] | Done:         632 | Cost:  20 / 20 | Speed:    11 862.79 | Memory:  0.02 GiB
 echo -n " 32: "; cargo run -- debug 32 NE,N,NW,2SE,S,2N,SW,NW,SE,NE,S,2NW,SE,SW,SE,NE,NW 2>&1 | grep Status
-#  33: # TODO "ROTATOR",
+#  33: Won:  2 | Time:         0  [0h  0m  0s] | Done:       1 533 | Cost:  32 / 32 | Speed:    10 348.06 | Memory:  0.02 GiB
+echo -n " 33: "; cargo run -- debug 33 3SE,NE,SW,S,N,3NW,3N,NW,SE,S,NE,2NW,SE,3S,4SW,NE,SW,2NE,SW 2>&1 | grep Status
 #  34: Won:  1 | Time:         0  [0h  0m  0s] | Done:      17 476 | Cost:  34 / 34 | Speed:    27 785.40 | Memory:  0.07 GiB
 echo -n " 34: "; cargo run -- debug 34 SW,NW,4N,NE,SE,S,4SW,3NW,NE,SE,NE,3N,NW,SW,2S,SE,NE,2N,NW,2SW,S 2>&1 | grep Status
 #  35: # TODO OK, -- OOM 12 GB
 #  36: # TODO "ROTATOR, LASER",
-#  37: # TODO "ROTATOR",
+#  37: Won:  1 | Time:         0  [0h  0m  0s] | Done:         270 | Cost:  19 / 19 | Speed:    13 451.48 | Memory:  0.02 GiB
+echo -n " 37: "; cargo run -- debug 37 2SE,NW,N,S,N,S,N,S,NW,N,2NE,SE,4S,NW 2>&1 | grep Status
 #  38: # TODO "ROTATOR, LASER",
 #  39: Won:  2 | Time:       300  [0h  5m  0s] | Done:   6 711 306 | Cost:  41 / 41 | Speed:    22 309.48 | Memory:  0.19 GiB
 echo -n " 39: "; cargo run -- debug 39 SE,NE,SE,S,SE,2NE,2N,NW,2S,SW,2NW,2SW,2NW,2N,S,SW,SE,NE,N,NE,2SE,2S,SW,2N,NW,2SW,2NW,SW,N 2>&1 | grep Status
-#  40: # TODO "ROTATOR",
+#  40: Won:  1 | Time:         0  [0h  0m  0s] | Done:       3 493 | Cost:  16 / 16 | Speed:    13 980.93 | Memory:  0.03 GiB
+echo -n " 40: "; cargo run -- debug 40 SE,2SW,N,NE,N,NE,3SE,SW,NW,SW,S,SE,NW 2>&1 | grep Status
 #  41: # TODO "ROTATOR",
 #  42: # TODO "ROTATOR",
 #  43: Won:  2 | Time:         6  [0h  0m  6s] | Done:     132 311 | Cost:  76 / 76 | Speed:    20 344.15 | Memory:  0.14 GiB
