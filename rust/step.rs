@@ -261,6 +261,16 @@ impl GameState {
             TileType::Rotator => {
                 map_state.rotate(map_info, projectile.point);
             }
+            TileType::LowElevator => {
+                map_state.tiles[tile_index.unwrap()] = TileType::HighElevator as u8;
+            }
+            TileType::HighElevator => {
+                if !high {
+                    dead = true;
+                } else {
+                    map_state.tiles[tile_index.unwrap()] = TileType::LowElevator as u8;
+                }
+            }
             _ => {
                 unimplemented!("TODO step for tile: {}", landed_on_tile.describe())
             }
