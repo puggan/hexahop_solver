@@ -3,6 +3,7 @@ use crate::map;
 use crate::map::list;
 use crate::map::MapStatus;
 use crate::map::MapState;
+use crate::point::Boundary;
 use crate::point::Point;
 use crate::step::GameState;
 use crate::tile;
@@ -119,7 +120,7 @@ pub fn generate_corrected_json() {
         // Read Bounds
         let mut b = [0u8; 4];
         let _ = std::io::Read::read_exact(&mut reader, &mut b);
-        let (x_min, x_max, y_min, y_max) = (b[0], b[1], b[2], b[3]);
+        let boundary = Boundary::from_parsed(b);
 
         // Read Player Start (Original World Coordinates)
         let mut p = [0u8; 8];
@@ -128,20 +129,19 @@ pub fn generate_corrected_json() {
         let p_y = u32::from_le_bytes(p[4..8].try_into().unwrap());
 
         // Calculate actual dimensions
-        let width = (x_max as i16 - x_min as i16 + 1) as u8;
-        let height = (y_max as i16 - y_min as i16 + 1) as u8;
+        let map_size = boundary.size();
 
         // Print as JSON object
         println!("  {{");
         println!("    \"file\": \"{}\",", info.file);
         println!("    \"title\": \"{}\",", info.title);
         println!("    \"level_number\": {},", info.level_number);
-        println!("    \"width\": {},", width);
-        println!("    \"height\": {},", height);
-        println!("    \"x_min\": {},", x_min);
-        println!("    \"x_max\": {},", x_max);
-        println!("    \"y_min\": {},", y_min);
-        println!("    \"y_max\": {},", y_max);
+        println!("    \"width\": {},", map_size.x);
+        println!("    \"height\": {},", map_size.y);
+        println!("    \"x_min\": {},", boundary.low.x);
+        println!("    \"x_max\": {},", boundary.high.x);
+        println!("    \"y_min\": {},", boundary.low.y);
+        println!("    \"y_max\": {},", boundary.high.y);
         println!("    \"start_x\": {},", p_x);
         println!("    \"start_y\": {},", p_y);
         println!("    \"par\": {}", info.par);

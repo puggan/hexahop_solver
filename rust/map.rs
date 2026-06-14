@@ -5,6 +5,7 @@ use std::io::Cursor;
 use std::io::{Read, Seek, SeekFrom};
 use strum_macros::Display;
 use validator::Validate;
+use crate::point::Boundary;
 use crate::point::Point;
 use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
 
@@ -33,6 +34,10 @@ pub struct MapInfo {
 }
 
 impl MapInfo {
+    pub fn size(&self) -> Point {
+        Point::new(self.width as i8, self.height as i8)
+    }
+
     pub fn tile_index(&self, point: Point) -> Option<usize> {
         if !point.valid(self.height, self.width) {
             return None;
@@ -101,17 +106,16 @@ impl MapState {
         // 2. Read 4 u8 as x-min, x-max, y-min, y-max
         let mut bounds = [0u8; 4];
         reader.read_exact(&mut bounds).map_err(|e| e.to_string())?;
-        let (x_min, x_max, y_min, y_max) = (bounds[0], bounds[1], bounds[2], bounds[3]);
+        let boundary = Boundary::from_parsed(bounds);
 
         // Calculate ACTUAL dimensions from file
-        let actual_width = (x_max as i16 - x_min as i16 + 1) as u8;
-        let actual_height = (y_max as i16 - y_min as i16 + 1) as u8;
+        let map_size = boundary.size();
 
         // VERIFY: Does the file match the JSON metadata?
-        if actual_width != info.width || actual_height != info.height {
+        if map_size != info.size() {
             return Err(format!(
-                "ID {}: {} -> File is {}x{} at offset {},{}",
-                info.level_number, info.title, actual_width, actual_height, x_min, y_min
+                "ID {}: {} -> File is {}x{} at offset {}",
+                info.level_number, info.title, map_size.x, map_size.y, boundary.low
             ));
             /*
             return Err(format!(
@@ -121,7 +125,7 @@ impl MapState {
             */
         }
 
-        let total_cells = actual_width as usize * actual_height as usize;
+        let total_cells = map_size.x as usize * map_size.y as usize;
         if total_cells > MAX_TILES {
             return Err(format!("Map {} exceeds buffer ({} tiles)", info.title, total_cells));
         }
@@ -133,6 +137,7 @@ impl MapState {
         // Convert raw bytes to u32
         let p_x = u32::from_le_bytes(player_coords[0..4].try_into().unwrap());
         let p_y = u32::from_le_bytes(player_coords[4..8].try_into().unwrap());
+        let player_point = Point::new(p_x as i8, p_y as i8);
 
         // 4. Read the raw tile block exactly as it exists in the file
         // PHP: foreach(x) { foreach(y) { ... } }
@@ -142,7 +147,7 @@ impl MapState {
 
         Ok(MapState {
             tiles,
-            player: Point::new(p_x as i8 - x_min as i8, p_y as i8 - y_min as i8),
+            player: player_point - boundary.low,
             anti_ice: 0,
             jumps: 0,
         })
