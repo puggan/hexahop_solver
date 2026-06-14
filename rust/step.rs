@@ -172,7 +172,7 @@ impl GameState {
                 if map_state.anti_ice > 0 {
                     map_state.anti_ice -= 1;
                     map_state.tiles[tile_index.unwrap()] = TileType::AntiIce as u8;
-                } else {
+                } else if !projectile.dir.special() {
                     let mut glide = 0;
                     loop {
                         let glide_projectile = projectile.forward(glide);
@@ -209,7 +209,9 @@ impl GameState {
                 let next2 = projectile.forward(2);
                 let next1_tile = map_state.get_tile(map_info.tile_index(next1.point));
                 let next2_tile = map_state.get_tile(map_info.tile_index(next2.point));
-                if high {
+                if projectile.dir.special() {
+                    // break;
+                } else if high {
                     return GameState {
                         state: map_state,
                         path: self.path.clone(),

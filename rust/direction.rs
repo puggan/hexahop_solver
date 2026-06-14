@@ -84,6 +84,10 @@ impl Direction {
         Point::new(self.dx(length), self.dy(length))
     }
 
+    pub fn special(&self) -> bool {
+        matches!(self, Direction::None | Direction::Jump)
+    }
+
     pub fn make_list(path_text: &str) -> Result<Vec<Direction>, &'static str> {
         let validate_full = Regex::new(r"^(([1-9][0-9]?)?([NnSs][EeWw]|[NnSsJj]),?\s*)+$").unwrap();
         let find_parts = Regex::new(r"([1-9][0-9]?)?([NnSs][EeWw]|[NnSsJj])").unwrap();
