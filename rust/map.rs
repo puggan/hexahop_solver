@@ -17,12 +17,13 @@ use crate::tile::MASK_TILE_TYPE;
 use crate::tile::SHIFT_TILE_ITEM;
 use crate::tile::TileType;
 
-const MAX_TILES: usize = 375;
+// Largest framed grid: (16 + 2) * (25 + 2) = 486 (one-tile water border around the map).
+const MAX_TILES: usize = 486;
 const JSON_PATH: &str = "resources/hexahopmaps.json";
 const LEVEL_PATH: &str = "resources/levels/";
 
 #[derive(Deserialize, Debug, Clone, Validate)]
-pub struct MapInfo {
+pub struct MapInfoJson {
     #[validate(length(min = 5, max = 32))]
     pub file: String,
     #[validate(length(min = 4, max = 22))]
@@ -39,6 +40,29 @@ pub struct MapInfo {
     pub start_x: u8,
     #[validate(range(min = 4, max = 25))]
     pub start_y: u8,
+}
+
+#[derive(Debug, Clone)]
+pub struct MapInfo {
+    pub file: String,
+    pub title: String,
+    pub level_number: u8,
+    pub width: u8,
+    pub height: u8,
+    pub par: u16,
+}
+
+impl From<MapInfoJson> for MapInfo {
+    fn from(json: MapInfoJson) -> Self {
+        MapInfo {
+            file: json.file,
+            title: json.title,
+            level_number: json.level_number,
+            width: json.width + 2,
+            height: json.height + 2,
+            par: json.par,
+        }
+    }
 }
 
 impl MapInfo {
@@ -67,10 +91,10 @@ pub fn list() -> Result<Vec<MapInfo>, String> {
     let data = fs::read_to_string(std::path::Path::new(&project_root).join(JSON_PATH))
         .map_err(|e| format!("File error: {}", e))?;
 
-    let maps: Vec<MapInfo> = serde_json::from_str(&data)
+    let maps: Vec<MapInfoJson> = serde_json::from_str(&data)
         .map_err(|e| format!("JSON error: {}", e))?;
 
-    Ok(maps)
+    Ok(maps.into_iter().map(MapInfo::from).collect())
 }
 
 pub fn get(map_nr: usize) -> Result<MapInfo, String> {
@@ -115,12 +139,13 @@ impl MapState {
         let mut bounds = [0u8; 4];
         reader.read_exact(&mut bounds).map_err(|e| e.to_string())?;
         let boundary = Boundary::from_parsed(bounds);
+        let framed = boundary.expand(1);
 
         // Calculate ACTUAL dimensions from file
         let map_size = boundary.size();
 
         // VERIFY: Does the file match the JSON metadata?
-        if map_size != info.size() {
+        if framed.size() != info.size() {
             return Err(format!(
                 "ID {}: {} -> File is {}x{} at offset {}",
                 info.level_number, info.title, map_size.x, map_size.y, boundary.low
@@ -150,12 +175,23 @@ impl MapState {
         // 4. Read the raw tile block exactly as it exists in the file
         // PHP: foreach(x) { foreach(y) { ... } }
         // This means the file is 1D: [X0Y0, X0Y1, X0Y2, X1Y0, X1Y1...]
-        let mut tiles = [0u8; MAX_TILES];
-        reader.read_exact(&mut tiles[..total_cells]).map_err(|e| e.to_string())?;
+        let mut parsed_tiles = [0u8; MAX_TILES];
+        reader.read_exact(&mut parsed_tiles[..total_cells]).map_err(|e| e.to_string())?;
+
+        let mut framed_tiles = [0u8; MAX_TILES];
+        let mut parsed_index = 0;
+        for x in 0..map_size.x {
+            for y in 0..map_size.y {
+                if let Some(index) = info.tile_index(Point::new(x + 1, y + 1)) {
+                    framed_tiles[index] = parsed_tiles[parsed_index];
+                }
+                parsed_index += 1;
+            }
+        }
 
         Ok(MapState {
-            tiles,
-            player: player_point - boundary.low,
+            tiles: framed_tiles,
+            player: player_point - framed.low,
             anti_ice: 0,
             jumps: 0,
         })
@@ -251,6 +287,20 @@ impl MapState {
                 self.tiles[i] = carry | (old & MASK_ITEM_TYPE);
             }
             carry = old & MASK_TILE_TYPE;
+        }
+    }
+
+    pub fn build(&mut self, info: &MapInfo, point: Point) {
+        for neighbour in point.neighbours() {
+            if let Some(index) = info.tile_index(neighbour.point) {
+                let item = self.tiles[index] & MASK_ITEM_TYPE;
+                let tile = TileType::from_repr(self.tiles[index] & MASK_TILE_TYPE).unwrap_or(TileType::Water);
+                self.tiles[index] = item | match tile {
+                    TileType::Water => TileType::LowGreen as u8,
+                    TileType::LowGreen => TileType::HighGreen as u8,
+                    _ => tile as u8,
+                };
+            }
         }
     }
 

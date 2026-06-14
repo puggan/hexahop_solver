@@ -273,6 +273,9 @@ impl GameState {
                     map_state.tiles[tile_index.unwrap()] = TileType::LowElevator as u8;
                 }
             }
+            TileType::Build => {
+                map_state.build(map_info, projectile.point);
+            }
             _ => {
                 unimplemented!("TODO step for tile: {}", landed_on_tile.describe())
             }

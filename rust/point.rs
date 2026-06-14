@@ -86,6 +86,13 @@ impl Boundary {
     pub fn size(&self) -> Point {
         self.high - self.low + Point::new(1, 1)
     }
+
+    pub fn expand(&self, n: i8) -> Boundary {
+        Boundary {
+            low: self.low - Point::new(n, n),
+            high: self.high + Point::new(n, n),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
