@@ -38,6 +38,32 @@ impl Direction {
         }
     }
 
+    pub fn clockwise(&self) -> Direction {
+        match self {
+            Direction::N => Direction::NE,
+            Direction::NE => Direction::SE,
+            Direction::SE => Direction::S,
+            Direction::S => Direction::SW,
+            Direction::SW => Direction::NW,
+            Direction::NW => Direction::N,
+            Direction::None => Direction::None,
+            Direction::Jump => Direction::Jump,
+        }
+    }
+
+    pub fn counter_clockwise(&self) -> Direction {
+        match self {
+            Direction::N => Direction::NW,
+            Direction::NW => Direction::SW,
+            Direction::SW => Direction::S,
+            Direction::S => Direction::SE,
+            Direction::SE => Direction::NE,
+            Direction::NE => Direction::N,
+            Direction::None => Direction::None,
+            Direction::Jump => Direction::Jump,
+        }
+    }
+
     pub fn dx(&self, length: i8) -> i8 {
         match self {
             Direction::NE | Direction::SE => length,

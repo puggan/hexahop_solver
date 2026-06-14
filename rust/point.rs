@@ -1,3 +1,4 @@
+use crate::direction::Direction;
 use std::fmt;
 use std::ops::Neg;
 use std::ops::Mul;
@@ -21,6 +22,10 @@ impl Point {
 
     pub fn valid(&self, height: u8, width: u8) -> bool {
         self.x >= 0 && self.y >= 0 && self.x < width as i8 && self.y < height as i8
+    }
+
+    pub fn projectile(&self, dir: Direction) -> Projectile {
+        Projectile { point: *self, dir }
     }
 }
 
@@ -76,5 +81,24 @@ impl Boundary {
     /// The inclusive size spanned by the boundary, as a Point.
     pub fn size(&self) -> Point {
         self.high - self.low + Point::new(1, 1)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+pub struct Projectile {
+    pub point: Point,
+    pub dir: Direction,
+}
+
+impl Projectile {
+    pub fn all(point: Point) -> [Projectile; 6] {
+        Direction::flat().map(|dir| Projectile { point, dir })
+    }
+
+    pub fn forward(&self, length: i8) -> Projectile {
+        Projectile {
+            point: self.point + self.dir.offset(length),
+            dir: self.dir,
+        }
     }
 }

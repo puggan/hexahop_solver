@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::io::Cursor;
@@ -8,6 +9,7 @@ use validator::Validate;
 use crate::direction::Direction;
 use crate::point::Boundary;
 use crate::point::Point;
+use crate::point::Projectile;
 use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
 
 const MAX_TILES: usize = 375;
@@ -166,9 +168,9 @@ impl MapState {
         describe_tile_byte(self.get_tile(info.tile_index(point)).unwrap_or(TileType::Water as u8))
     }
 
-    pub fn raycast(&self, info: &MapInfo, start: Point, dir: Direction) -> Option<Point> {
-        let step = dir.offset(1);
-        let mut point = start;
+    pub fn raycast(&self, info: &MapInfo, projectile: Projectile) -> Option<Point> {
+        let step = projectile.dir.offset(1);
+        let mut point = projectile.point;
         loop {
             point = point + step;
             let tile = match self.get_tile(info.tile_index(point)) {
@@ -179,6 +181,59 @@ impl MapState {
                 return Some(point);
             }
         }
+    }
+
+    pub fn fire_laser(&mut self, info: &MapInfo, projectile: Projectile) -> u16 {
+        let mut todo: Vec<Projectile> = if projectile.dir == Direction::Jump {
+            Projectile::all(projectile.point).to_vec()
+        } else {
+            vec![projectile]
+        };
+        let mut visited: HashSet<Projectile> = HashSet::new();
+        let mut damage: HashSet<Point> = HashSet::new();
+
+        while let Some(beam) = todo.pop() {
+            if !visited.insert(beam) {
+                continue;
+            }
+            let hit = match self.raycast(info, beam) {
+                Some(hit) => hit,
+                None => continue, // beam left the map
+            };
+            let hit_tile = TileType::from_repr(self.tiles[info.tile_index(hit).unwrap()] & MASK_TILE_TYPE).unwrap_or(TileType::Water);
+            if hit_tile == TileType::Ice {
+                // reflect into the two neighbouring directions
+                todo.push(hit.projectile(beam.dir.counter_clockwise()));
+                todo.push(hit.projectile(beam.dir.clockwise()));
+            } else {
+                damage.insert(hit);
+            }
+        }
+
+        let score = |tile_byte: u8| -> u16 {
+            match TileType::from_repr(tile_byte & MASK_TILE_TYPE).unwrap_or(TileType::Water) {
+                TileType::Water | TileType::LowGreen | TileType::HighGreen => 0,
+                _ => 10,
+            }
+        };
+
+        let mut points = 0;
+        for hit in damage {
+            let hit_index = info.tile_index(hit).unwrap();
+            let hit_tile = TileType::from_repr(self.tiles[hit_index] & MASK_TILE_TYPE).unwrap_or(TileType::Water);
+            points += score(self.tiles[hit_index]);
+            self.tiles[hit_index] = TileType::Water as u8;
+            if hit_tile == TileType::Laser {
+                // chain reaction: destroy the six neighbouring tiles too
+                for d in Direction::flat() {
+                    if let Some(n_index) = info.tile_index(hit + d.offset(1)) {
+                        points += score(self.tiles[n_index]);
+                        self.tiles[n_index] = TileType::Water as u8;
+                    }
+                }
+            }
+        }
+        points
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
