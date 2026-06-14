@@ -3,6 +3,7 @@ use crate::map;
 use crate::map::list;
 use crate::map::MapStatus;
 use crate::map::MapState;
+use crate::point::Point;
 use crate::step::GameState;
 use crate::tile;
 
@@ -21,7 +22,7 @@ pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
     let state = MapState::load_lev(&info)?;
 
     println!("\n--- Tile Details ---");
-    println!("Standing on: ({}, {}): {}", state.player_x, state.player_y, state.describe_tile(state.player_x, state.player_y, &info));
+    println!("Standing on: {}: {}", state.player, state.describe_tile(state.player, &info));
     print_map(&state, &info);
 
     if path.is_some() {
@@ -55,7 +56,7 @@ pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
                 current_state.step(dir, &info, &None)
             }
         );
-        println!("Standing on: ({}, {}): {}", final_state.state.player_x, final_state.state.player_y, final_state.state.describe_tile(final_state.state.player_x, final_state.state.player_y, &info));
+        println!("Standing on: {}: {}", final_state.state.player, final_state.state.describe_tile(final_state.state.player, &info));
         println!("\nStatus: {}", &final_state.status);
         println!("Cost: {}", final_state.cost);
         print_map(&final_state.state, &info);
@@ -175,11 +176,12 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
             if target_content >= 0 && target_content % 2 == 0 {
                 let y = (target_content / 2) as i8;
                 if y < info.height as i8 {
+                    let point = Point::new(x, y);
                     // Check for Player or Item here
-                    if x == state.player_x && y == state.player_y {
+                    if point == state.player {
                         display_text = "PL".to_string();
                     } else {
-                        let byte = state.get_tile(info.tile_index(x, y)).unwrap_or(0);
+                        let byte = state.get_tile(info.tile_index(point)).unwrap_or(0);
                         let item = tile::item_code_high_byte(byte);
                         display_text = item.to_string();
                     }
@@ -187,7 +189,8 @@ pub fn print_map(state: &MapState, info: &map::MapInfo) {
             } else if target_base >= 0 && target_base % 2 == 0 {
                 let y = (target_base / 2) as i8;
                 if y < info.height as i8 {
-                    let byte = state.get_tile(info.tile_index(x, y)).unwrap_or(0);
+                    let point = Point::new(x, y);
+                    let byte = state.get_tile(info.tile_index(point)).unwrap_or(0);
                     display_text = tile::tile_code_byte(byte).to_string();
                 }
             }

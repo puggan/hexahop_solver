@@ -5,6 +5,7 @@ use std::io::Cursor;
 use std::io::{Read, Seek, SeekFrom};
 use strum_macros::Display;
 use validator::Validate;
+use crate::point::Point;
 use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
 
 const MAX_TILES: usize = 375;
@@ -32,12 +33,12 @@ pub struct MapInfo {
 }
 
 impl MapInfo {
-    pub fn tile_index(&self, x: i8, y: i8) -> Option<usize> {
-        if x < 0 || y < 0 || x >= self.width as i8 || y >= self.height as i8 {
+    pub fn tile_index(&self, point: Point) -> Option<usize> {
+        if !point.valid(self.height, self.width) {
             return None;
         }
 
-        let index = (x as usize * self.height as usize) + y as usize;
+        let index = point.index(self.height);
 
         if index >= MAX_TILES {
             return None;
@@ -70,8 +71,7 @@ pub fn get(map_nr: usize) -> Result<MapInfo, String> {
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct MapState {
     pub tiles: [u8; MAX_TILES],
-    pub player_x: i8,
-    pub player_y: i8,
+    pub player: Point,
     pub anti_ice: u8,
     pub jumps: u8,
 }
@@ -142,8 +142,7 @@ impl MapState {
 
         Ok(MapState {
             tiles,
-            player_x: (p_x as i8 - x_min as i8),
-            player_y: (p_y as i8 - y_min as i8),
+            player: Point::new(p_x as i8 - x_min as i8, p_y as i8 - y_min as i8),
             anti_ice: 0,
             jumps: 0,
         })
@@ -157,8 +156,8 @@ impl MapState {
         }
     }
 
-    pub fn describe_tile(&self, x: i8, y: i8, info: &MapInfo) -> String {
-        describe_tile_byte(self.get_tile(info.tile_index(x, y)).unwrap_or(TileType::Water as u8))
+    pub fn describe_tile(&self, point: Point, info: &MapInfo) -> String {
+        describe_tile_byte(self.get_tile(info.tile_index(point)).unwrap_or(TileType::Water as u8))
     }
 
     pub fn status(&mut self, info: &MapInfo, current_cost: u16, max_cost: &Option<u16>) -> MapStatus {
@@ -166,7 +165,7 @@ impl MapState {
             return MapStatus::Dead;
         }
 
-        let current_index = info.tile_index(self.player_x, self.player_y);
+        let current_index = info.tile_index(self.player);
         let current_tile = self.get_tile(current_index).unwrap_or(0) & MASK_TILE_TYPE;
         if current_tile == TileType::Water as u8 {
             return MapStatus::Dead;

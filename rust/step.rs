@@ -3,6 +3,7 @@ use crate::direction::Direction;
 use crate::map::MapInfo;
 use crate::map::MapState;
 use crate::map::MapStatus;
+use crate::point::Point;
 use crate::tile::ItemType;
 use crate::tile::MASK_TILE_TYPE;
 use crate::tile::SHIFT_TILE_ITEM;
@@ -54,13 +55,12 @@ impl GameState {
     }
 
     pub fn step(&self, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
-        let old_tile = TileType::from_option(self.state.get_tile(map_info.tile_index(self.state.player_x, self.state.player_y)));
+        let old_tile = TileType::from_option(self.state.get_tile(map_info.tile_index(self.state.player)));
         self
             .step_out_of(map_info, max_cost)
             .step_into(
                 old_tile.unwrap_or(TileType::Water).high(),
-                self.state.player_x + dir.dx(),
-                self.state.player_y + dir.dy(),
+                self.state.player + dir.offset(1),
                 dir,
                 map_info,
                 max_cost
@@ -70,7 +70,7 @@ impl GameState {
     pub fn step_out_of(&self, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let mut new_tiles = self.state.tiles;
         let mut extra_cost = 1;
-        let tile_index = map_info.tile_index(self.state.player_x, self.state.player_y);
+        let tile_index = map_info.tile_index(self.state.player);
         if tile_index.is_some() {
             let tile_value = self.state.tiles[tile_index.unwrap()];
             let tile = TileType::from_repr(tile_value).unwrap_or(TileType::Water);
@@ -92,8 +92,7 @@ impl GameState {
 
         let mut map_state = MapState {
             tiles: new_tiles,
-            player_x: self.state.player_x,
-            player_y: self.state.player_y,
+            player: self.state.player,
             anti_ice: self.state.anti_ice,
             jumps: self.state.jumps,
         };
@@ -107,7 +106,7 @@ impl GameState {
         }
     }
 
-    pub fn step_into(&self, high: bool, x: i8, y: i8, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
+    pub fn step_into(&self, high: bool, point: Point, dir: &Direction, map_info: &MapInfo, max_cost: &Option<u16>) -> GameState {
         let mut new_path = self.path.clone();
         new_path.push(*dir);
         let mut dead = new_path.len() > 100;
@@ -123,16 +122,13 @@ impl GameState {
             _ => 0
         };
 
-        let tile_index = map_info.tile_index(x, y);
+        let tile_index = map_info.tile_index(point);
         let tile_value = self.state.get_tile(tile_index).unwrap_or(0);
         let landed_on_tile = TileType::from_repr(tile_value & MASK_TILE_TYPE).unwrap_or(TileType::Water);
 
-        let dx = dir.dx();
-        let dy = dir.dy();
         let mut map_state = MapState {
             tiles: self.state.tiles,
-            player_x: x,
-            player_y: y,
+            player: point,
             anti_ice: self.state.anti_ice,
             jumps: self.state.jumps - jump_used,
         };
@@ -179,15 +175,15 @@ impl GameState {
                 } else {
                     let mut glide = 0;
                     loop {
-                        let next1_tile = TileType::from_option(map_state.get_tile(map_info.tile_index(x + dx * glide, y + dy * glide))).unwrap_or(TileType::Water);
+                        let glide_point = point + dir.offset(glide);
+                        let next1_tile = TileType::from_option(map_state.get_tile(map_info.tile_index(glide_point))).unwrap_or(TileType::Water);
                         if next1_tile.high() {
                             break;
                         }
 
                         if next1_tile == TileType::Water {
                             dead = true;
-                            map_state.player_x = x + dx * glide;
-                            map_state.player_y = y + dy * glide;
+                            map_state.player = glide_point;
                             break;
                         } else if next1_tile == TileType::Ice {
                             glide += 1;
@@ -199,8 +195,7 @@ impl GameState {
                                 status: MapStatus::Ongoing,
                             }.step_into(
                                 high,
-                                x + dx * glide,
-                                y + dy * glide,
+                                glide_point,
                                 dir,
                                 map_info,
                                 max_cost,
@@ -211,8 +206,10 @@ impl GameState {
             }
             TileType::Trampoline => {
                 map_state.status(&map_info, self.cost, max_cost);
-                let next1_tile = map_state.get_tile(map_info.tile_index(x + dx, y + dy));
-                let next2_tile = map_state.get_tile(map_info.tile_index(x + dx * 2, y + dy * 2));
+                let next1 = point + dir.offset(1);
+                let next2 = point + dir.offset(2);
+                let next1_tile = map_state.get_tile(map_info.tile_index(next1));
+                let next2_tile = map_state.get_tile(map_info.tile_index(next2));
                 if high {
                     return GameState {
                         state: map_state,
@@ -221,8 +218,7 @@ impl GameState {
                         status: MapStatus::Ongoing,
                     }.step_into(
                         high,
-                        x + dx * 2,
-                        y + dy * 2,
+                        next2,
                         dir,
                         map_info,
                         max_cost,
@@ -236,8 +232,7 @@ impl GameState {
                         status: MapStatus::Ongoing,
                     }.step_into(
                         high,
-                        x + dx * jump_size,
-                        y + dy * jump_size,
+                        point + dir.offset(jump_size),
                         dir,
                         map_info,
                         max_cost,
@@ -246,8 +241,9 @@ impl GameState {
             }
             TileType::Boat => {
                 loop {
-                    let old_tile_index = map_info.tile_index(map_state.player_x, map_state.player_y);
-                    let next_tile_index = map_info.tile_index(map_state.player_x + dx, map_state.player_y + dy);
+                    let old_tile_index = map_info.tile_index(map_state.player);
+                    let next_point = map_state.player + dir.offset(1);
+                    let next_tile_index = map_info.tile_index(next_point);
                     let next_tile = self.state.get_tile(next_tile_index);
                     if next_tile.is_none() {
                         dead = true;
@@ -255,8 +251,7 @@ impl GameState {
                     } else if next_tile.unwrap() == TileType::Water as u8 {
                         map_state.tiles[next_tile_index.unwrap()] = TileType::Boat as u8;
                         map_state.tiles[old_tile_index.unwrap()] = TileType::Water as u8;
-                        map_state.player_x += dx;
-                        map_state.player_y += dy;
+                        map_state.player = next_point;
                     } else {
                         break;
                     }

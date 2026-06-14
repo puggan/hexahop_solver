@@ -1,3 +1,4 @@
+use crate::point::Point;
 use regex::Regex;
 use std::fmt;
 use std::iter::repeat_n;
@@ -37,20 +38,24 @@ impl Direction {
         }
     }
 
-    pub fn dx(&self) -> i8 {
+    pub fn dx(&self, length: i8) -> i8 {
         match self {
-            Direction::NE | Direction::SE => 1,
-            Direction::NW | Direction::SW => -1,
+            Direction::NE | Direction::SE => length,
+            Direction::NW | Direction::SW => -length,
             _ => 0,
         }
     }
 
-    pub fn dy(&self) -> i8 {
+    pub fn dy(&self, length: i8) -> i8 {
         match self {
-            Direction::N | Direction::NE => -1,
-            Direction::S | Direction::SW => 1,
+            Direction::N | Direction::NE => -length,
+            Direction::S | Direction::SW => length,
             _ => 0,
         }
+    }
+
+    pub fn offset(&self, length: i8) -> Point {
+        Point::new(self.dx(length), self.dy(length))
     }
 
     pub fn make_list(path_text: &str) -> Result<Vec<Direction>, &'static str> {
