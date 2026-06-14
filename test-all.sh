@@ -94,7 +94,8 @@ echo -n " 54: "; cargo run -- debug 54 NE,S,NE,SE,N,3SE,2S,2N,NW,N,NE,2SW,NW,SW,
 #  55: # TODO "ROTATOR, LASER",
 #  56: Won:  4 | Time:        54  [0h  0m 54s] | Done:   1 105 949 | Cost:  39 / 39 | Speed:    20 138.14 | Memory:  0.15 GiB
 echo -n " 56: "; cargo run -- debug 56 2S,SW,3S,3NE,3SE,NE,2N,NW,NE,N,SE,N,3NW,SW,NW,SW,SE,S,SW,2SE,NE,2S,SE,N,NW,SW,NE 2>&1 | grep Status
-#  57: # TODO "BUILD, LOW_ELEVATOR",
+#  57: Won:  1 | Time:       519  [0h  8m 39s] | Done:   4 830 823 | Cost:  37 / 37 | Speed:     9 305.18 | Memory:  0.19 GiB
+echo -n " 57: "; cargo run -- debug 57 2SE,NE,N,SW,N,NE,SE,S,NE,NW,S,SE,NE,S,SW,N,NE,SE,2S,SE,NE,SE,NE,SW,SE,NE,N,3SW,NW,2SW,NW,SW 2>&1 | grep Status
 #  58: Won:  1 | Time:     2 734  [0h 45m 34s] | Done:  32 949 852 | Cost:  45 / 45 | Speed:    12 049.75 | Memory:  0.87 GiB
 echo -n " 58: "; cargo run -- debug 58 5N,SE,N,NE,S,NE,N,4SE,S,3SW,S,SW,SE,NE,S,SE,N,SE,5NE,3N,SW,3S,SE,S,SE,N,NE,SW 2>&1 | grep Status
 #  59: # TODO "ROTATOR, LASER, ICE",
@@ -110,13 +111,15 @@ echo -n " 62: "; cargo run -- debug 62 2NW,NE,NW,2S,NW,N,NW,NE,3NW,5N,NE,SE,3S,N
 #  68: Won:  1 | Time:       183  [0h  3m  3s] | Done:   2 628 991 | Cost: 116 / 116 | Speed:    14 330.49 | Memory:  0.16 GiB
 echo -n " 68: "; cargo run -- debug 68 N,2S,NE,SW,3S,5NE,NW,N,NW,2SW,NW,SE,S,2SE,3NE,SW,3NE,S,2SE,SW,N,SE 2>&1 | grep Status
 #  69: # TODO "LOW_ELEVATOR",
-#  70: # TODO "BUILD, LOW_ELEVATOR",
+#  70: Won:  1 | Time:         0  [0h  0m  0s] | Done:      11 090 | Cost:  23 / 23 | Speed:    16 588.42 | Memory:  0.06 GiB
+echo -n " 70: "; cargo run -- debug 70 NE,SE,2NE,SW,3SE,NW,SE,NE,4NW,SW,S,4SE,NE,SE 2>&1 | grep Status
 #  71: # TODO "ROTATOR, ICE, ITEM_ANTI_ICE",
 #  72: # TODO "LASER, ITEM_JUMP",
 #  73: # TODO "ROTATOR, LASER, ITEM_JUMP",
 #  74: # TODO "ROTATOR, ITEM_JUMP",
 #  75: # TODO "LASER, ICE, BUILD",
-#  76: # TODO "ROTATOR, LASER",
+#  76: Won:  6 | Time:     7 369  [2h  2m 49s] | Done:  60 299 728 | Cost:  51 / 51 | Speed:     8 181.98 | Memory:  1.69 GiB
+echo -n " 76: "; cargo run -- debug 76 NW,NE,N,2NE,SW,NE,3N,NE,S,NW,N,S,SW,S,NW,NE,NW,3SE,S,4SW,N,3NE,NW,2N,SW,S,N,NW,S,NE,NW,SW,N,2NE,NW,2SW,N,NW 2>&1 | grep Status
 #  77: Won:  5 | Time:         0  [0h  0m  0s] | Done:       3 828 | Cost:  18 / 18 | Speed:    20 522.96 | Memory:  0.03 GiB
 echo -n " 77: "; cargo run -- debug 77 N,NW,2S,NE,S,SE,S,SW,NW,N,NE,N,SE,2N,2NW, 2>&1 | grep Status
 #  78: Won:  3 | Time:         4  [0h  0m  4s] | Done:      58 877 | Cost:  38 / 38 | Speed:    14 335.34 | Memory:  0.12 GiB
@@ -124,7 +127,8 @@ echo -n " 78: "; cargo run -- debug 78 N,NE,SE,2NW,N,SE,SW,NW,SE,N,NW,SE,NE,N,2S
 #  79: Won:  1 | Time:         0  [0h  0m  0s] | Done:          80 | Cost:  11 / 11 | Speed:     3 972.82 | Memory:  0.02 GiB
 echo -n " 79: "; cargo run -- debug 79 2NE,SW,S,N,NW,SW,S,SE,2S 2>&1 | grep Status
 #  80: # TODO "LASER, ICE",
-#  81: # TODO "ROTATOR, BUILD, LOW_ELEVATOR, ITEM_JUMP",
+#  81: Won:  4 | Time:        65  [0h  1m  5s] | Done:     828 573 | Cost:  36 / 36 | Speed:    12 687.15 | Memory:  0.15 GiB
+echo -n " 81: "; cargo run -- debug 81 2SE,NW,SE,SW,NE,N,S,SW,NE,N,SE,N,2NW,N,SW,NE,3S,NW,N,NW,N,NE,3N,3NW,S,SE,SW,NW 2>&1 | grep Status
 #  82: Won:  7 | Time:        21  [0h  0m 21s] | Done:     461 432 | Cost:  20 / 20 | Speed:    21 961.69 | Memory:  0.15 GiB
 echo -n " 82: "; cargo run -- debug 82 NE,N,2NE,3S,NW,SW,NW,N,SE,SW,NW,N,SW,3S,NE 2>&1 | grep Status
 #  83: # TODO "LASER, ICE, LOW_ELEVATOR, HIGH_ELEVATOR",
@@ -137,7 +141,8 @@ echo -n " 85: "; cargo run -- debug 85 NE,3SE,S,SE,NE,N,2NW,2N,NE,2SE,SW,N,3SE,S
 echo -n " 88: "; cargo run -- debug 88 SE,NE,2N,S,NW,SE,SW,2NW,NE,2N,NE,SE,S,NW,J 2>&1 | grep Status
 #  89: # TODO "ROTATOR, LASER, ICE, ITEM_ANTI_ICE",
 #  90: # TODO "ROTATOR, LASER, LOW_ELEVATOR",
-#  91: # TODO "BUILD",
+#  91: Won:  3 | Time:         8  [0h  0m  8s] | Done:     105 818 | Cost:  26 / 26 | Speed:    12 830.90 | Memory:  0.14 GiB
+echo -n " 91: "; cargo run -- debug 91 NE,SE,N,SE,S,SW,2SE,S,NW,SE,N,NW,2S,NW,N,2NE,N,NW,4S,SW 2>&1 | grep Status
 #  92: # TODO OK, OOM? 5GB
 #  93: # TODO "ROTATOR, LASER, ICE",
 #  94: Won:  1 | Time:       271  [0h  4m 31s] | Done:   3 453 681 | Cost:  37 / 37 | Speed:    12 716.70 | Memory:  0.17 GiB
