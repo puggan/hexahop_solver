@@ -230,8 +230,8 @@ impl MapState {
             self.tiles[hit_index] = TileType::Water as u8;
             if hit_tile == TileType::Laser {
                 // chain reaction: destroy the six neighbouring tiles too
-                for d in Direction::flat() {
-                    if let Some(n_index) = info.tile_index(hit + d.offset(1)) {
+                for neighbour in hit.neighbours() {
+                    if let Some(n_index) = info.tile_index(neighbour.point) {
                         points += score(self.tiles[n_index]);
                         self.tiles[n_index] = TileType::Water as u8;
                     }
@@ -242,10 +242,10 @@ impl MapState {
     }
 
     pub fn rotate(&mut self, info: &MapInfo, point: Point) {
-        let neighbours = Projectile::all(point).map(|p| p.forward(1).point);
-        let mut carry = self.get_tile(info.tile_index(neighbours[5])).unwrap_or(0) & MASK_TILE_TYPE;
+        let neighbours = point.neighbours();
+        let mut carry = self.get_tile(info.tile_index(neighbours[5].point)).unwrap_or(0) & MASK_TILE_TYPE;
         for neighbour in neighbours {
-            let index = info.tile_index(neighbour);
+            let index = info.tile_index(neighbour.point);
             let old = self.get_tile(index).unwrap_or(0);
             if let Some(i) = index {
                 self.tiles[i] = carry | (old & MASK_ITEM_TYPE);

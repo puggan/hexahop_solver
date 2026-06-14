@@ -27,6 +27,10 @@ impl Point {
     pub fn projectile(&self, dir: Direction) -> Projectile {
         Projectile { point: *self, dir }
     }
+
+    pub fn neighbours(&self) -> [Projectile; 6] {
+        Projectile::all(*self).map(|p| p.forward(1))
+    }
 }
 
 impl Add for Point {
