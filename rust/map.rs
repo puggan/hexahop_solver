@@ -10,7 +10,11 @@ use crate::direction::Direction;
 use crate::point::Boundary;
 use crate::point::Point;
 use crate::point::Projectile;
-use crate::tile::{describe_tile_byte, TileType, MASK_TILE_TYPE};
+use crate::tile::describe_tile_byte;
+use crate::tile::ItemType;
+use crate::tile::MASK_TILE_TYPE;
+use crate::tile::SHIFT_TILE_ITEM;
+use crate::tile::TileType;
 
 const MAX_TILES: usize = 375;
 const JSON_PATH: &str = "resources/hexahopmaps.json";
@@ -271,10 +275,16 @@ impl MapState {
             }
         }
 
-        let laser_offset = if tile_count[TileType::Laser as usize] > 0 { 1 } else { 0 };
+        let laser_present = tile_count[TileType::Laser as usize] > 0;
+        let ice_present = tile_count[TileType::Ice as usize] > 0;
+        let map_jump_items = self.tiles.iter().filter(|&&t| t >> SHIFT_TILE_ITEM == ItemType::Jump as u8).count();
+        let jumps_available = self.jumps as usize + map_jump_items;
 
-        if current_cost + targets_remaining as u16 - laser_offset > max_cost.unwrap_or(info.par) {
-            return MapStatus::Dead;
+        if !(laser_present && ice_present) {
+            let laser_offset = if laser_present { 1 + jumps_available * 5 } else { 0 };
+            if current_cost + targets_remaining as u16 > laser_offset as u16 + max_cost.unwrap_or(info.par) {
+                return MapStatus::Dead;
+            }
         }
 
         MapStatus::Ongoing
