@@ -37,6 +37,9 @@ struct Solver {
     done: HashSet<u64>,
     last_print_time: Instant,
     last_todo_len: usize,
+    last_cost: u16,
+    done_at_level_start: usize,
+    prev_level_size: usize,
     max_cost_or_par: u16,
     pid: sysinfo::Pid,
     start_time: Instant,
@@ -52,6 +55,9 @@ impl Solver {
             done: HashSet::with_capacity(8_000_000),
             last_print_time: now,
             last_todo_len: 0,
+            last_cost: 0,
+            done_at_level_start: 0,
+            prev_level_size: 0,
             max_cost_or_par,
             pid,
             start_time: now,
@@ -80,8 +86,20 @@ impl Solver {
             };
             let speed = chunk_size as f64 / duration_float;
             let min_eta = (todo_len as f64 / speed) as u64;
+            if cost > self.last_cost {
+                self.prev_level_size = done_len - self.done_at_level_start;
+                self.done_at_level_start = done_len;
+                self.last_cost = cost;
+            }
+            let level_progress = if self.prev_level_size > 0 {
+                ((done_len - self.done_at_level_start) as f64 / self.prev_level_size as f64).min(1.0)
+            } else {
+                0.0
+            };
+            let levels_left = (self.max_cost_or_par as f64 - cost as f64 - level_progress).max(0.0);
+            let max_eta = (todo_len as f64 * levels_left / speed) as u64;
             println!(
-                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB | {} {:>3}h{:>3}m{:>3}s",
+                "{}: {:>2} | {}: {:>11} ({:>7}) | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB | {} {:>3}h{:>3}m{:>3}s | {} {:>3}h{:>3}m{:>3}s",
                 "Won".yellow(),
                 won,
                 "Queued".yellow(),
@@ -101,6 +119,10 @@ impl Solver {
                 min_eta / 3600,
                 (min_eta % 3600) / 60,
                 min_eta % 60,
+                "ETA ~=".yellow(),
+                max_eta / 3600,
+                (max_eta % 3600) / 60,
+                max_eta % 60,
             );
             self.last_todo_len = todo_len;
             self.last_print_time = now;

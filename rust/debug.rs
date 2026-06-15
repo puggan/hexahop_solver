@@ -18,6 +18,7 @@ pub fn run_debug(map_nr: usize, path: Option<String>) -> Result<(), String> {
     let info = map::get(map_nr)?;
     println!("Debugging Map: {}", info.title);
     println!("File reference: {}", info.file);
+    println!("Par: {}", info.par);
 
     // Load the binary data
     let state = MapState::load_lev(&info)?;
