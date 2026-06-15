@@ -45,11 +45,14 @@ echo -n " 23: "; cargo run -- debug 23 2NE,SE,S,2NE,2N,SE,NW,SW,S,SE,S,SW,SE,2NE
 echo -n " 24: "; cargo run -- debug 24 N,SW,S,SE,NE,SE,S,SE,NE,SE,NE,SE,NE,N,NW,SE,NW,N,NW,N,NE,N,NE,SE,NW,SE,NE 2>&1 | grep Status
 #  25: Won:  1 | Time:    43 649 [12h  7m 29s] | Done: 303 813 658 | Cost: 216 / 216 | Speed:     6 960.33 | Memory:  7.04 GiB
 echo -n " 25: "; cargo run -- debug 25 NW,N,NW,N,NE,N,NW,N,NW,SW,2S,NW,3SW,S,2SE,SW,S,SE,2NE,N,SW,2N,2NW,4SW,2S,SE,NE,N,SW,N,NW,3N,2NE,S,N,SE,2NE,NW,SE,NW,SE 2>&1 | grep Status
-#  26: # TODO "LASER",
+#  26: Won:  1 | Time:        22  [0h  0m 22s] | Done:     275 448 | Cost: 119 / 119 | Speed:    12 014.42 | Memory:  0.15 GiB
+echo -n " 26: "; cargo run -- debug 26 NE,SW,N,NE,SE,2NW,3SW,S,NW,3S,N,2S,NE,S,2SE,NE,SE,SW,4NE,NW,NE,2N,S,2N,NW,S,SW 2>&1 | grep Status
 #  27: Won:  1 | Time:        0  [0h  0m  0s] | Done:       2 770 | Cost:  29 / 29 | Speed:    11 352.20 | Memory:  0.03 GiB
 echo -n " 27: "; cargo run -- debug 27 4SE,NE,3N,4NW,SW,N,SE,NW,SW,S,4SE,NE,N,NE,N,3NW 2>&1 | grep Status
-#  28: # TODO "LASER",
-#  29: # TODO "LASER",
+#  28: Won:  1 | Time:         0  [0h  0m  0s] | Done:      10 219 | Cost:  93 / 93 | Speed:    17 574.63 | Memory:  0.05 GiB
+echo -n " 28: "; cargo run -- debug 28 SE,N,3NE,3SE,4S,SW,2NW,N,S,N,S,2SW,2NW 2>&1 | grep Status
+#  29: Won:  4 | Time:         1  [0h  0m  1s] | Done:      11 743 | Cost: 107 / 107 | Speed:     7 054.30 | Memory:  0.06 GiB
+echo -n " 29: "; cargo run -- debug 29 2N,NE,SW,2S,3SE,NE,SW,S,SE,2S,NW,S,N,2NE,SW,2NE,2N,NE,NW,NE,SW,SE,NW,3S,2SE,NW 2>&1 | grep Status
 #  30: Won:  1 | Time:    2 732  [0h 45m 32s] | Done:  38 010 769 | Cost:  57 / 57 | Speed:    13 911.06 | Memory:  0.89 GiB
 echo -n " 30: "; cargo run -- debug 30 2NW,SE,2S,2NE,N,NW,2NE,2SE,2SW,SE,NE,SW,2S,NW,SW,SE,NW,2SW,N,2NW,SW,NE,SE,NE,S,SE,2N 2>&1 | grep Status
 #  31: Won:  1 | Time:         0  [0h  0m  0s] | Done:         942 | Cost:  29 / 29 | Speed:     7 776.38 | Memory:  0.02 GiB
@@ -70,7 +73,8 @@ echo -n " 38: "; cargo run -- debug 38 NE,SW,NE,SW,NE,N,NW,S,NE,S,NE,S,2SW,S,NE,
 echo -n " 39: "; cargo run -- debug 39 SE,NE,SE,S,SE,2NE,2N,NW,2S,SW,2NW,2SW,2NW,2N,S,SW,SE,NE,N,NE,2SE,2S,SW,2N,NW,2SW,2NW,SW,N 2>&1 | grep Status
 #  40: Won:  1 | Time:         0  [0h  0m  0s] | Done:       3 493 | Cost:  16 / 16 | Speed:    13 980.93 | Memory:  0.03 GiB
 echo -n " 40: "; cargo run -- debug 40 SE,2SW,N,NE,N,NE,3SE,SW,NW,SW,S,SE,NW 2>&1 | grep Status
-#  41: # TODO "ROTATOR",
+#  41: Won:  2 | Time:        15  [0h  0m 15s] | Done:      88 469 | Cost:  68 / 68 | Speed:     5 758.00 | Memory:  0.14 GiB
+echo -n " 41: "; cargo run -- debug 41 SE,S,6SE,N,SW,2NW,N,5NW,3N,2NE,4SE,N,S,3NE,SE,S,NE,N,2NW,2SW,2NW,2SW,NW,SW,S,2SE,S,NW,NE,SE,SW,SE,NE,SE,NE,SE,SW,2S,SE,2NW,SW,S,NW 2>&1 | grep Status
 #  42: Won:  5 | Time:       342  [0h  5m 42s] | Done:   3 265 789 | Cost:  41 / 41 | Speed:     9 521.38 | Memory:  0.18 GiB
 echo -n " 42: "; cargo run -- debug 42 2SW,NW,S,SW,N,SE,SW,2NE,3SE,NW,2SE,SW,2NW,N,SE,NW,SE,2NW,3N,2NE,SE,S,SW,N,2S,N,NW,SW,S,SE 2>&1 | grep Status
 #  43: Won:  2 | Time:         6  [0h  0m  6s] | Done:     132 311 | Cost:  76 / 76 | Speed:    20 344.15 | Memory:  0.14 GiB
@@ -86,13 +90,16 @@ echo -n " 47: "; cargo run -- debug 47 3S,2NE,SE,N,NE,3S,2SW,N,NE,NW,N,SE,N,2SW,
 echo -n " 48: "; cargo run -- debug 48 SE,2NE,SE,3NE,NW,SW,N,NW,SW,S,NW,3N,SE,NE,2NW,3SW,S,N,S 2>&1 | grep Status
 #  49: # TODO "ICE", -- OOM? 8GB
 #  50: # TODO "ROTATOR, LASER, ICE, ITEM_ANTI_ICE",
-#  51: # TODO "ROTATOR, LASER, ICE, ITEM_ANTI_ICE",
-#  52: # TODO "ROTATOR, LOW_ELEVATOR",
+#  51: Won:  1 | Time:       168  [0h  2m 48s] | Done:   1 182 460 | Cost:  61 / 61 | Speed:     7 028.20 | Memory:  0.15 GiB
+echo -n " 51: "; cargo run -- debug 51 N,NE,SE,N,NE,SW,3NE,SE,NE,SE,NE,SE,N,NE,SW,2S,NE,2S,2NW,SW,2S,SE,S,2SW,NW,N,SW,N,SE,NW,NE,N,NE,SW 2>&1 | grep Status
+#  52: Won:  3 | Time:         1  [0h  0m  1s] | Done:      18 779 | Cost:  92 / 92 | Speed:    13 411.79 | Memory:  0.07 GiB
+echo -n " 52: "; cargo run -- debug 52 N,SE,NW,2N,2NE,SE,NW,NE,N,S,NW,SE,S,N,2SE,4S,SE,2NE,NW,SE,S,N,S,2SW 2>&1 | grep Status
 #  53: Won:  8 | Time:     5 032  [1h 23m 52s] | Done:  59 127 134 | Cost:  82 / 82 | Speed:    11 748.09 | Memory:  1.78 GiB
 echo -n " 53: "; cargo run -- debug 53 2NE,2SE,SW,N,SE,2SW,2NW,2SW,S,NE,N,2NE,SE,NE,2N,S,NE,SE,N,2S,N,SE,SW,N 2>&1 | grep Status
 #  64: Won:  2 | Time:         8  [0h  0m  8s] | Done:     122 699 | Cost:  62 / 62 | Speed:    14 869.62 | Memory:  0.14 GiB
 echo -n " 54: "; cargo run -- debug 54 NE,S,NE,SE,N,3SE,2S,2N,NW,N,NE,2SW,NW,SW,NW,NE,S 2>&1 | grep Status
-#  55: # TODO "ROTATOR, LASER",
+#  55: Won:  2 | Time:       321  [0h  5m 21s] | Done:   3 316 609 | Cost:  75 / 75 | Speed:    10 311.59 | Memory:  0.16 GiB
+echo -n " 55: "; cargo run -- debug 55 NE,NW,N,2NE,NW,SW,S,NW,SW,NE,SE,N,NW,SE,S,NE,SW,N,S,SE,S,SW,NW,NE,2SE,NE,SE,NE,SE,NE,N,NW,N,NW,SW,SE,S,2NW,SW,NW,2N 2>&1 | grep Status
 #  56: Won:  4 | Time:        54  [0h  0m 54s] | Done:   1 105 949 | Cost:  39 / 39 | Speed:    20 138.14 | Memory:  0.15 GiB
 echo -n " 56: "; cargo run -- debug 56 2S,SW,3S,3NE,3SE,NE,2N,NW,NE,N,SE,N,3NW,SW,NW,SW,SE,S,SW,2SE,NE,2S,SE,N,NW,SW,NE 2>&1 | grep Status
 #  57: Won:  1 | Time:       519  [0h  8m 39s] | Done:   4 830 823 | Cost:  37 / 37 | Speed:     9 305.18 | Memory:  0.19 GiB
@@ -106,18 +113,24 @@ echo -n " 58: "; cargo run -- debug 58 5N,SE,N,NE,S,NE,N,4SE,S,3SW,S,SW,SE,NE,S,
 echo -n " 62: "; cargo run -- debug 62 2NW,NE,NW,2S,NW,N,NW,NE,3NW,5N,NE,SE,3S,NW,SE,S,N,2NE,N,NE,SE,S,SW,SE,S,SW 2>&1 | grep Status
 #  63: # TODO "LOW_ELEVATOR",
 #  64: # TODO "ROTATOR, LASER",
-#  65: # TODO "ROTATOR, BUILD",
+#  65: Won:  2 | Time:        62  [0h  1m  2s] | Done:     678 322 | Cost: 135 / 135 | Speed:    10 806.92 | Memory:  0.15 GiB
+echo -n " 65: "; cargo run -- debug 65 2N,S,N,2NE,N,NW,SE,NW,NE,SW,SE,S,2SE,S,SW,SE,NE,NW,N,2NE,N,NE,N,NW,SW,SE,SW,SE,S,2SE 2>&1 | grep Status
 #  66: # TODO "ITEM_JUMP", -- OOM
-#  67: # TODO "LOW_ELEVATOR",
+#  67: Won:  1 | Time:        22  [0h  0m 22s] | Done:     358 373 | Cost:  80 / 80 | Speed:    16 089.57 | Memory:  0.15 GiB
+echo -n " 67: "; cargo run -- debug 67 2S,NE,S,2NE,NW,N,2NE,S,NE,2SE,NE,2S,N,2S,SW,2NW,SW,NW,6NE,SE,N,SE,4S,2NW 2>&1 | grep Status
 #  68: Won:  1 | Time:       183  [0h  3m  3s] | Done:   2 628 991 | Cost: 116 / 116 | Speed:    14 330.49 | Memory:  0.16 GiB
 echo -n " 68: "; cargo run -- debug 68 N,2S,NE,SW,3S,5NE,NW,N,NW,2SW,NW,SE,S,2SE,3NE,SW,3NE,S,2SE,SW,N,SE 2>&1 | grep Status
 #  69: # TODO "LOW_ELEVATOR",
 #  70: Won:  1 | Time:         0  [0h  0m  0s] | Done:      11 090 | Cost:  23 / 23 | Speed:    16 588.42 | Memory:  0.06 GiB
 echo -n " 70: "; cargo run -- debug 70 NE,SE,2NE,SW,3SE,NW,SE,NE,4NW,SW,S,4SE,NE,SE 2>&1 | grep Status
-#  71: # TODO "ROTATOR, ICE, ITEM_ANTI_ICE",
-#  72: # TODO "LASER, ITEM_JUMP",
-#  73: # TODO "ROTATOR, LASER, ITEM_JUMP",
-#  74: # TODO "ROTATOR, ITEM_JUMP",
+#  71: Won:  1 | Time:         0  [0h  0m  0s] | Done:       5 384 | Cost: 103 / 103 | Speed:     8 693.45 | Memory:  0.04 GiB
+echo -n " 71: "; cargo run -- debug 71 2SW,N,NW,SW,NW,SW,S,SE,NE,SE,S,SW,NW,SW,NW,2N,4NW,2NE,2SE,2NE,SE,NE,2SE,NE,S,SW,S,2SE,3NW,3SW,4NW,N,NW,SE,S,4SE,NE,2SW,NW,SW,2NE 2>&1 | grep Status
+#  72: Won:  1 | Time:       239  [0h  3m 59s] | Done:   2 781 799 | Cost:  73 / 73 | Speed:    11 638.93 | Memory:  0.17 GiB
+echo -n " 72: "; cargo run -- debug 72 2NE,3S,3SE,NE,2N,2NW,N,NW,SE,NW,2N,SE,N,SE,NE,4SE,SW,SE,2S,SW,SE,S,4SW,2NW,2SE,J 2>&1 | grep Status
+#  73: Won:  1 | Time:         1  [0h  0m  1s] | Done:      34 180 | Cost: 100 / 100 | Speed:    18 984.80 | Memory:  0.10 GiB
+echo -n " 73: "; cargo run -- debug 73 NE,SE,NE,2SE,SW,SE,SW,NW,S,SE,NW,N,SW,NE,S,2N,S,NW,SE,N,2S,N,SW,NE,NW,SE,N 2>&1 | grep Status
+#  74: Won:  2 | Time:       185  [0h  3m  5s] | Done:   1 966 183 | Cost: 105 / 105 | Speed:    10 621.05 | Memory:  0.16 GiB
+echo -n " 74: "; cargo run -- debug 74 3S,NW,NE,N,S,2SE,2NE,2J,NW,SE,2NE,2SE,J,S,3N,2NE,2N,2SW,NE,3SW,SE,N,NW,N,2NE,SE,NW,N,NW,7SW,J,SW,S,SE 2>&1 | grep Status
 #  75: Won:  1 | Time:     7 750  [2h  9m 10s] | Done:  58 192 580 | Cost:  50 / 50 | Speed:     7 508.13 | Memory:  0.86 GiB
 echo -n " 75: "; cargo run -- debug 75 2NE,SE,2S,3SE,S,2NE,NW,SW,S,SW,N,S,NE,N,NW,2SW,N,S,NE,N,NW,NE,N,2NW,2SW,5S,SE,NE 2>&1 | grep Status
 #  76: Won:  6 | Time:     7 369  [2h  2m 49s] | Done:  60 299 728 | Cost:  51 / 51 | Speed:     8 181.98 | Memory:  1.69 GiB
@@ -143,15 +156,18 @@ echo -n " 85: "; cargo run -- debug 85 NE,3SE,S,SE,NE,N,2NW,2N,NE,2SE,SW,N,3SE,S
 #  87: # TODO "ROTATOR, LOW_ELEVATOR, HIGH_ELEVATOR",
 #  88: Won:  1 | Time:         3  [0h  0m  3s] | Done:      47 789 | Cost:  38 / 38 | Speed:    13 804.07 | Memory:  0.12 GiB
 echo -n " 88: "; cargo run -- debug 88 SE,NE,2N,S,NW,SE,SW,2NW,NE,2N,NE,SE,S,NW,J 2>&1 | grep Status
-#  89: # TODO "ROTATOR, LASER, ICE, ITEM_ANTI_ICE",
+#  89: Won:  1 | Time:        13  [0h  0m 13s] | Done:     112 156 | Cost:  92 / 92 | Speed:     8 297.35 | Memory:  0.14 GiB
+echo -n " 89: "; cargo run -- debug 89 3SW,2S,SW,S,SE,NE,SW,S,2SE,NE,SE,2NE,5N,SW,N,NW,SW,N,S,NW,SE,N,S 2>&1 | grep Status
 #  90: # TODO "ROTATOR, LASER, LOW_ELEVATOR",
 #  91: Won:  3 | Time:         8  [0h  0m  8s] | Done:     105 818 | Cost:  26 / 26 | Speed:    12 830.90 | Memory:  0.14 GiB
 echo -n " 91: "; cargo run -- debug 91 NE,SE,N,SE,S,SW,2SE,S,NW,SE,N,NW,2S,NW,N,2NE,N,NW,4S,SW 2>&1 | grep Status
 #  92: # TODO OK, OOM? 5GB
-#  93: # TODO "ROTATOR, LASER, ICE",
+#  93: Won:  2 | Time:       112  [0h  1m 52s] | Done:     944 976 | Cost:  68 / 68 | Speed:     8 382.43 | Memory:  0.15 GiB
+echo -n " 93: "; cargo run -- debug 93 N,SW,NE,NW,SE,N,S,NE,SW,2S,SW,NE,SW,NE,NW,SE,NW,SE,4S,SW,NW,SW,S,SE 2>&1 | grep Status
 #  94: Won:  1 | Time:       271  [0h  4m 31s] | Done:   3 453 681 | Cost:  37 / 37 | Speed:    12 716.70 | Memory:  0.17 GiB
 echo -n " 94: "; cargo run -- debug 94 NE,N,NE,S,NE,N,NE,N,SE,N,NE,NW,SW,NW,N,NE,3SE,2S,2SW,NW,N,NE,NW,SW,NW,N,NW,SW,S,SE,3S 2>&1 | grep Status
-#  95: # TODO "ROTATOR",
+#  95: Won:  1 | Time:       134  [0h  2m 14s] | Done:   1 044 054 | Cost:  79 / 79 | Speed:     7 737.03 | Memory:  0.15 GiB
+echo -n " 95: "; cargo run -- debug 95 N,SE,N,SE,NW,S,2N,NE,SW,SE,NW,N,NE,SW,SE,NW,N,NE,SW,SE,NW,3N,3NE,2SE,2S,2SW,N,NW,2S,NW 2>&1 | grep Status
 #  96: # TODO "ROTATOR, LASER, ICE, ITEM_ANTI_ICE",
 #  97: Won:  2 | Time:       100  [0h  1m 40s] | Done:   1 362 765 | Cost:  35 / 35 | Speed:    13 566.07 | Memory:  0.15 GiB
 echo -n " 97: "; cargo run -- debug 97 2SW,2SE,NW,NE,2N,S,SE,NW,2SW,4S,SE,NE,NW,2N,NW,S,3SE,N,NW,3N,NW,2SW 2>&1 | grep Status
