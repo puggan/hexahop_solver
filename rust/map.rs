@@ -231,7 +231,8 @@ impl MapState {
             vec![projectile]
         };
         let mut visited: HashSet<Projectile> = HashSet::new();
-        let mut damage: HashSet<Point> = HashSet::new();
+        let mut damage: Vec<Point> = Vec::new();
+        let mut damage_seen: HashSet<Point> = HashSet::new();
 
         while let Some(beam) = todo.pop() {
             if !visited.insert(beam) {
@@ -246,8 +247,8 @@ impl MapState {
                 // reflect into the two neighbouring directions
                 todo.push(hit.projectile(beam.dir.counter_clockwise()));
                 todo.push(hit.projectile(beam.dir.clockwise()));
-            } else {
-                damage.insert(hit);
+            } else if damage_seen.insert(hit) {
+                damage.push(hit);
             }
         }
 
