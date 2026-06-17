@@ -131,7 +131,7 @@ impl Solver {
             let duration_full_sec = duration.as_secs();
             let duration_float = duration.as_secs_f64();
             println!(
-                "{}: {:>2} | {}: {:>9} {:>13} | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB",
+                "{}: {:>2} | {}: {:>9} {:>13} | {}: {:>11} | {}: {:>3} {} | {}: {:>9}.{:02} | {}: {:>5.2} GiB | v1.0",
                 "Won".yellow(),
                 won,
                 "Time".yellow(),
