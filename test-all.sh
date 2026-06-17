@@ -22,13 +22,12 @@ echo -n " 10: "; cargo run -- debug 10 SE,2NE,SE,S,N,NW,2SW,S,2SE,2NE,NW,SE,3NE,
 echo -n " 11: "; cargo run -- debug 11 N,NE,N,4NE,SE,NW,4SW,S,SW,4S,SE,NE,SE,6NE,3N,3NW,3SE,3S,6SW,NW,SW,NW,2N,NE,SE,NW,SE,2NE,SW,2NE,NW 2>&1 | grep Status
 #  12: # TODO OK?, need reachable high-greens
 echo -n " 12; "; cargo run -- debug 12 N,S,N,Se,Ne,Se,N,Sw,Nw,N,Ne,Se,N,Sw,Nw,N,N,Se,Se,Nw,Ne,Se,Ne,Sw,Se,S,S,S,S,Sw,Se,Ne,Se,Se,Sw,Sw,Nw,Nw,N,N 2>&1 | grep Status # Migrated
-echo -n " 12: "; cargo run -- debug 12 N,S,N,SE,N,2SE,NW,NE,2N,2SW,NE,NW,2N,2SE,NW,NE,SE,NE,SW,SE,4S,SW,S,2SE,2NE,2NW,SW,NW,N 2>&1 | grep Status
 #  13: Won:  5 | Time:        2  [0h  0m  2s] | Done:      37 488 | Cost: 101 / 101 | Speed:    13 542.14 | Memory:  0.10 GiB
 echo -n " 13: "; cargo run -- debug 13 2SW,2S,SW,3NW,SW,NE,3SE,NE,SE,S,N,NE,SE,S,N,NW,N,NE,SE,NE,N,NW,SW,NW,N,SW,NW,S,2SW,NW,N,2NE,S 2>&1 | grep Status
 #  14: Won:  1 | Time:       28  [0h  0m 28s] | Done:     277 148 | Cost:  63 / 63 | Speed:     9 673.92 | Memory:  0.15 GiB
 echo -n " 14: "; cargo run -- debug 14 S,SE,S,2NE,NW,NE,N,NW,SW,N,NE,2SE,S,3NE,SE,S,NW,S,2NW,S,3N,2NE,3SE,S,NE,SE,S,SW,NW,S,3SW,2NW,S,SW,SE,NE,SE,3SW,NW,N,SW,2NW,4N,S 2>&1 | grep Status
-#  15: # TODO OK, Need reachable high-greens
-echo -n " 15; "; cargo run -- debug 15 Ne,S,S,Sw,S,Se,Ne,N,Se,Se,Sw,Se,Ne,N,Se,N,Ne,Ne,S,Se,Ne,N,Nw,Ne,Nw,Nw,Nw,N,Nw,Nw,Sw,Se,Se,Sw,Sw,S,Nw,Nw,Ne,Nw,N,Ne,Nw,Nw,S,S,S,Nw,N,Ne,S,S,Sw,S,Ne,S,Sw,S,S,S,Se,N,N,N,Ne 2>&1 | grep Status # Migrated
+#  15: Won:  2 | Time:    22 795  [6h 19m 55s] | Done: 225 968 530 | Cost:  65 / 65 | Speed:     9 912.80 | Memory:  4.06 GiB
+echo -n " 15; "; cargo run -- debug 15 SE,S,SW,S,SE,NE,N,2SE,SW,SE,2NE,NW,3NE,S,SE,NE,N,NW,NE,3NW,N,2SW,N,NE,NW,SW,3NW,2S,NE,S,2SE,S,2NW,SW,N,NW,N,NE,2S,SW,S,NE,S,SW,3S,SE,3N,NE 2>&1 | grep Status
 #  16: # TODO OK, Need reachable high-greens
 echo -n " 16; "; cargo run -- debug 16 Se,Ne,Ne,Ne,Ne,N,Nw,Nw,Nw,Nw,Sw,S,S,S,Ne,Se,Sw,Ne,N,Nw,Ne,Se,Se,Se,N,Nw,Nw,Nw,Sw,N,Nw,S,Nw,N,Sw,S,Sw,N,Sw,S,Se,S,Nw,S,Se,Sw,Se,Sw,S,Se,N,Se,S,Ne,S,Ne,Ne,Nw,Ne,Se,N,Ne,S,Ne,Ne,Nw,N,Se,Ne 2>&1 | grep Status # Migrated
 #  17: # TODO OK, -- OOM 5+ GB
